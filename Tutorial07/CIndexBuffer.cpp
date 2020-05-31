@@ -14,6 +14,14 @@
 **/
 #include "CIndexBuffer.h"
 
+CIndexBuffer::CIndexBuffer() {
+
+}
+
+CIndexBuffer::~CIndexBuffer() {
+
+}
+
 void CIndexBuffer::init(SubresourceData s, BufferDesc b) {
 	Buffer.init(b);
 #ifdef D_DIRECTX

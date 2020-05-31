@@ -1,10 +1,10 @@
-#include "CGraphicsAPI.h"
+#include "CResource.h"
 #ifdef D_DIRECTX
-CGraphicsAPI::CGraphicsAPI() {}
+CResource::CResource() {}
 
-CGraphicsAPI::~CGraphicsAPI() {}
+CResource::~CResource() {}
 
-bool CGraphicsAPI::loadMesh(const char * path, CSceneManager * SM, const aiScene * model, CDeviceContext * DC, Assimp::Importer * importer, CDevice * dev)
+bool CResource::loadMesh(const char * path, CSceneManager * SM, const aiScene * model, CDeviceContext * DC, Assimp::Importer * importer, CDevice * dev)
 {
 	model = importer->ReadFile(path, aiProcessPreset_TargetRealtime_Fast | aiProcess_ConvertToLeftHanded | aiProcess_FindInstances
 		| aiProcess_ValidateDataStructure | aiProcess_OptimizeMeshes | aiProcess_Debone);
@@ -46,7 +46,7 @@ bool CGraphicsAPI::loadMesh(const char * path, CSceneManager * SM, const aiScene
 	return true;
 }
 
-void CGraphicsAPI::meshRead(const aiScene * model, CMesh * mesh, int index, CDevice * dev)
+void CResource::meshRead(const aiScene * model, CMesh * mesh, int index, CDevice * dev)
 {
 	std::vector <std::uint32_t> indis;
 	indis.reserve(model->mMeshes[index]->mNumFaces * 3);
@@ -89,7 +89,7 @@ void CGraphicsAPI::meshRead(const aiScene * model, CMesh * mesh, int index, CDev
 #endif
 }
 
-void CGraphicsAPI::readMeshTexture(const aiScene * model, CMesh * mesh, int index, CDevice * dev)
+void CResource::readMeshTexture(const aiScene * model, CMesh * mesh, int index, CDevice * dev)
 {
 	const aiMaterial* pMaterial = model->mMaterials[model->mMeshes[index]->mMaterialIndex];
 

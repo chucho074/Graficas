@@ -62,7 +62,6 @@ public:
 	BufferDesc Desc;
 	
 	
-
 #ifdef D_DIRECTX
 	D3D11_BUFFER_DESC m_bd;
 	ID3D11Buffer * Buffer;

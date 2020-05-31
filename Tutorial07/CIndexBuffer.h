@@ -25,6 +25,17 @@ class CIndexBuffer {
 public:
 
 	/**
+	* @brief	: Initializer.
+	* @bug		: No Bugs known.
+	**/
+	CIndexBuffer();
+
+	/**
+	* @brief	: Destructor.
+	* @bug		: No Bugs known.
+	**/
+	~CIndexBuffer();
+	/**
 	* @brief	: Init of the class.
 	* @param	: DescBuffer.
 	* @bug		: No Bugs known.

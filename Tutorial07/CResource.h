@@ -1,6 +1,6 @@
 /**
 * @LC		: 30/03/2020
-* @file		: CGraphicsAPI.cpp
+* @file		: CResource.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
 * @date		: 13/03/2020
@@ -23,20 +23,20 @@
 * @brief	: Class for Graphics.
 * @bug		: No Bugs Known.
 **/
-class CGraphicsAPI {
+class CResource {
 #ifdef D_DIRECTX
 public:
 	/**
 	* @brief	: Constructor.
 	* @bug		: No Bugs Known.
 	**/
-	CGraphicsAPI();
+	CResource();
 
 	/**
 	* @brief	: Destructor.
 	* @bug		: No Bugs Known.
 	**/
-	~CGraphicsAPI();
+	~CResource();
 
 	/**
 	* @brief	: Load a mesh.

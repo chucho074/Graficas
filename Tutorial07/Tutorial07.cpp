@@ -23,7 +23,7 @@
 #include "CSamplerState.h"
 #include "amgui/imgui.h"
 
-#include "CGraphicsAPI.h"
+#include "CResource.h"
 #include <iostream>
 
 #ifdef OPENGL
@@ -67,6 +67,7 @@ FEATURE_LEVEL						featureLevel = FEATURE_LEVEL_11_0;
 CDevice *							g_pDevice = CDevice::getInstance();
 CSwapChain *						g_SwapChain = CSwapChain::getInstance();
 CDeviceContext *					g_DeviceContext = CDeviceContext::getInstance();
+
 CVertexBuffer						g_VertexBuffer;
 CIndexBuffer						g_IndexBuffer;
 CTexture2D							g_DepthStencil;
@@ -89,8 +90,8 @@ ID3D11Device * ptrDevice = static_cast<ID3D11Device*>(g_pDevice->getDevice());
 ID3D11DeviceContext * ptrDC = static_cast<ID3D11DeviceContext*>(g_DeviceContext->getDeviceContext());
 IDXGISwapChain* ptrSC = static_cast<IDXGISwapChain*>(g_SwapChain->getSwapChain());
 
-CGraphicsAPI						graphicApi;
-CSceneManager						SCManager;
+//CResource						graphicApi;
+//CSceneManager						SCManager;
 #elif OPENGL
 unsigned int framebuffer;
 unsigned int textureColorbuffer;
@@ -104,7 +105,7 @@ unsigned int rbo;
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 HRESULT InitDevice();
 void CleanupDevice();
-LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void Render();
 
 
@@ -801,7 +802,7 @@ HRESULT InitDevice() {
 		return hr;
 	}
 
-	//// Create the vertex shader
+	// Create the vertex shader
 	hr = ptrDevice->CreateVertexShader(g_VertexShader.m_pVSBlob->GetBufferPointer(), g_VertexShader.m_pVSBlob->GetBufferSize(), NULL, &g_VertexShader.m_pVertexShader);
 	if (FAILED(hr)) {
 		g_VertexShader.m_pVSBlob->Release();
@@ -863,24 +864,31 @@ HRESULT InitDevice() {
 		{ glm::vec3(-1.0f, 1.0f, 1.0f), glm::vec2(0.0f, 1.0f) },
 	};
 
+	//											NEW TESTING
+
+	//BManager.init();
 	BufferDesc bufferstrct;
 	bufferstrct.usage = USAGE_DEFAULT;
 	bufferstrct.byteWidth = sizeof(SimpleVertex) * 24;
 	bufferstrct.bindFlags = 1;			// D3D11_BIND_VERTEX_BUFFER;
 	bufferstrct.cpuAccessFlags = 0;
 
+	//BManager.updateDesc(sizeof(SimpleVertex) * 24);
 	SubresourceData subrsrcData;
 	subrsrcData.psysMem = vertices;
 	g_VertexBuffer.init(subrsrcData, bufferstrct);
-
+	//BManager.initVB(subrsrcData);
+	
 	hr = ptrDevice->CreateBuffer(&g_VertexBuffer.Buffer.m_bd, &g_VertexBuffer.Data, &g_VertexBuffer.Buffer.Buffer);
+	//hr = ptrDevice->CreateBuffer(&BManager.getVB()->Buffer.m_bd, &BManager.getVB()->Data, &BManager.getVB()->Buffer.Buffer);
 	if (FAILED(hr)) {
-	return hr;
+		return hr;
 	}
     // Set vertex buffer
     UINT stride = sizeof( SimpleVertex );
     UINT offset = 0;
 	ptrDC->IASetVertexBuffers( 0, 1, &g_VertexBuffer.Buffer.Buffer, &stride, &offset );
+	//ptrDC->IASetVertexBuffers( 0, 1, &BManager.getVB()->Buffer.Buffer, &stride, &offset );
 
     // Create index buffer
     WORD indices[] = {
@@ -907,15 +915,20 @@ HRESULT InitDevice() {
 	bufferstrct.byteWidth = sizeof( WORD ) * 36;
 	bufferstrct.bindFlags = 2;		// D3D11_BIND_INDEX_BUFFER;
 	bufferstrct.cpuAccessFlags = 0;
+	//BManager.updateDesc(sizeof(WORD) * 36);
+
 	subrsrcData.psysMem = indices;
+	//BManager.initIB(subrsrcData);
 	g_IndexBuffer.init(subrsrcData, bufferstrct);
+
     hr = ptrDevice->CreateBuffer( &g_IndexBuffer.Buffer.m_bd, &g_IndexBuffer.m_Data, &g_IndexBuffer.Buffer.Buffer );
+	//hr = ptrDevice->CreateBuffer(&BManager.getIB()->Buffer.m_bd, &BManager.getIB()->m_Data, &BManager.getIB()->Buffer.Buffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
     // Set index buffer
 	ptrDC->IASetIndexBuffer(g_IndexBuffer.Buffer.Buffer, DXGI_FORMAT_R16_UINT, 0 );
-
+	//ptrDC->IASetIndexBuffer(BManager.getIB()->Buffer.Buffer, DXGI_FORMAT_R16_UINT, 0);
     
 	//Create billboard VertexBuffer
 	SimpleVertex boardVertex[] =
@@ -947,8 +960,7 @@ HRESULT InitDevice() {
 	ptrDC->IASetVertexBuffers(0, 1, &g_BoardVB.Buffer.Buffer, &stride, &offset);
 
 	//Create billboard IB
-	WORD boardIndices[] =
-	{
+	WORD boardIndices[] = {
 		3,1,0,
 		2,1,3
 	};
@@ -1142,7 +1154,7 @@ HRESULT InitDevice() {
 
 	g_pDevice->Device = ptrDevice;
 	g_DeviceContext->m_DeviceContext = ptrDC;
-	graphicApi.loadMesh("Models/Scene/Reflect.fbx", &SCManager, graphicApi.m_Model, g_DeviceContext, graphicApi.m_Importer, g_pDevice);
+	//graphicApi.loadMesh("Models/Scene/Reflect.fbx", &SCManager, graphicApi.m_Model, g_DeviceContext, graphicApi.m_Importer, g_pDevice);
 
 #endif
 
@@ -1157,8 +1169,7 @@ HRESULT InitDevice() {
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created
 //--------------------------------------------------------------------------------------
-void CleanupDevice()
-{
+void CleanupDevice() {
 #ifdef D_DIRECTX
     if( ptrDC) ptrDC->ClearState();
     if( g_SamplerState.m_pSamplerLinear ) g_SamplerState.m_pSamplerLinear->Release();
@@ -1390,26 +1401,26 @@ void Render() {
 
 
 
-	for (int i = 0; i < 32; i++){
+	
 
-		g_World = glm::mat4(1.f);
-		
-		cb.mWorld = glm::transpose(g_World);
-		cb.vMeshColor = g_MeshColor;
-		g_DeviceContext->m_DeviceContext->UpdateSubresource(InactiveCamera->m_CBChangesEveryFrame.Buffer, 0, NULL, &cb, 0, 0);
+	g_World = glm::mat4(1.f);
+	
+	cb.mWorld = glm::transpose(g_World);
+	cb.vMeshColor = g_MeshColor;
+	g_DeviceContext->m_DeviceContext->UpdateSubresource(InactiveCamera->m_CBChangesEveryFrame.Buffer, 0, NULL, &cb, 0, 0);
 
-		g_DeviceContext->m_DeviceContext->VSSetShader(g_VertexShader.m_pVertexShader, NULL, 0);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(0, 1, &InactiveCamera->m_CBNeverChanges.Buffer);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(1, 1, &InactiveCamera->m_CBChangesOnResize.Buffer);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
-		g_DeviceContext->m_DeviceContext->PSSetShader(g_PixelShader.m_pPixelShader, NULL, 0);
-		g_DeviceContext->m_DeviceContext->PSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
-		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &g_pTextureRV);
-		g_DeviceContext->m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
-		g_DeviceContext->m_DeviceContext->DrawIndexed(36, 0, 0);
-		ID3D11ShaderResourceView* temp = NULL;
-		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &temp);
-	}
+	g_DeviceContext->m_DeviceContext->VSSetShader(g_VertexShader.m_pVertexShader, NULL, 0);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(0, 1, &InactiveCamera->m_CBNeverChanges.Buffer);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(1, 1, &InactiveCamera->m_CBChangesOnResize.Buffer);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
+	g_DeviceContext->m_DeviceContext->PSSetShader(g_PixelShader.m_pPixelShader, NULL, 0);
+	g_DeviceContext->m_DeviceContext->PSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
+	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &g_pTextureRV);
+	g_DeviceContext->m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
+	g_DeviceContext->m_DeviceContext->DrawIndexed(36, 0, 0);
+	ID3D11ShaderResourceView* temp = NULL;
+	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &temp);
+	
 
 	CBChangesEveryFrame cbMesh;
 	cbMesh.mWorld = {
@@ -1421,7 +1432,7 @@ void Render() {
 
 	cbMesh.vMeshColor = { 1, 0, 0, 1 };
 	g_DeviceContext->m_DeviceContext->UpdateSubresource(InactiveCamera->m_CBChangesEveryFrame.Buffer, 0, NULL, &cbMesh, 0, 0);
-	for (int i = 0; i < SCManager.m_MeshList.size(); i++) {
+	/*for (int i = 0; i < SCManager.m_MeshList.size(); i++) {
 		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
 		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &SCManager.m_MeshList[i]->Materials->m_TextureDiffuse);
 		g_DeviceContext->m_DeviceContext->VSSetShaderResources(0, 1, &SCManager.m_MeshList[i]->Materials->m_TextureDiffuse);
@@ -1429,7 +1440,7 @@ void Render() {
 		g_DeviceContext->m_DeviceContext->IASetVertexBuffers(0, 1, &SCManager.m_MeshList[i]->VB->Buffer, &stride, &offset);
 		g_DeviceContext->m_DeviceContext->IASetIndexBuffer(SCManager.m_MeshList[i]->IB->Buffer, DXGI_FORMAT_R16_UINT, 0);
 		g_DeviceContext->m_DeviceContext->DrawIndexed(SCManager.m_MeshList[i]->INum, 0, 0);
-	}
+	}*/
 
 	//Set backbuffer and main DSV
 	g_DeviceContext->m_DeviceContext->OMSetRenderTargets(1, &g_RenderTargetView.m_pRTV, DepthStencilViewFree.m_pDepthStencilView);
@@ -1437,29 +1448,29 @@ void Render() {
 	g_DeviceContext->m_DeviceContext->ClearDepthStencilView( DepthStencilViewFree.m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
 	g_DeviceContext->m_DeviceContext->IASetVertexBuffers(0, 1, &g_VertexBuffer.Buffer.Buffer, &stride, &offset);
 	g_DeviceContext->m_DeviceContext->IASetIndexBuffer(g_IndexBuffer.Buffer.Buffer, DXGI_FORMAT_R16_UINT, 0);
-
+	
     //
     // Update variables that change once per frame
     //
-	for (int i = 0; i < 32; i++){
+	
 		
-		g_World = glm::mat4(1.f);
+	g_World = glm::mat4(1.f);
 
-		cb.mWorld = glm::transpose(g_World);
-		cb.vMeshColor = g_MeshColor;
-		g_DeviceContext->m_DeviceContext->UpdateSubresource(ActiveCamera->m_CBChangesEveryFrame.Buffer, 0, NULL, &cb, 0, 0);
-		g_DeviceContext->m_DeviceContext->VSSetShader(g_VertexShader.m_pVertexShader, NULL, 0);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(0, 1, &ActiveCamera->m_CBNeverChanges.Buffer);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(1, 1, &ActiveCamera->m_CBChangesOnResize.Buffer);
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &ActiveCamera->m_CBChangesEveryFrame.Buffer);
-		g_DeviceContext->m_DeviceContext->PSSetShader( g_PixelShader.m_pPixelShader, NULL, 0);
-		g_DeviceContext->m_DeviceContext->PSSetConstantBuffers(2, 1, &ActiveCamera->m_CBChangesEveryFrame.Buffer);
-		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &InactiveSRV);
-		g_DeviceContext->m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
-		g_DeviceContext->m_DeviceContext->DrawIndexed(36, 0, 0);
-		ID3D11ShaderResourceView* temp = NULL;
-		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &temp);
-	}
+	cb.mWorld = glm::transpose(g_World);
+	cb.vMeshColor = g_MeshColor;
+	g_DeviceContext->m_DeviceContext->UpdateSubresource(ActiveCamera->m_CBChangesEveryFrame.Buffer, 0, NULL, &cb, 0, 0);
+	g_DeviceContext->m_DeviceContext->VSSetShader(g_VertexShader.m_pVertexShader, NULL, 0);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(0, 1, &ActiveCamera->m_CBNeverChanges.Buffer);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(1, 1, &ActiveCamera->m_CBChangesOnResize.Buffer);
+	g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &ActiveCamera->m_CBChangesEveryFrame.Buffer);
+	g_DeviceContext->m_DeviceContext->PSSetShader( g_PixelShader.m_pPixelShader, NULL, 0);
+	g_DeviceContext->m_DeviceContext->PSSetConstantBuffers(2, 1, &ActiveCamera->m_CBChangesEveryFrame.Buffer);
+	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &InactiveSRV);
+	g_DeviceContext->m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
+	g_DeviceContext->m_DeviceContext->DrawIndexed(36, 0, 0);
+	temp = NULL;
+	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &temp);
+	
 
 	g_DeviceContext->m_DeviceContext->IASetVertexBuffers(0, 1, &g_BoardVB.Buffer.Buffer, &stride, &offset);
 	g_DeviceContext->m_DeviceContext->IASetIndexBuffer(g_BoardIB.Buffer.Buffer, DXGI_FORMAT_R16_UINT, 0);
@@ -1485,7 +1496,7 @@ void Render() {
 	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &InactiveSRV);
 	g_DeviceContext->m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
 	g_DeviceContext->m_DeviceContext->DrawIndexed(6, 0, 0);
-	ID3D11ShaderResourceView* temp = NULL;
+	temp = NULL;
 	g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &temp);
 
     //

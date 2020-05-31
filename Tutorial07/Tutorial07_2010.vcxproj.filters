@@ -86,9 +86,6 @@
     <ClCompile Include="amgui\imgui_widgets.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
-    <ClCompile Include="CGraphicsAPI.cpp">
-      <Filter>assimp</Filter>
-    </ClCompile>
     <ClCompile Include="CMaterial.cpp">
       <Filter>assimp</Filter>
     </ClCompile>
@@ -119,6 +116,11 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="glad.c" />
+    <ClCompile Include="CBaseBuffer.cpp" />
+    <ClCompile Include="CManager.cpp" />
+    <ClCompile Include="CResource.cpp">
+      <Filter>assimp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial07.cpp" />
@@ -265,9 +267,6 @@
       <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Includes.h" />
-    <ClInclude Include="CGraphicsAPI.h">
-      <Filter>assimp</Filter>
-    </ClInclude>
     <ClInclude Include="CMaterial.h">
       <Filter>assimp</Filter>
     </ClInclude>
@@ -299,6 +298,11 @@
     </ClInclude>
     <ClInclude Include="Defines.h">
       <Filter>Graphics\include</Filter>
+    </ClInclude>
+    <ClInclude Include="CBaseBuffer.h" />
+    <ClInclude Include="CManager.h" />
+    <ClInclude Include="CResource.h">
+      <Filter>assimp</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
