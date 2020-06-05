@@ -15,7 +15,7 @@
 
 CDeviceContext::CDeviceContext() {
 #ifdef D_DIRECTX
-	m_DeviceContext = NULL;
+	m_DeviceContext = nullptr;
 #endif
 }
 
@@ -23,12 +23,12 @@ CDeviceContext::~CDeviceContext() {
 
 }
 
-CDeviceContext * CDeviceContext::getInstance() {
-	if (m_DCInstance == nullptr) {
-		m_DCInstance = new CDeviceContext();
-	}
-	return m_DCInstance;
-}
+//CDeviceContext * CDeviceContext::getInstance() {
+//	if (m_DCInstance == nullptr) {
+//		m_DCInstance = new CDeviceContext();
+//	}
+//	return m_DCInstance;
+//}
 
 void * CDeviceContext::getDeviceContext() {
 #ifdef D_DIRECTX

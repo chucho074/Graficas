@@ -117,10 +117,10 @@
     </ClCompile>
     <ClCompile Include="glad.c" />
     <ClCompile Include="CBaseBuffer.cpp" />
-    <ClCompile Include="CManager.cpp" />
     <ClCompile Include="CResource.cpp">
       <Filter>assimp</Filter>
     </ClCompile>
+    <ClCompile Include="CGraphicsAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial07.cpp" />
@@ -304,6 +304,8 @@
     <ClInclude Include="CResource.h">
       <Filter>assimp</Filter>
     </ClInclude>
+    <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CShaders.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

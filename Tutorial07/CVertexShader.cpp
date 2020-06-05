@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 04/06/2020
 * @file		: CVertexShader.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -15,23 +15,23 @@
 
 CVertexShader::CVertexShader() {
 #ifdef D_DIRECTX
-	m_pVSBlob = NULL;
-	m_pVertexShader = NULL;
-	m_pInputLayout = NULL;
+	m_Blob = NULL;
+	m_VertexShader = NULL;
+	m_InputLayout = NULL;
 #endif
 }
 
 void * CVertexShader::getBlob() {
 #ifdef D_DIRECTX
-	return m_pVSBlob;
+	return m_Blob;
 #else
 	return nullptr;
 #endif
 }
 
-void * CVertexShader::getVS() {
+void * CVertexShader::getShader() {
 #ifdef D_DIRECTX
-	return m_pVertexShader;
+	return m_VertexShader;
 #else
 	return nullptr;
 #endif
@@ -39,7 +39,7 @@ void * CVertexShader::getVS() {
 
 void * CVertexShader::getInputLayout() {
 #ifdef D_DIRECTX
-	return m_pInputLayout;
+	return m_InputLayout;
 #else
 	return nullptr;
 #endif

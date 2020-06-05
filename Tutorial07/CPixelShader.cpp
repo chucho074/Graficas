@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 04/06/2020
 * @file		: CPixelShader.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -15,18 +15,29 @@
 
 CPixelShader::CPixelShader() {
 #ifdef D_DIRECTX
-	m_pPSBlob = NULL;
-	m_pPixelShader = NULL;
+	m_Blob = NULL;
+	m_PixelShader = NULL;
 #endif 
 }
+
 
 CPixelShader::~CPixelShader() {
 
 }
 
-void * CPixelShader::getPS() {
+
+void * CPixelShader::getBlob() {
 #ifdef D_DIRECTX
-	return m_pPixelShader;
+	return m_Blob;
+#else
+	return nullptr;
+#endif
+}
+
+
+void * CPixelShader::getShader() {
+#ifdef D_DIRECTX
+	return m_PixelShader;
 #else
 	return nullptr;
 #endif 

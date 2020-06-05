@@ -62,7 +62,7 @@ public:
 	* @brief	: Getter for the instance.
 	* @bug		: No Bugs known.
 	**/
-	static CSwapChain * getInstance();
+	//static CSwapChain * getInstance();
 
 	/**
 	* @brief	: Getter for the SC.
@@ -79,5 +79,5 @@ public:
 #endif
 
 private:
-	static CSwapChain * m_pSCInstance;
+	//static CSwapChain * m_pSCInstance;
 };

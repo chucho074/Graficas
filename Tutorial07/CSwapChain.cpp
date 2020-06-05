@@ -15,7 +15,7 @@
 
 CSwapChain::CSwapChain() {
 #ifdef D_DIRECTX
-	//m_pSwapChain = nullptr;
+	m_pSwapChain = nullptr;
 #endif
 }
 
@@ -41,12 +41,12 @@ void CSwapChain::init(SwapChainDesc inDesc) {
 #endif
 }
 
-CSwapChain * CSwapChain::getInstance() {
-	if (m_pSCInstance == nullptr) {
-		m_pSCInstance = new CSwapChain();
-	}
-	return m_pSCInstance;
-}
+//CSwapChain * CSwapChain::getInstance() {
+//	if (m_pSCInstance == nullptr) {
+//		m_pSCInstance = new CSwapChain();
+//	}
+//	return m_pSCInstance;
+//}
 
 void * CSwapChain::getSwapChain() {
 #ifdef D_DIRECTX

@@ -31,12 +31,29 @@ void CBuffer::init(BufferDesc inDesc) {
 #endif
 }
 
+void CBuffer::init(SubresourceData inSD, BufferDesc inDesc) {
+	Desc = inDesc;
+#ifdef D_DIRECTX
+	ZeroMemory(&m_bd, sizeof(m_bd));
+	m_bd.Usage = (D3D11_USAGE)Desc.usage;
+	m_bd.ByteWidth = Desc.byteWidth;
+	m_bd.BindFlags = Desc.bindFlags;
+	m_bd.CPUAccessFlags = Desc.cpuAccessFlags;
+	ZeroMemory(&m_Data, sizeof(m_Data));
+	m_Data.pSysMem = inSD.psysMem;
+#endif
+}
+
 void * CBuffer::getBuffer() {
 #ifdef D_DIRECTX
 	return Buffer;
 #else
 	return nullptr;
 #endif	
+}
+
+void CBuffer::clear() {
+	Buffer->Release();
 }
 
 #ifdef D_DIRECTX

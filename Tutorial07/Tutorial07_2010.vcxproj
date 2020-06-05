@@ -885,9 +885,9 @@
     <ClCompile Include="CDepthStencilView.cpp" />
     <ClCompile Include="CDevice.cpp" />
     <ClCompile Include="CDeviceContext.cpp" />
+    <ClCompile Include="CGraphicsAPI.cpp" />
     <ClCompile Include="CResource.cpp" />
     <ClCompile Include="CIndexBuffer.cpp" />
-    <ClCompile Include="CManager.cpp" />
     <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMesh.cpp" />
     <ClCompile Include="CModel.cpp" />
@@ -925,6 +925,7 @@
     <ClInclude Include="CDepthStencilView.h" />
     <ClInclude Include="CDevice.h" />
     <ClInclude Include="CDeviceContext.h" />
+    <ClInclude Include="CGraphicsAPI.h" />
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CIndexBuffer.h" />
     <ClInclude Include="CManager.h" />
@@ -935,6 +936,7 @@
     <ClInclude Include="CRenderTargetView.h" />
     <ClInclude Include="CSamplerState.h" />
     <ClInclude Include="CSceneManager.h" />
+    <ClInclude Include="CShaders.h" />
     <ClInclude Include="CSwapChain.h" />
     <ClInclude Include="CTexture2D.h" />
     <ClInclude Include="CVertexBuffer.h" />

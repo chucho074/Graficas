@@ -21,6 +21,17 @@
 * @bug		: No Bugs known.
 **/
 struct DeviceDesc {
+	DeviceDesc::DeviceDesc() {
+		DriverType = DRIVER_TYPE_UNKNOWN;
+		DriverTypes[0] = DRIVER_TYPE_UNKNOWN;
+		DriverTypes[1] = DRIVER_TYPE_UNKNOWN;
+		DriverTypes[2] = DRIVER_TYPE_UNKNOWN;
+		DeviceFlags = 0;
+		FeatureLevels[0] = FEATURE_LEVEL_9_1;
+		FeatureLevels[1] = FEATURE_LEVEL_9_1;
+		FeatureLevels[2] = FEATURE_LEVEL_9_1;
+		numFeatureLevels = 0;
+	}
 	DRIVER_TYPE		DriverType;
 	DRIVER_TYPE		DriverTypes[3];
 	unsigned int	DeviceFlags;
@@ -56,19 +67,16 @@ public:
 	* @brief	: Getter for the device.
 	* @bug		: No Bugs known.
 	**/
+#ifdef D_DIRECTX
 	void * getDevice();
-
-	/**
-	* @brief	: Getter the instance.
-	* @bug		: No Bugs known.
-	**/
-	static CDevice * getInstance();
+#endif
 	
 	void operator = (CDevice const&) = delete;
+	
 	DeviceDesc Desc;
+
 #ifdef D_DIRECTX
 	ID3D11Device * Device;
 #endif 
-private:
-	static CDevice * m_DeviceInstance;
+
 };

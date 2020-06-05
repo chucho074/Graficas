@@ -44,7 +44,7 @@ public:
 	* @brief	: Getter for the instance.
 	* @bug		: No Bugs known.
 	**/
-	static CDeviceContext * getInstance();
+	//static CDeviceContext * getInstance();
 
 	void operator = (CDeviceContext const&) = delete;
 
@@ -53,5 +53,5 @@ public:
 #endif
 
 private:
-	static CDeviceContext * m_DCInstance;
+	//static CDeviceContext * m_DCInstance;
 };

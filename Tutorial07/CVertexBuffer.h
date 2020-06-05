@@ -16,12 +16,14 @@
 #include "CBuffer.h"
 #include "Includes.h"
 
+
 /**
 * @brief	: Class for Vertex Buffer.
 * @bug		: No Bugs known.
 **/
 class CVertexBuffer {
 public:
+
 	/**
 	* @brief	: Initializer.
 	* @bug		: No Bugs known.

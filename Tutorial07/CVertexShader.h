@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 04/06/2020
 * @file		: CVertexShader.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -12,14 +12,13 @@
 * Headers
 **/
 #pragma once
-#include "Defines.h"
-#include "Includes.h"
+#include "CShaders.h"
 
 /**
 * @brief	: Class for Vertex Shader abstraction.
 * @bug		: No Bugs known.
 **/
-class CVertexShader {
+class CVertexShader : public CShaders {
 public:
 
 	/**
@@ -38,7 +37,7 @@ public:
 	* @brief	: Getter for the Vertex Shader.
 	* @bug		: No Bugs known.
 	**/
-	void * getVS();
+	void * getShader();
 
 	/**
 	* @brief	: Getter for the Input Layout.
@@ -47,8 +46,8 @@ public:
 	void * getInputLayout();
 
 #ifdef D_DIRECTX
-	ID3DBlob * m_pVSBlob;
-	ID3D11VertexShader * m_pVertexShader;
-	ID3D11InputLayout * m_pInputLayout;
+	//ID3DBlob * m_pVSBlob;
+	ID3D11VertexShader * m_VertexShader;
+	ID3D11InputLayout * m_InputLayout;
 #endif
 };

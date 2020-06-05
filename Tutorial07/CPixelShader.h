@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 04/06/2020
 * @file		: CPixelShader.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -12,14 +12,13 @@
 * Headers
 **/
 #pragma once
-#include "Defines.h"
-#include "Includes.h"
+#include "CShaders.h"
 
 /**
 * @brief	: Class for Pixel Shader abstraction.
 * @bug		: No Bugs known.
 **/
-class CPixelShader {
+class CPixelShader : public CShaders  {
 public:
 	/**
 	* @brief	: Constructor of the class.
@@ -34,12 +33,18 @@ public:
 	~CPixelShader();
 
 	/**
+	* @brief	: Getter for the Blob.
+	* @bug		: No Bugs known.
+	**/
+	void * getBlob();
+
+	/**
 	* @brief	: Getter the PixelShader.
 	* @bug		: No Bugs known.
 	**/
-	void * getPS();
+	void * getShader();
 #ifdef D_DIRECTX
-	ID3DBlob * m_pPSBlob;
-	ID3D11PixelShader * m_pPixelShader;
+	//ID3DBlob * m_pPSBlob;
+	ID3D11PixelShader * m_PixelShader;
 #endif
 };
