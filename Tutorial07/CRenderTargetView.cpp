@@ -16,7 +16,7 @@
 
 CRenderTargetView::CRenderTargetView() {
 #ifdef D_DIRECTX
-	m_pRTV = NULL;
+	m_RTV = NULL;
 #endif
 }
 
@@ -35,7 +35,7 @@ void CRenderTargetView::init(RenderTargetViewDesc inDesc) {
 
 void * CRenderTargetView::getRTV() {
 #ifdef D_DIRECTX
-	return m_pRTV;
+	return m_RTV;
 #else
 	return nullptr;
 #endif

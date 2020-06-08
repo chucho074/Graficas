@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 08/06/2020
 * @file		: CDevice.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -14,6 +14,12 @@
 #pragma once
 #include "Defines.h"
 #include "Includes.h"
+
+#include "CRenderTargetView.h"
+#include "CTexture2D.h"
+#include "CDepthStencilView.h"
+#include "CVertexShader.h"
+#include "CPixelShader.h"
 
 
 /**
@@ -63,14 +69,51 @@ public:
 	**/
 	void init(DeviceDesc inDesc);
 
+#ifdef D_DIRECTX
 	/**
 	* @brief	: Getter for the device.
 	* @bug		: No Bugs known.
 	**/
-#ifdef D_DIRECTX
 	void * getDevice();
 #endif
+
+	/**
+	* @brief	: Create a Render Target View.
+	* @param	: CTexture2D, CRenderTargetView.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createRTV(CTexture2D & inTexture, CRenderTargetView & inRTV);
+
+	/**
+	* @brief	: Create a Texture in the Device.
+	* @param	: CTexture2D.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createTexture(CTexture2D & inTexture);
+
+	/**
+	* @brief	: Create a DepthStencilView in the Device.
+	* @param	: CTexture2D, CDepthStencilView.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createDSV(CTexture2D & inDStencil, CDepthStencilView & inDSView);
 	
+	/**
+	* @brief	: Create a Vertex Shader in the Device.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createVShader(CVertexShader & inVS);
+	
+	/**
+	* @brief	: Create a Pixel Shader in the Device.
+	* @param	: CPixelShader.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createPShader(CPixelShader & inPS);
+
+
+
 	void operator = (CDevice const&) = delete;
 	
 	DeviceDesc Desc;

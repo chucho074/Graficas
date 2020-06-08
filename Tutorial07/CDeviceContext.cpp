@@ -19,21 +19,29 @@ CDeviceContext::CDeviceContext() {
 #endif
 }
 
+
 CDeviceContext::~CDeviceContext() {
 
 }
-
-//CDeviceContext * CDeviceContext::getInstance() {
-//	if (m_DCInstance == nullptr) {
-//		m_DCInstance = new CDeviceContext();
-//	}
-//	return m_DCInstance;
-//}
 
 void * CDeviceContext::getDeviceContext() {
 #ifdef D_DIRECTX
 	return m_DeviceContext;
 #else
 	return nullptr;
+#endif
+}
+
+
+void CDeviceContext::setViewport(CViewPort inVP) {
+#ifdef D_DIRECTX
+	m_DeviceContext->RSSetViewports(1, &inVP.m_Viewport);
+#endif
+}
+
+
+void CDeviceContext::setILayout(CVertexShader & inVS) {
+#ifdef D_DIRECTX
+	m_DeviceContext->IASetInputLayout(inVS.m_InputLayout);
 #endif
 }

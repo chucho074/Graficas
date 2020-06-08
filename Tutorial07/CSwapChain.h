@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 08/06/2020
 * @file		: CSwapChain.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -14,6 +14,7 @@
 #pragma once
 #include "Defines.h"
 #include "Includes.h"
+#include "CTexture2D.h"
 
 /**
 * @brief	: SwapChain Descriptor.
@@ -59,25 +60,24 @@ public:
 	void init(SwapChainDesc s);
 
 	/**
-	* @brief	: Getter for the instance.
-	* @bug		: No Bugs known.
-	**/
-	//static CSwapChain * getInstance();
-
-	/**
 	* @brief	: Getter for the SC.
 	* @bug		: No Bugs known.
 	**/
 	void * getSwapChain();
 
+	/**
+	* @brief	: Getter for BackBuffer.
+	* @param	: CTexture2D.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT getBuffer(CTexture2D & inTexture);
+
+
 	void operator = (CSwapChain const&) = delete;
 
 
 #ifdef D_DIRECTX
-	IDXGISwapChain * m_pSwapChain;
-	DXGI_SWAP_CHAIN_DESC m_sd;
+	IDXGISwapChain * m_SwapChain;
+	DXGI_SWAP_CHAIN_DESC m_SCDesc;
 #endif
-
-private:
-	//static CSwapChain * m_pSCInstance;
 };

@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/02/2020
+* @LC		: 08/06/2020
 * @file		: CDeviceContext.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -14,6 +14,8 @@
 #pragma once
 #include "Defines.h"
 #include "Includes.h"
+#include "CViewport.h"
+#include "CVertexShader.h"
 
 /**
 * @brief	: Abstraction for DeviceContext.
@@ -33,25 +35,31 @@ public:
 	**/
 	~CDeviceContext();
 
-
 	/**
-	* @brief	: Getter forthe Device Context.
+	* @brief	: Getter for the Device Context.
 	* @bug		: No Bugs known.
 	**/
 	void * getDeviceContext();
 
 	/**
-	* @brief	: Getter for the instance.
+	* @brief	: Sets the VPorts to the DeviceContext.
+	* @param	: CViewPort.
 	* @bug		: No Bugs known.
 	**/
-	//static CDeviceContext * getInstance();
+	void setViewport(CViewPort inVP);
+
+	/**
+	* @brief	: Sets the ILayout in the DeviceCotext.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
+	void setILayout(CVertexShader & inVS);
+
+
 
 	void operator = (CDeviceContext const&) = delete;
 
 #ifdef D_DIRECTX
 	ID3D11DeviceContext * m_DeviceContext;
 #endif
-
-private:
-	//static CDeviceContext * m_DCInstance;
 };

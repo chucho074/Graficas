@@ -69,7 +69,7 @@ public:
 
 
 #ifdef D_DIRECTX
-	ID3D11Texture2D * m_pTexture;
+	ID3D11Texture2D * m_Texture;
 	D3D11_TEXTURE2D_DESC m_Desc;
 #endif
 

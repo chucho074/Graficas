@@ -15,7 +15,7 @@
 
 CTexture2D::CTexture2D() {
 #ifdef D_DIRECTX
-	m_pTexture = NULL;
+	m_Texture = NULL;
 #endif
 }
 
@@ -44,7 +44,7 @@ void CTexture2D::init(TextureDesc inDesc) {
 
 void * CTexture2D::getTexture() {
 #ifdef D_DIRECTX
-	return m_pTexture;
+	return m_Texture;
 #else
 	return nullptr;
 #endif

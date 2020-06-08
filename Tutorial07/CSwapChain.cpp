@@ -15,43 +15,51 @@
 
 CSwapChain::CSwapChain() {
 #ifdef D_DIRECTX
-	m_pSwapChain = nullptr;
+	m_SwapChain = nullptr;
 #endif
 }
+
 
 CSwapChain::~CSwapChain() {
 
 
 }
 
+
 void CSwapChain::init(SwapChainDesc inDesc) {
 #ifdef D_DIRECTX
-	ZeroMemory(&m_sd, sizeof(m_sd));
-	m_sd.BufferCount = inDesc.bufferCount;
-	m_sd.BufferDesc.Width = inDesc.W;
-	m_sd.BufferDesc.Height = inDesc.H;
-	m_sd.BufferDesc.Format = (DXGI_FORMAT)inDesc.format;
-	m_sd.BufferDesc.RefreshRate.Numerator = inDesc.refreshNumerator;
-	m_sd.BufferDesc.RefreshRate.Denominator = inDesc.refreshDenominator;
-	m_sd.BufferUsage = inDesc.bufferUsage;
-	m_sd.OutputWindow = (HWND)inDesc.outputWND;
-	m_sd.SampleDesc.Count = inDesc.count;
-	m_sd.SampleDesc.Quality = inDesc.quality;
-	m_sd.Windowed = inDesc.windowed;
+	ZeroMemory(&m_SCDesc, sizeof(m_SCDesc));
+	m_SCDesc.BufferCount = inDesc.bufferCount;
+	m_SCDesc.BufferDesc.Width = inDesc.W;
+	m_SCDesc.BufferDesc.Height = inDesc.H;
+	m_SCDesc.BufferDesc.Format = (DXGI_FORMAT)inDesc.format;
+	m_SCDesc.BufferDesc.RefreshRate.Numerator = inDesc.refreshNumerator;
+	m_SCDesc.BufferDesc.RefreshRate.Denominator = inDesc.refreshDenominator;
+	m_SCDesc.BufferUsage = inDesc.bufferUsage;
+	m_SCDesc.OutputWindow = (HWND)inDesc.outputWND;
+	m_SCDesc.SampleDesc.Count = inDesc.count;
+	m_SCDesc.SampleDesc.Quality = inDesc.quality;
+	m_SCDesc.Windowed = inDesc.windowed;
 #endif
 }
 
-//CSwapChain * CSwapChain::getInstance() {
-//	if (m_pSCInstance == nullptr) {
-//		m_pSCInstance = new CSwapChain();
-//	}
-//	return m_pSCInstance;
-//}
 
 void * CSwapChain::getSwapChain() {
 #ifdef D_DIRECTX
-	return m_pSwapChain;
+	return m_SwapChain;
 #else
 	return nullptr;
 #endif
+}
+
+
+HRESULT CSwapChain::getBuffer(CTexture2D & inTexture) {
+#ifdef D_DIRECTX
+	if (FAILED(m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&inTexture.m_Texture))) {
+		return false;
+	}
+	else { 	return S_OK; 
+	}
+#endif
+	return E_NOTIMPL;
 }

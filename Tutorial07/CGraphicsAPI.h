@@ -1,5 +1,5 @@
 /**
-* @LC		: 01/06/2020
+* @LC		: 08/06/2020
 * @file		: CGraphicsAPI.h
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -27,12 +27,6 @@
 #include "CViewPort.h"
 #include "CRenderTargetView.h"
 #include "CSamplerState.h"
-
-
-/*	TODO LIST:
- *	Quitar los singletons de Device, DeviceContext Swapchain
-*/
-
 
 
 
@@ -63,198 +57,163 @@ public:
 
 	/**
 	* @brief	: Setter for the DriverType.
-	* @param	: SwapChainDesc.
+	* @param	: DriverType.
 	* @bug		: No Bugs known.
 	**/
 	void setDriverType(unsigned int inDriverType);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create the Device and the Swapchain.
+	* @param	: FeatureLevel.
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createDevnSC(FEATURE_LEVEL inFeatureLvl);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create the Render Target View.
+	* @param	: CTexture2D, CRenderTargetView.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createRTV(CTexture2D inTexture, CRenderTargetView inRTV);
+	HRESULT createRTV(CTexture2D & inTexture, CRenderTargetView & inRTV);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a texture.
+	* @param	: CTexture2D.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createTexture(CTexture2D inTexture);
+	HRESULT createTexture(CTexture2D & inTexture);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a depth Stencil View.
+	* @param	: CTexture2D, CDepthStencilView.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createDSV(CTexture2D inDStencil, CDepthStencilView inDSView);
+	HRESULT createDSV(CTexture2D & inDStencil, CDepthStencilView & inDSView);
 
 	/**
-	* @brief	: Initializer.
+	* @brief	: Create a View Port and asign to the Dev context.
 	* @param	: SwapChainDesc.
 	* @bug		: No Bugs known.
 	**/
 	void createVPort(ViewPortDesc inVPDesc);
 
 	/**
-	* @brief	: Initializer.
+	* @brief	: Create a Vertex Shader.
 	* @param	: SwapChainDesc.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createVShader(CVertexShader inVShader);
+	HRESULT createVShader(CVertexShader & inVShader);
 
 	/**
-	* @brief	: Initializer.
+	* @brief	: Create and Set the InputLayout.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createILayout(CVertexShader & inVShader);
+
+	/**
+	* @brief	: Create a Pixel Shader.
 	* @param	: SwapChainDesc.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createILayout(CVertexShader inVShader);
+	HRESULT createPShader(CPixelShader &inPShader);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a Buffer.
+	* @param	: CBuffer, bool for have a SubResource Data.
+	* @bug		: Needs to be change.
+	**/
+	HRESULT createBuffer(CBuffer & inBuffer, bool inUseSRD);
+
+	/**
+	* @brief	: Sets a Vertex Buffer.
+	* @param	: CBuffer.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createPShader(CPixelShader inPShader);
+	void setVBuffer(CBuffer & inVBuffer);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Sets a Index Buffer.
+	* @param	: CBuffer.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createBuffer(CBuffer inBuffer, bool inUseSRD);
+	void setIBuffer(CBuffer & inVBuffer);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Sets Constant Buffer.
+	* @param	: unsigned int, CBuffer.
 	* @bug		: No Bugs known.
 	**/
-	void setVBuffer(CBuffer inVBuffer);
+	void setCBuffer(unsigned int inStartLot, CBuffer & inCBuffer);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a SamplerState.
+	* @param	: CSamplerState.
 	* @bug		: No Bugs known.
 	**/
-	void setIBuffer(CBuffer inVBuffer);
+	HRESULT createSState(CSamplerState & inSampler);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	void setCBuffer(unsigned int inStartLot, CBuffer inCBuffer);
-
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	HRESULT createSState(CSamplerState inSampler);
-
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Make a Resize to the buffers.
 	* @bug		: No Bugs known.
 	**/
 	HRESULT resizeBuffers();
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	void mergePtrs();
-
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Make the present.
 	* @bug		: No Bugs known.
 	**/
 	void show();
 
 #ifdef D_DIRECTX
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Sets the topology to the Device Context.
+	* @param	: D3D11_PRIMITIVE_TOPOLOGY.
 	* @bug		: No Bugs known.
 	**/
 	void setTopology(D3D11_PRIMITIVE_TOPOLOGY inTopology);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a shader resource View form a file.
+	* @param	: ID3D11ShaderResourceView.
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createSRViewFFile(ID3D11ShaderResourceView * inSRView);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Create a shader Resource View.
+	* @param	: CTexture2D, D3D11_SHADER_RESOURCE_VIEW_DESC, ID3D11ShaderResourceView.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createSRView(CTexture2D inTexture, D3D11_SHADER_RESOURCE_VIEW_DESC inDesc, ID3D11ShaderResourceView * inSRView);
+	HRESULT createSRView(CTexture2D & inTexture, D3D11_SHADER_RESOURCE_VIEW_DESC inDesc, ID3D11ShaderResourceView * inSRView);
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Make a update to the SubResource.
+	* @param	: CBuffer, const void*.
 	* @bug		: No Bugs known.
 	**/
-	void updateSResource(CBuffer inResource, const void* inData);
+	void updateSResource(CBuffer &inResource, const void* inData);
 #endif
 //private:
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Access to the CDevice Class.
 	* @bug		: No Bugs known.
 	**/
 	CDevice				m_Device;
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Access to the CDeviceContext Class.
 	* @bug		: No Bugs known.
 	**/
 	CDeviceContext		m_DContx;
 
 	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
+	* @brief	: Access to the CSwapChain Class.
 	* @bug		: No Bugs known.
 	**/
 	CSwapChain			m_SChain;
 
-public:
-#ifdef D_DIRECTX
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	ID3D11Device		* m_ptrDevice;
-
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	ID3D11DeviceContext * m_ptrDContx;
-
-	/**
-	* @brief	: Initializer.
-	* @param	: SwapChainDesc.
-	* @bug		: No Bugs known.
-	**/
-	IDXGISwapChain		* m_ptrSChain;
-#endif
 
 private:
 #ifdef D_DIRECTX

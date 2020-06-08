@@ -26,7 +26,6 @@ public:
 			return nullptr;
 	#endif
 	}
-	//virtual void * getInputLayout();
 
 #ifdef D_DIRECTX
 	ID3DBlob * m_Blob;

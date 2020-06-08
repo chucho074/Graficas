@@ -67,7 +67,7 @@ public:
 	void * getRTV();
 
 #ifdef D_DIRECTX
-	ID3D11RenderTargetView * m_pRTV;
+	ID3D11RenderTargetView * m_RTV;
 	D3D11_RENDER_TARGET_VIEW_DESC m_Desc;
 #endif 
 };
