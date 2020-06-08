@@ -98,7 +98,7 @@ public:
 	void createVPort(ViewPortDesc inVPDesc);
 
 	/**
-	* @brief	: Create a Vertex Shader.
+	* @brief	: Compile and create a Vertex Shader.
 	* @param	: SwapChainDesc.
 	* @bug		: No Bugs known.
 	**/
@@ -112,7 +112,7 @@ public:
 	HRESULT createILayout(CVertexShader & inVShader);
 
 	/**
-	* @brief	: Create a Pixel Shader.
+	* @brief	: Compile and create a Pixel Shader.
 	* @param	: SwapChainDesc.
 	* @bug		: No Bugs known.
 	**/

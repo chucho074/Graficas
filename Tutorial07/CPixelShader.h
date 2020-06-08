@@ -44,7 +44,7 @@ public:
 	**/
 	void * getShader();
 #ifdef D_DIRECTX
-	//ID3DBlob * m_pPSBlob;
+
 	ID3D11PixelShader * m_PixelShader;
 #endif
 };

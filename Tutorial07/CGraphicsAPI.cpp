@@ -104,7 +104,12 @@ void CGraphicsAPI::createVPort(ViewPortDesc inVPDesc) {
 HRESULT CGraphicsAPI::createVShader(CVertexShader & inVShader) {
 
 #ifdef D_DIRECTX
-		if (FAILED(m_Device.createVShader(inVShader))) {
+
+		if (FAILED(inVShader.CompileShaderFromFile(L"Tutorial07.fx", "VS", "vs_4_0"))) {
+			return false;
+		}
+		else if (FAILED(m_Device.createVShader(inVShader))) {
+			inVShader.m_Blob->Release();
 			return false;
 		}
 		else { return S_OK; }
@@ -135,10 +140,16 @@ HRESULT CGraphicsAPI::createILayout(CVertexShader & inVShader) {		//WIP
 
 HRESULT CGraphicsAPI::createPShader(CPixelShader & inPShader) {
 #ifdef D_DIRECTX
-	if (FAILED(m_Device.createPShader(inPShader))) {
+	if (FAILED(inPShader.CompileShaderFromFile(L"Tutorial07.fx", "PS", "ps_4_0"))) {
 		return false;
 	}
-	else { return S_OK; }
+	else if (FAILED(m_Device.createPShader(inPShader))) {
+		return false;
+	}
+	else { 
+		inPShader.m_Blob->Release();
+		return S_OK; 
+	}
 #else
 	return false;
 #endif

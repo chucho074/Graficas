@@ -113,9 +113,9 @@ public:
 	HRESULT createPShader(CPixelShader & inPS);
 
 
-
 	void operator = (CDevice const&) = delete;
 	
+
 	DeviceDesc Desc;
 
 #ifdef D_DIRECTX

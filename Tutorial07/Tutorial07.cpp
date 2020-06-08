@@ -48,7 +48,6 @@ CRenderTargetView					SecondRTV;
 glm::mat4							g_World;
 FEATURE_LEVEL						featureLevel = FEATURE_LEVEL_11_0;
 CGraphicsAPI						g_GAPI;
-
 CBuffer								g_VertexBuffer;
 CBuffer								g_IndexBuffer;
 CTexture2D							g_DepthStencil;
@@ -529,38 +528,38 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow ) {
 //--------------------------------------------------------------------------------------
 // Helper for compiling shaders with D3DX11
 //--------------------------------------------------------------------------------------
-#ifdef D_DIRECTX
-HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut ) {
-    HRESULT hr = S_OK;
-
-    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-
-    // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-    // Setting this flag improves the shader debugging experience, but still allows 
-    // the shaders to be optimized and to run exactly the way they will run in 
-    // the release configuration of this program.
-    dwShaderFlags |= D3DCOMPILE_DEBUG;
-
-
-    ID3DBlob* pErrorBlob;
-    hr = D3DX11CompileFromFile( szFileName, NULL, NULL, szEntryPoint, szShaderModel, 
-        dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
-    if( FAILED(hr) ) {
-		if (pErrorBlob != NULL) {
-			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-		}
-		if (pErrorBlob) {
-			pErrorBlob->Release();
-		}
-        return hr;
-    }
-	if (pErrorBlob) {
-		pErrorBlob->Release();
-	}
-
-    return S_OK;
-}
-#endif
+//#ifdef D_DIRECTX
+//HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut ) {
+//    HRESULT hr = S_OK;
+//
+//    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+//
+//    // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+//    // Setting this flag improves the shader debugging experience, but still allows 
+//    // the shaders to be optimized and to run exactly the way they will run in 
+//    // the release configuration of this program.
+//    dwShaderFlags |= D3DCOMPILE_DEBUG;
+//
+//
+//    ID3DBlob* pErrorBlob;
+//    hr = D3DX11CompileFromFile( szFileName, NULL, NULL, szEntryPoint, szShaderModel, 
+//        dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
+//    if( FAILED(hr) ) {
+//		if (pErrorBlob != NULL) {
+//			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+//		}
+//		if (pErrorBlob) {
+//			pErrorBlob->Release();
+//		}
+//        return hr;
+//    }
+//	if (pErrorBlob) {
+//		pErrorBlob->Release();
+//	}
+//
+//    return S_OK;
+//}
+//#endif
 
 //--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
@@ -613,7 +612,6 @@ HRESULT InitDevice() {
 
 	for (unsigned int driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
 		g_GAPI.setDriverType(driverTypeIndex);
-		
 		hr = g_GAPI.createDevnSC(featureLevel);
 		if (SUCCEEDED(hr)) {
 			break;
@@ -676,18 +674,9 @@ HRESULT InitDevice() {
 	g_GAPI.createVPort(vpStruct);
 
 	// Compile the vertex shader
-
-	hr = CompileShaderFromFile(L"Tutorial07.fx", "VS", "vs_4_0", &g_VertexShader.m_Blob);
-	if (FAILED(hr)) {
-		MessageBox(NULL,
-			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-		return hr;
-	}
-
 	// Create the vertex shader
 	hr = g_GAPI.createVShader(g_VertexShader);
 	if (FAILED(hr)) {
-		g_VertexShader.m_Blob->Release();
 		return hr;
 	}
 
@@ -700,19 +689,12 @@ HRESULT InitDevice() {
 	
 
 	// Compile the pixel shader
-	hr = CompileShaderFromFile(L"Tutorial07.fx", "PS", "ps_4_0", &g_PixelShader.m_Blob);
-	if (FAILED(hr)){
-		MessageBox(NULL,
-			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
-		return hr;
-	}
-
 	// Create the pixel shader
 	hr = g_GAPI.createPShader(g_PixelShader);
-	g_PixelShader.m_Blob->Release();
 	if (FAILED(hr)) {
 		return hr;
 	}
+
 	// Create vertex buffer
 	SimpleVertex vertices[] = {
 		{ glm::vec3(-1.0f, 1.0f, -1.0f),	glm::vec2(0.0f, 0.0f) },
@@ -753,7 +735,6 @@ HRESULT InitDevice() {
 	bufferstrct.byteWidth = sizeof(SimpleVertex) * 24;
 	bufferstrct.bindFlags = 1;			// D3D11_BIND_VERTEX_BUFFER;
 	bufferstrct.cpuAccessFlags = 0;
-
 	
 	SubresourceData subrsrcData;
 	subrsrcData.psysMem = vertices;
@@ -764,8 +745,8 @@ HRESULT InitDevice() {
 	if (FAILED(hr)) {
 		return hr;
 	}
+
     // Set vertex buffer
-   
 	g_GAPI.setVBuffer(g_VertexBuffer);
 
     // Create index buffer
@@ -801,6 +782,7 @@ HRESULT InitDevice() {
 	if (FAILED(hr)) {
 		return hr;
 	}
+
     // Set index buffer
 	g_GAPI.setIBuffer(g_IndexBuffer);
 

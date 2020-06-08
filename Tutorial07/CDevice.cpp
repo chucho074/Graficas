@@ -106,3 +106,4 @@ HRESULT CDevice::createPShader(CPixelShader & inPS) {
 #endif
 	return false;
 }
+

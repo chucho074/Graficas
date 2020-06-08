@@ -46,7 +46,6 @@ public:
 	void * getInputLayout();
 
 #ifdef D_DIRECTX
-	//ID3DBlob * m_pVSBlob;
 	ID3D11VertexShader * m_VertexShader;
 	ID3D11InputLayout * m_InputLayout;
 #endif
