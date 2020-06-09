@@ -16,6 +16,10 @@
 #include "Includes.h"
 #include "CViewport.h"
 #include "CVertexShader.h"
+#include "CPixelShader.h"
+#include "CRenderTargetView.h"
+#include "CDepthStencilView.h"
+#include "CSamplerState.h"
 
 /**
 * @brief	: Abstraction for DeviceContext.
@@ -54,7 +58,79 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	void setILayout(CVertexShader & inVS);
+	
+	/**
+	* @brief	: Clears the renderTargets of the DeviceContext.
+	* @bug		: No Bugs known.
+	**/
+	void zeroRT();
+	
+	/**
+	* @brief	: Sets the RenderTargets in the DeviceCotext.
+	* @param	: unsigned int, CRenderTargetView, CDepthStencilView.
+	* @bug		: No Bugs known.
+	**/
+	void setRTarget(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV);
+	
+	/**
+	* @brief	: Clears the Render Target Views.
+	* @param	: CRenderTargetView, float.
+	* @bug		: No Bugs known.
+	**/
+	void clearRTV(CRenderTargetView & inRTV, float & inColor);
 
+	/**
+	* @brief	: Clears the DepthStencilView.
+	* @param	: CRenderTargetView, unsigned int, float, unsigned int.
+	* @bug		: No Bugs known.
+	**/
+	void clearDSV(CDepthStencilView & inDSV, unsigned int inFlags, float inDepth, unsigned int inStencil);
+
+	/**
+	* @brief	: Sets VertexShader.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
+	void setVS(CVertexShader & inShader);
+
+	/**
+	* @brief	: Sets PixelShader.
+	* @param	: CPixelShader.
+	* @bug		: No Bugs known.
+	**/
+	void setPS(CPixelShader & inShader);
+
+#ifdef D_DIRECTX
+	/**
+	* @brief	: Set ShaderResources.
+	* @param	: ID3D11ShaderResourceView.
+	* @bug		: No Bugs known.
+	**/
+	void setSResource(ID3D11ShaderResourceView * inTexture);
+#endif
+	
+	/**
+	* @brief	: Set Sampler State.
+	* @param	: CSamplerState.
+	* @bug		: No Bugs known.
+	**/
+	void setSampler(CSamplerState & inSampler);
+	
+	/**
+	* @brief	: Set Draw Indexes.
+	* @param	: int.
+	* @bug		: No Bugs known.
+	**/
+	void setDrawIndexed(int inIndex);
+
+
+	/**
+	* @brief	: Sets the Viewports in the DeviceCotext.
+	* @param	: unsigned int, CViewport.
+	* @bug		: No Bugs known.
+	**/
+	void setVPorts(unsigned int inNumViews, CViewPort & inVP);
+	
 
 
 	void operator = (CDeviceContext const&) = delete;

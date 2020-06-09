@@ -236,6 +236,65 @@ HRESULT CGraphicsAPI::resizeBuffers() {
 }
 
 
+HRESULT CGraphicsAPI::setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV) {
+#ifdef D_DIRECTX
+	m_DContx.setRTarget(inNumViews, inRTV, inDSV);
+#elif
+	return E_NOTIMPL;
+#endif
+	return false;
+}
+
+
+void CGraphicsAPI::setZeroRTargets() {
+	m_DContx.zeroRT();
+}
+
+
+void CGraphicsAPI::clearRTV(CRenderTargetView & inRTV, float & inColor) {
+	m_DContx.clearRTV(inRTV, inColor);
+
+}
+
+
+void CGraphicsAPI::clearDSV(CDepthStencilView & inDSV, unsigned int inFlags, float inDepth, unsigned int inStencil) {
+	m_DContx.clearDSV(inDSV, inFlags, inDepth, inStencil);
+
+}
+
+
+void CGraphicsAPI::setVPorts(unsigned int inNumViews, CViewPort & inVP) {
+#ifdef D_DIRECTX
+	m_DContx.setVPorts(inNumViews, inVP);
+
+#endif
+}
+
+
+void CGraphicsAPI::setVShader(CVertexShader & inShader) {
+	m_DContx.setVS(inShader);
+}
+
+
+void CGraphicsAPI::setPShader(CPixelShader & inShader) {
+	m_DContx.setPS(inShader);
+}
+
+
+void CGraphicsAPI::setSResource(ID3D11ShaderResourceView *inSRV) {
+	m_DContx.setSResource(inSRV);
+}
+
+
+void CGraphicsAPI::setSampler(CSamplerState & inSampler) {
+	m_DContx.setSampler(inSampler);
+}
+
+void CGraphicsAPI::setDrawIndex(int inIndex) {
+	m_DContx.setDrawIndexed(inIndex);
+}
+
+
 void CGraphicsAPI::show() {
 	m_SChain.m_SwapChain->Present(0,0);
 }

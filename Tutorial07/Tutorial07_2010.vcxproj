@@ -878,7 +878,6 @@
     <ClCompile Include="amgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="amgui\imgui_impl_win32.cpp" />
     <ClCompile Include="amgui\imgui_widgets.cpp" />
-    <ClCompile Include="CBaseBuffer.cpp" />
     <ClCompile Include="CBuffer.cpp" />
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CCameraFP.cpp" />
@@ -887,7 +886,6 @@
     <ClCompile Include="CDeviceContext.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
     <ClCompile Include="CResource.cpp" />
-    <ClCompile Include="CIndexBuffer.cpp" />
     <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMesh.cpp" />
     <ClCompile Include="CModel.cpp" />
@@ -897,7 +895,6 @@
     <ClCompile Include="CSceneManager.cpp" />
     <ClCompile Include="CSwapChain.cpp" />
     <ClCompile Include="CTexture2D.cpp" />
-    <ClCompile Include="CVertexBuffer.cpp" />
     <ClCompile Include="CVertexShader.cpp" />
     <ClCompile Include="CViewport.cpp" />
     <ClCompile Include="glad.c" />
@@ -918,7 +915,6 @@
     <ClInclude Include="amgui\imstb_rectpack.h" />
     <ClInclude Include="amgui\imstb_textedit.h" />
     <ClInclude Include="amgui\imstb_truetype.h" />
-    <ClInclude Include="CBaseBuffer.h" />
     <ClInclude Include="CBuffer.h" />
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CCameraFP.h" />
@@ -927,8 +923,6 @@
     <ClInclude Include="CDeviceContext.h" />
     <ClInclude Include="CGraphicsAPI.h" />
     <ClInclude Include="CResource.h" />
-    <ClInclude Include="CIndexBuffer.h" />
-    <ClInclude Include="CManager.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CMesh.h" />
     <ClInclude Include="CModel.h" />
@@ -939,7 +933,6 @@
     <ClInclude Include="CShaders.h" />
     <ClInclude Include="CSwapChain.h" />
     <ClInclude Include="CTexture2D.h" />
-    <ClInclude Include="CVertexBuffer.h" />
     <ClInclude Include="CVertexShader.h" />
     <ClInclude Include="CViewport.h" />
     <ClInclude Include="Defines.h" />

@@ -33,8 +33,6 @@ struct BufferDesc {
 	unsigned int structureByteStride;
 };
 
-//TODO:
-//Cambiar el init del subResource, mandar el subRes en el desc
 
 /**
 * @brief	: Class for Buffers.

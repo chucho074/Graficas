@@ -47,9 +47,6 @@
     <ClCompile Include="CSwapChain.cpp">
       <Filter>Graphics\source</Filter>
     </ClCompile>
-    <ClCompile Include="CVertexBuffer.cpp">
-      <Filter>Graphics\source</Filter>
-    </ClCompile>
     <ClCompile Include="CTexture2D.cpp">
       <Filter>Graphics\source</Filter>
     </ClCompile>
@@ -60,9 +57,6 @@
       <Filter>Graphics\source</Filter>
     </ClCompile>
     <ClCompile Include="CVertexShader.cpp">
-      <Filter>Graphics\source</Filter>
-    </ClCompile>
-    <ClCompile Include="CIndexBuffer.cpp">
       <Filter>Graphics\source</Filter>
     </ClCompile>
     <ClCompile Include="CPixelShader.cpp">
@@ -116,7 +110,6 @@
       <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="CBaseBuffer.cpp" />
     <ClCompile Include="CResource.cpp">
       <Filter>assimp</Filter>
     </ClCompile>
@@ -218,9 +211,6 @@
     <ClInclude Include="CSwapChain.h">
       <Filter>Graphics\include</Filter>
     </ClInclude>
-    <ClInclude Include="CVertexBuffer.h">
-      <Filter>Graphics\include</Filter>
-    </ClInclude>
     <ClInclude Include="CTexture2D.h">
       <Filter>Graphics\include</Filter>
     </ClInclude>
@@ -231,9 +221,6 @@
       <Filter>Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="CVertexShader.h">
-      <Filter>Graphics\include</Filter>
-    </ClInclude>
-    <ClInclude Include="CIndexBuffer.h">
       <Filter>Graphics\include</Filter>
     </ClInclude>
     <ClInclude Include="CPixelShader.h">
@@ -299,8 +286,6 @@
     <ClInclude Include="Defines.h">
       <Filter>Graphics\include</Filter>
     </ClInclude>
-    <ClInclude Include="CBaseBuffer.h" />
-    <ClInclude Include="CManager.h" />
     <ClInclude Include="CResource.h">
       <Filter>assimp</Filter>
     </ClInclude>

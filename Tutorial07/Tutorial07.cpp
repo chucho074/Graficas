@@ -1029,28 +1029,28 @@ HRESULT InitDevice() {
 //--------------------------------------------------------------------------------------
 void CleanupDevice() {
 #ifdef D_DIRECTX
-    if( g_GAPI.m_DContx.m_DeviceContext) g_GAPI.m_DContx.m_DeviceContext->ClearState();			//WIP
-    if( g_SamplerState.m_pSamplerLinear ) g_SamplerState.m_pSamplerLinear->Release();
-    if( g_pTextureRV ) g_pTextureRV->Release();
-    if( Camera.m_CBNeverChanges.Buffer ) Camera.m_CBNeverChanges.clear();
-    if( Camera.m_CBChangesOnResize.Buffer ) Camera.m_CBChangesOnResize.clear();
-    if( Camera.m_CBChangesEveryFrame.Buffer ) Camera.m_CBChangesEveryFrame.clear();
-	if( g_VertexBuffer.Buffer) g_VertexBuffer.clear();
-	if( g_BoardVB.Buffer) g_BoardVB.clear();
-	if( g_IndexBuffer.Buffer) g_IndexBuffer.clear();
-	if( g_BoardIB.Buffer) g_BoardIB.clear();
-    if( g_VertexShader.m_InputLayout ) g_VertexShader.m_InputLayout->Release();
-    if( g_VertexShader.m_VertexShader ) g_VertexShader.m_VertexShader->Release();
-    if( g_PixelShader.m_PixelShader) g_PixelShader.m_PixelShader->Release();
-    if( g_DepthStencil.m_Texture) g_DepthStencil.m_Texture->Release();
-    if( DepthStencilViewFree.m_pDepthStencilView ) DepthStencilViewFree.m_pDepthStencilView->Release();
-    if( g_RenderTargetView.m_RTV ) g_RenderTargetView.m_RTV->Release();
-    if( g_GAPI.m_SChain.m_SwapChain) g_GAPI.m_SChain.m_SwapChain->Release();					//WIP
-	if( FirstPerson.m_CBNeverChanges.Buffer) FirstPerson.m_CBNeverChanges.clear();
-	if( FirstPerson.m_CBChangesOnResize.Buffer) FirstPerson.m_CBChangesOnResize.clear();
-	if( FirstPerson.m_CBChangesEveryFrame.Buffer) FirstPerson.m_CBChangesEveryFrame.clear();
-    if( g_GAPI.m_DContx.m_DeviceContext) g_GAPI.m_DContx.m_DeviceContext->Release();			//WIP
-    if( g_GAPI.m_Device.Device ) g_GAPI.m_Device.Device->Release();								//WIP
+    if( g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->ClearState();			}	//WIP
+    if( g_SamplerState.m_pSamplerLinear )			{ g_SamplerState.m_pSamplerLinear->Release();				}
+    if( g_pTextureRV )								{ g_pTextureRV->Release();									}
+    if( Camera.m_CBNeverChanges.Buffer )			{ Camera.m_CBNeverChanges.clear();							}
+    if( Camera.m_CBChangesOnResize.Buffer )			{ Camera.m_CBChangesOnResize.clear();						}
+    if( Camera.m_CBChangesEveryFrame.Buffer )		{ Camera.m_CBChangesEveryFrame.clear();						}
+	if( g_VertexBuffer.Buffer)						{ g_VertexBuffer.clear();									}
+	if( g_BoardVB.Buffer)							{ g_BoardVB.clear();										}
+	if( g_IndexBuffer.Buffer)						{ g_IndexBuffer.clear();									}
+	if( g_BoardIB.Buffer)							{ g_BoardIB.clear();										}
+    if( g_VertexShader.m_InputLayout )				{ g_VertexShader.m_InputLayout->Release();					}
+    if( g_VertexShader.m_VertexShader )				{ g_VertexShader.m_VertexShader->Release();					}
+    if( g_PixelShader.m_PixelShader)				{ g_PixelShader.m_PixelShader->Release();					}
+    if( g_DepthStencil.m_Texture)					{ g_DepthStencil.m_Texture->Release();						}
+    if( DepthStencilViewFree.m_pDepthStencilView )	{ DepthStencilViewFree.m_pDepthStencilView->Release();		}
+    if( g_RenderTargetView.m_RTV )					{ g_RenderTargetView.m_RTV->Release();						}
+    if( g_GAPI.m_SChain.m_SwapChain)				{ g_GAPI.m_SChain.m_SwapChain->Release();					}	//WIP
+	if( FirstPerson.m_CBNeverChanges.Buffer)		{ FirstPerson.m_CBNeverChanges.clear();						}
+	if( FirstPerson.m_CBChangesOnResize.Buffer)		{ FirstPerson.m_CBChangesOnResize.clear();					}
+	if( FirstPerson.m_CBChangesEveryFrame.Buffer)	{ FirstPerson.m_CBChangesEveryFrame.clear();				}
+    if( g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->Release();				}	//WIP
+	if (g_GAPI.m_Device.Device)						{ g_GAPI.m_Device.Device->Release();						}	//WIP
 #endif
 }
 
@@ -1077,7 +1077,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 
 		case WM_SIZE: {
 #ifdef D_DIRECTX
-			if (g_GAPI.m_DContx.m_DeviceContext != nullptr) {		//WIP
+			if (g_GAPI.m_DContx.m_DeviceContext != nullptr) {		
 				RECT rc;
 				GetClientRect(hWnd, &rc);
 				UINT width = imguiWindowW = rc.right - rc.left;
@@ -1094,7 +1094,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 				InactiveCamera->updatePM();
 				cbChangesOnResize.mProjection = glm::transpose(InactiveCamera->PM);
 				g_GAPI.updateSResource(InactiveCamera->m_CBChangesOnResize, &cbChangesOnResize);
-				if (g_GAPI.m_SChain.m_SwapChain) {							//WIP
+				if (g_GAPI.m_SChain.m_SwapChain) {							
 					HRESULT h;
 					InactiveCameraTexture.m_Texture->Release();
 					InactiveSRV->Release();
@@ -1132,13 +1132,13 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 					SRV.Texture2D.MostDetailedMip = 0;
 					SRV.Texture2D.MipLevels = 1;
 					h = g_GAPI.createSRView(InactiveCameraTexture, SRV, InactiveSRV);
-					g_GAPI.m_DContx.m_DeviceContext->OMSetRenderTargets(0, 0, 0);		//WIP
+					g_GAPI.setZeroRTargets();
 					g_RenderTargetView.m_RTV->Release();
 					h = g_GAPI.resizeBuffers();
 					if (FAILED(h)) {
 						return h;
 					}
-					//CBuffer tempBack;
+					
 					CTexture2D tempBack;
 					h = g_GAPI.createRTV(tempBack, g_RenderTargetView);
 					if (FAILED(h)) {
@@ -1146,6 +1146,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 					}
 					tempBack.m_Texture->Release();
 					g_DepthStencil.m_Texture->Release();
+
 					TextureDesc DepthDesc;
 					DepthDesc.W = width;
 					DepthDesc.H = height;
@@ -1173,7 +1174,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 					if (FAILED(h)) {
 						return h;
 					}
-					g_GAPI.m_DContx.m_DeviceContext->OMSetRenderTargets(1, &g_RenderTargetView.m_RTV, DepthStencilViewFree.m_pDepthStencilView);
+					g_GAPI.setRTargets(1, g_RenderTargetView, DepthStencilViewFree);
 					ViewPortDesc V;
 					V.W = width;
 					V.H = height;
@@ -1183,7 +1184,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 					V.topLeftY = 0;
 					CViewPort ViewP;
 					ViewP.init(V);		
-					g_GAPI.m_DContx.m_DeviceContext->RSSetViewports(1, &ViewP.m_Viewport);					//WIP
+					g_GAPI.setVPorts(1, ViewP);
 				}
 				ImGui::GetStyle().ScaleAllSizes(1);
 			}
@@ -1262,10 +1263,10 @@ void Render() {
 	g_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
     float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; 
-	g_GAPI.m_DContx.m_DeviceContext->OMSetRenderTargets(1, &SecondRTV.m_RTV, DepthStencilViewFree.m_pDepthStencilView);								//WIP
-	g_GAPI.m_DContx.m_DeviceContext->ClearRenderTargetView(SecondRTV.m_RTV, ClearColor);															//WIP
-	g_GAPI.m_DContx.m_DeviceContext->ClearDepthStencilView(DepthStencilViewFree.m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);					//WIP
+	g_GAPI.setRTargets(1, SecondRTV, DepthStencilViewFree);
 
+	g_GAPI.clearRTV(SecondRTV, *ClearColor);													//WIP
+	g_GAPI.clearDSV(DepthStencilViewFree, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	unsigned int stride = sizeof(SimpleVertex);
 	unsigned int offset = 0;
 	g_GAPI.setVBuffer(g_VertexBuffer);
@@ -1275,10 +1276,7 @@ void Render() {
 	g_World = glm::translate(g_World,ActiveCamera->getPos());
 	cb.mWorld = glm::transpose(g_World);
 	cb.vMeshColor = g_MeshColor;
-	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cb);
-
-
-	
+	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cb);	
 
 	g_World = glm::mat4(1.f);
 	
@@ -1286,20 +1284,21 @@ void Render() {
 	cb.vMeshColor = g_MeshColor;
 	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cb);
 					
-	g_GAPI.m_DContx.m_DeviceContext->VSSetShader(g_VertexShader.m_VertexShader, NULL, 0);		//WIP
+	g_GAPI.setVShader(g_VertexShader);
 	g_GAPI.setCBuffer(0, InactiveCamera->m_CBNeverChanges);
 	g_GAPI.setCBuffer(1, InactiveCamera->m_CBChangesOnResize);
 	g_GAPI.setCBuffer(2, InactiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShader(g_PixelShader.m_PixelShader, NULL, 0);			//WIP
+	g_GAPI.setPShader(g_PixelShader);
 	g_GAPI.setCBuffer(2, InactiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &g_pTextureRV);					//WIP
-	g_GAPI.m_DContx.m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);		//WIP
-	g_GAPI.m_DContx.m_DeviceContext->DrawIndexed(36, 0, 0);										//WIP
+	g_GAPI.setSResource(g_pTextureRV);
+	g_GAPI.setSampler(g_SamplerState);
+	g_GAPI.setDrawIndex(36);
+
 	
 
 
 	ID3D11ShaderResourceView* temp = NULL;
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &temp);							//WIP
+	g_GAPI.setSResource(temp);																	
 
 	CBChangesEveryFrame cbMesh;
 	cbMesh.mWorld = {
@@ -1323,9 +1322,9 @@ void Render() {
 
 	//Set backbuffer and main DSV
 	
-	 g_GAPI.m_DContx.m_DeviceContext->OMSetRenderTargets(1, &g_RenderTargetView.m_RTV, DepthStencilViewFree.m_pDepthStencilView);
-	 g_GAPI.m_DContx.m_DeviceContext->ClearRenderTargetView(g_RenderTargetView.m_RTV, ClearColor);
-	 g_GAPI.m_DContx.m_DeviceContext->ClearDepthStencilView(DepthStencilViewFree.m_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	 g_GAPI.setRTargets(1, g_RenderTargetView, DepthStencilViewFree);
+	 g_GAPI.clearRTV(g_RenderTargetView, *ClearColor);											//WIP
+	 g_GAPI.clearDSV(DepthStencilViewFree, D3D11_CLEAR_DEPTH, 1.0f, 0);
 	 g_GAPI.setVBuffer(g_VertexBuffer);
 	 g_GAPI.setIBuffer(g_IndexBuffer);
 
@@ -1341,20 +1340,20 @@ void Render() {
 	cb.vMeshColor = g_MeshColor;
 	
 	g_GAPI.updateSResource(ActiveCamera->m_CBChangesEveryFrame, &cb);
-	g_GAPI.m_DContx.m_DeviceContext->VSSetShader(g_VertexShader.m_VertexShader, NULL, 0);
+	g_GAPI.setVShader(g_VertexShader);
 	g_GAPI.setCBuffer(0, ActiveCamera->m_CBNeverChanges);
 	g_GAPI.setCBuffer(1, ActiveCamera->m_CBChangesOnResize);
 	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShader(g_PixelShader.m_PixelShader, NULL, 0);
+	g_GAPI.setPShader(g_PixelShader);
 	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &InactiveSRV);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
-	g_GAPI.m_DContx.m_DeviceContext->DrawIndexed(36, 0, 0);
+	g_GAPI.setSResource(InactiveSRV);
+	g_GAPI.setSampler(g_SamplerState);
+	g_GAPI.setDrawIndex(36);
 	
 
 
 	temp = NULL;
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &temp);
+	g_GAPI.setSResource(temp);
 
 	g_GAPI.setVBuffer(g_BoardVB);
 	g_GAPI.setIBuffer(g_BoardIB);
@@ -1371,18 +1370,18 @@ void Render() {
 	cb.vMeshColor = g_MeshColor;
 
 	g_GAPI.updateSResource(ActiveCamera->m_CBChangesEveryFrame, &cb);
-	g_GAPI.m_DContx.m_DeviceContext->VSSetShader(g_VertexShader.m_VertexShader, NULL, 0);
+	g_GAPI.setVShader(g_VertexShader);
 	g_GAPI.setCBuffer(0, ActiveCamera->m_CBNeverChanges);
 	g_GAPI.setCBuffer(1, ActiveCamera->m_CBChangesOnResize);
 	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShader(g_PixelShader.m_PixelShader, NULL, 0);
+	g_GAPI.setPShader(g_PixelShader);
 	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &InactiveSRV);
-	g_GAPI.m_DContx.m_DeviceContext->PSSetSamplers(0, 1, &g_SamplerState.m_pSamplerLinear);
-	g_GAPI.m_DContx.m_DeviceContext->DrawIndexed(6, 0, 0);
+	g_GAPI.setSResource(InactiveSRV);
+	g_GAPI.setSampler(g_SamplerState);
+	g_GAPI.setDrawIndex(6);
 
 	temp = NULL;
-	g_GAPI.m_DContx.m_DeviceContext->PSSetShaderResources(0, 1, &temp);
+	g_GAPI.setSResource(temp);
 
     //
     // Present our back buffer to our front buffer

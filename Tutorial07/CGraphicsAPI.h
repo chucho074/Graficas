@@ -13,13 +13,10 @@
 **/
 #pragma once
 #include <vector>
-#include "CManager.h"
 #include "CDevice.h"
 #include "CSwapChain.h"
 #include "CDeviceContext.h"
 #include "CBuffer.h"
-#include "CVertexBuffer.h"
-#include "CIndexBuffer.h"
 #include "CTexture2D.h"
 #include "CDepthStencilView.h"
 #include "CVertexShader.h"
@@ -34,7 +31,7 @@
 * @brief	: CGraphicAPI is the management of the Device, Device Context & SwapChain.
 * @bug		: No Bugs known.
 **/
-class CGraphicsAPI /*: public CManager*/ {
+class CGraphicsAPI {
 public:
 	/**
 	* @brief	: Constructor of the class.
@@ -152,12 +149,83 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createSState(CSamplerState & inSampler);
-
+	
 	/**
 	* @brief	: Make a Resize to the buffers.
 	* @bug		: No Bugs known.
 	**/
 	HRESULT resizeBuffers();
+
+	/**
+	* @brief	: Sets the RenderTargets in the DeviceCotext.
+	* @param	: unsigned int, CRenderTargetView, CDepthStencilView.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV);
+	
+	/**
+	* @brief	: Sets in 0's the renderTargets.
+	* @bug		: No Bugs known.
+	**/
+	void setZeroRTargets();
+
+	/**
+	* @brief	: Clears the Render Target Views.
+	* @param	: CRenderTargetView, float.
+	* @bug		: No Bugs known.
+	**/
+	void clearRTV(CRenderTargetView & inRTV, float & inColor);
+	
+	/**
+	* @brief	: Clears the DepthStencilView.
+	* @param	: CRenderTargetView, unsigned int, float, unsigned int.
+	* @bug		: No Bugs known.
+	**/
+	void clearDSV(CDepthStencilView & inDSV, unsigned int inFlags, float inDepth, unsigned int inStencil);
+
+
+	/**
+	* @brief	: Sets the Viewports in the DeviceCotext.
+	* @param	: unsigned int, CViewport.
+	* @bug		: No Bugs known.
+	**/
+	void setVPorts(unsigned int inNumViews, CViewPort & inVP);
+
+	/**
+	* @brief	: Sets VertexShader.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
+	void setVShader(CVertexShader & inShader);
+	
+	/**
+	* @brief	: Sets PixelShader.
+	* @param	: CPixelShader.
+	* @bug		: No Bugs known.
+	**/
+	void setPShader(CPixelShader & inShader);
+	
+	/**
+	* @brief	: Set ShaderResources.
+	* @param	: ID3D11ShaderResourceView.
+	* @bug		: No Bugs known.
+	**/
+	void setSResource(ID3D11ShaderResourceView *inSRV);
+	
+	/**
+	* @brief	: Sets the Sampler to the DeviceContext.
+	* @param	: CSamplerState.
+	* @bug		: No Bugs known.
+	**/
+	void setSampler(CSamplerState & inSampler);
+	
+	/**
+	* @brief	: Sets the Draw indexes to the Device Context.
+	* @param	: int.
+	* @bug		: No Bugs known.
+	**/
+	void setDrawIndex(int inIndex);
+
 
 	/**
 	* @brief	: Make the present.
