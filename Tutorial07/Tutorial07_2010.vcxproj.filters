@@ -114,6 +114,7 @@
       <Filter>assimp</Filter>
     </ClCompile>
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CInputLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tutorial07.cpp" />
@@ -291,6 +292,7 @@
     </ClInclude>
     <ClInclude Include="CGraphicsAPI.h" />
     <ClInclude Include="CShaders.h" />
+    <ClInclude Include="CInputLayout.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

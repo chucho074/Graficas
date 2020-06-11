@@ -40,9 +40,9 @@ void CDeviceContext::setViewport(CViewPort inVP) {
 }
 
 
-void CDeviceContext::setILayout(CVertexShader & inVS) {
+void CDeviceContext::setILayout(CInputLayout & inIL) {
 #ifdef D_DIRECTX
-	m_DeviceContext->IASetInputLayout(inVS.m_InputLayout);
+	m_DeviceContext->IASetInputLayout(inIL.m_InputLayout);
 #endif
 }
 

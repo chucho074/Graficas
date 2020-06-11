@@ -885,6 +885,7 @@
     <ClCompile Include="CDevice.cpp" />
     <ClCompile Include="CDeviceContext.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CInputLayout.cpp" />
     <ClCompile Include="CResource.cpp" />
     <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMesh.cpp" />
@@ -922,6 +923,7 @@
     <ClInclude Include="CDevice.h" />
     <ClInclude Include="CDeviceContext.h" />
     <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CInputLayout.h" />
     <ClInclude Include="CResource.h" />
     <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CMesh.h" />

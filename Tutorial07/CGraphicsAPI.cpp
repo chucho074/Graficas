@@ -119,16 +119,15 @@ HRESULT CGraphicsAPI::createVShader(CVertexShader & inVShader) {
 }
 
 
-HRESULT CGraphicsAPI::createILayout(CVertexShader & inVShader) {		//WIP
+HRESULT CGraphicsAPI::createILayout(CVertexShader & inVShader, CInputLayout &inILayout) {		//WIP
 	
 #ifdef D_DIRECTX
-	if (FAILED(CreateInputLayoutDescFromVertexShaderSignature(inVShader.m_Blob, m_Device.Device,			//WIP
-					&inVShader.m_InputLayout))) {
+	if (FAILED(m_Device.createInputLayoutDescFromVertexShaderSignature(inVShader, inILayout))) {
 		return false;
 	}
 	else { 
 		//Se settea el InputLayout
-		m_DContx.setILayout(inVShader);
+		m_DContx.setILayout(inILayout);
 		return S_OK; 
 	}
 #else

@@ -20,6 +20,7 @@
 #include "CDepthStencilView.h"
 #include "CVertexShader.h"
 #include "CPixelShader.h"
+#include "CInputLayout.h"
 
 
 /**
@@ -111,6 +112,13 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createPShader(CPixelShader & inPS);
+
+	/**
+	* @brief	: Create a Pixel Shader in the Device.
+	* @param	: CPixelShader.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createInputLayoutDescFromVertexShaderSignature(CVertexShader & inVS, CInputLayout &inIL);
 
 
 	void operator = (CDevice const&) = delete;

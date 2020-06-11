@@ -20,6 +20,8 @@
 #include "CRenderTargetView.h"
 #include "CDepthStencilView.h"
 #include "CSamplerState.h"
+#include "CInputLayout.h"
+
 
 /**
 * @brief	: Abstraction for DeviceContext.
@@ -57,7 +59,7 @@ public:
 	* @param	: CVertexShader.
 	* @bug		: No Bugs known.
 	**/
-	void setILayout(CVertexShader & inVS);
+	void setILayout(CInputLayout & inVS);
 	
 	/**
 	* @brief	: Clears the renderTargets of the DeviceContext.

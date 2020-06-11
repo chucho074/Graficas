@@ -26,8 +26,6 @@
 #define FIRSTW 800.f
 #define FIRSTH 600.f
 
-
-
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 //--------------------------------------------------------------------------------------
@@ -52,6 +50,7 @@ CBuffer								g_VertexBuffer;
 CBuffer								g_IndexBuffer;
 CTexture2D							g_DepthStencil;
 CDepthStencilView					DepthStencilViewFree;
+CInputLayout						g_ILayout;
 CVertexShader						g_VertexShader;
 CPixelShader						g_PixelShader;
 CRenderTargetView					g_RenderTargetView;
@@ -526,42 +525,6 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow ) {
 
 
 //--------------------------------------------------------------------------------------
-// Helper for compiling shaders with D3DX11
-//--------------------------------------------------------------------------------------
-//#ifdef D_DIRECTX
-//HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut ) {
-//    HRESULT hr = S_OK;
-//
-//    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-//
-//    // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
-//    // Setting this flag improves the shader debugging experience, but still allows 
-//    // the shaders to be optimized and to run exactly the way they will run in 
-//    // the release configuration of this program.
-//    dwShaderFlags |= D3DCOMPILE_DEBUG;
-//
-//
-//    ID3DBlob* pErrorBlob;
-//    hr = D3DX11CompileFromFile( szFileName, NULL, NULL, szEntryPoint, szShaderModel, 
-//        dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
-//    if( FAILED(hr) ) {
-//		if (pErrorBlob != NULL) {
-//			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
-//		}
-//		if (pErrorBlob) {
-//			pErrorBlob->Release();
-//		}
-//        return hr;
-//    }
-//	if (pErrorBlob) {
-//		pErrorBlob->Release();
-//	}
-//
-//    return S_OK;
-//}
-//#endif
-
-//--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice() {
@@ -583,19 +546,14 @@ HRESULT InitDevice() {
 	T.DriverTypes[0] = DRIVER_TYPE_HARDWARE;
 	T.DriverTypes[1] = DRIVER_TYPE_WARP;
 	T.DriverTypes[2] = DRIVER_TYPE_REFERENCE;
-
 	T.FeatureLevels[0] = FEATURE_LEVEL_11_0;
 	T.FeatureLevels[1] = FEATURE_LEVEL_10_1;
 	T.FeatureLevels[2] = FEATURE_LEVEL_10_0;
-
 	T.numFeatureLevels = ARRAYSIZE(T.FeatureLevels);
 
 	unsigned int numDriverTypes = ARRAYSIZE(T.DriverTypes);
 
-	//g_pDevice->init(T);
-
 	SwapChainDesc S;
-
 	S.bufferCount = 1;
 	S.W = width;
 	S.H = height;
@@ -644,11 +602,11 @@ HRESULT InitDevice() {
 	DepthDesc.miscFlags = 0;
 
 	g_DepthStencil.init(DepthDesc);
-
 	hr = g_GAPI.createTexture(g_DepthStencil);
 	if (FAILED(hr)) {
 		return hr;
 	}
+
 	// Create the depth stencil view
 	DepthStencilViewDesc DSV;
 	DSV.format = g_DepthStencil.m_Data.format;
@@ -656,7 +614,6 @@ HRESULT InitDevice() {
 	DSV.texture2D.mipSlice = 0;
 
 	DepthStencilViewFree.init(DSV, (FORMAT)g_DepthStencil.m_Desc.Format);
-
 	hr = g_GAPI.createDSV(g_DepthStencil, DepthStencilViewFree);
 	if (FAILED(hr)) {
 		return hr;
@@ -682,7 +639,8 @@ HRESULT InitDevice() {
 
 	//Create input layout from compiled VS
 	// Set the input layout
-	hr = g_GAPI.createILayout(g_VertexShader);
+
+	hr = g_GAPI.createILayout(g_VertexShader, g_ILayout);
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -739,7 +697,6 @@ HRESULT InitDevice() {
 	SubresourceData subrsrcData;
 	subrsrcData.psysMem = vertices;
 	g_VertexBuffer.init(subrsrcData, bufferstrct);
-
 	
 	hr = g_GAPI.createBuffer(g_VertexBuffer, true);
 	if (FAILED(hr)) {
@@ -1039,7 +996,7 @@ void CleanupDevice() {
 	if( g_BoardVB.Buffer)							{ g_BoardVB.clear();										}
 	if( g_IndexBuffer.Buffer)						{ g_IndexBuffer.clear();									}
 	if( g_BoardIB.Buffer)							{ g_BoardIB.clear();										}
-    if( g_VertexShader.m_InputLayout )				{ g_VertexShader.m_InputLayout->Release();					}
+    if( g_ILayout.m_InputLayout )					{ g_ILayout.m_InputLayout->Release();						}
     if( g_VertexShader.m_VertexShader )				{ g_VertexShader.m_VertexShader->Release();					}
     if( g_PixelShader.m_PixelShader)				{ g_PixelShader.m_PixelShader->Release();					}
     if( g_DepthStencil.m_Texture)					{ g_DepthStencil.m_Texture->Release();						}
@@ -1050,7 +1007,7 @@ void CleanupDevice() {
 	if( FirstPerson.m_CBChangesOnResize.Buffer)		{ FirstPerson.m_CBChangesOnResize.clear();					}
 	if( FirstPerson.m_CBChangesEveryFrame.Buffer)	{ FirstPerson.m_CBChangesEveryFrame.clear();				}
     if( g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->Release();				}	//WIP
-	if (g_GAPI.m_Device.Device)						{ g_GAPI.m_Device.Device->Release();						}	//WIP
+	if( g_GAPI.m_Device.Device)						{ g_GAPI.m_Device.Device->Release();						}	//WIP
 #endif
 }
 
@@ -1234,20 +1191,21 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 //--------------------------------------------------------------------------------------
 // Render a frame
 //--------------------------------------------------------------------------------------
-void Render() {
+void Render() {																				//WIP
 #ifdef D_DIRECTX
-    // Update our time
-    static float t = 0.0f;
-    if( g_GAPI.m_Device.Desc.DriverType == D3D_DRIVER_TYPE_REFERENCE ) {
-        t += ( float )XM_PI * 0.0125f;
-    }
-    else {
-        static DWORD dwTimeStart = 0;
-        DWORD dwTimeCur = GetTickCount();
-        if( dwTimeStart == 0 )
-            dwTimeStart = dwTimeCur;
-        t = ( dwTimeCur - dwTimeStart ) / 1000.0f;
-    }
+	// Update our time
+	static float t = 0.0f;
+	if (g_GAPI.m_Device.Desc.DriverType == D3D_DRIVER_TYPE_REFERENCE) {
+		t += (float)XM_PI * 0.0125f;
+	}
+	else {
+		static DWORD dwTimeStart = 0;
+		DWORD dwTimeCur = GetTickCount();
+		if (dwTimeStart == 0)
+			dwTimeStart = dwTimeCur;
+		t = (dwTimeCur - dwTimeStart) / 1000.0f;
+	}
+
 
 	if (ActiveCamera->mForward || ActiveCamera->mBack || ActiveCamera->mLeft || ActiveCamera->mRight || ActiveCamera->mUp || ActiveCamera->mDown || ActiveCamera->mRotateLeft || ActiveCamera->mRotateRight) {
 		ActiveCamera->move();
@@ -1257,33 +1215,38 @@ void Render() {
 		g_GAPI.updateSResource(ActiveCamera->m_CBNeverChanges, &cbNeverChanges);
 	}
 
-    // Modify the color
+	// Rotate cube around the origin
+
+	// Modify the color
 	g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
 	g_MeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
 	g_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
 
-    float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; 
+	//
+	// Clear the back buffer
+	//
+	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
 	g_GAPI.setRTargets(1, SecondRTV, DepthStencilViewFree);
 
-	g_GAPI.clearRTV(SecondRTV, *ClearColor);													//WIP
+	//
+	// Clear the depth buffer to 1.0 (max depth)
+	//
+	g_GAPI.clearRTV(SecondRTV, *ClearColor);
 	g_GAPI.clearDSV(DepthStencilViewFree, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	unsigned int stride = sizeof(SimpleVertex);
-	unsigned int offset = 0;
-	g_GAPI.setVBuffer(g_VertexBuffer);
-	g_GAPI.setIBuffer(g_IndexBuffer);
+
+	//
+	// Update variables that change once per frame
+	//
 	CBChangesEveryFrame cb;
 	g_World = glm::mat4(1.f);
-	g_World = glm::translate(g_World,ActiveCamera->getPos());
-	cb.mWorld = glm::transpose(g_World);
-	cb.vMeshColor = g_MeshColor;
-	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cb);	
-
-	g_World = glm::mat4(1.f);
-	
+	g_World = glm::translate(g_World, ActiveCamera->getPos());
 	cb.mWorld = glm::transpose(g_World);
 	cb.vMeshColor = g_MeshColor;
 	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cb);
-					
+
+	//
+	// Render the cube
+	//
 	g_GAPI.setVShader(g_VertexShader);
 	g_GAPI.setCBuffer(0, InactiveCamera->m_CBNeverChanges);
 	g_GAPI.setCBuffer(1, InactiveCamera->m_CBChangesOnResize);
@@ -1294,98 +1257,9 @@ void Render() {
 	g_GAPI.setSampler(g_SamplerState);
 	g_GAPI.setDrawIndex(36);
 
-	
-
-
-	ID3D11ShaderResourceView* temp = NULL;
-	g_GAPI.setSResource(temp);																	
-
-	CBChangesEveryFrame cbMesh;
-	cbMesh.mWorld = {
-		1, 0, 0, ActiveCamera->getPos().x,
-		0, 1, 0, ActiveCamera->getPos().y,
-		0, 0, 1, ActiveCamera->getPos().z,
-		0, 0, 0, 1
-	};
-
-	cbMesh.vMeshColor = { 1, 0, 0, 1 };
-	g_GAPI.updateSResource(InactiveCamera->m_CBChangesEveryFrame, &cbMesh);
-	/*for (int i = 0; i < SCManager.m_MeshList.size(); i++) {
-		g_DeviceContext->m_DeviceContext->VSSetConstantBuffers(2, 1, &InactiveCamera->m_CBChangesEveryFrame.Buffer);
-		g_DeviceContext->m_DeviceContext->PSSetShaderResources(0, 1, &SCManager.m_MeshList[i]->Materials->m_TextureDiffuse);
-		g_DeviceContext->m_DeviceContext->VSSetShaderResources(0, 1, &SCManager.m_MeshList[i]->Materials->m_TextureDiffuse);
-		
-		g_DeviceContext->m_DeviceContext->IASetVertexBuffers(0, 1, &SCManager.m_MeshList[i]->VB->Buffer, &stride, &offset);
-		g_DeviceContext->m_DeviceContext->IASetIndexBuffer(SCManager.m_MeshList[i]->IB->Buffer, DXGI_FORMAT_R16_UINT, 0);
-		g_DeviceContext->m_DeviceContext->DrawIndexed(SCManager.m_MeshList[i]->INum, 0, 0);
-	}*/
-
-	//Set backbuffer and main DSV
-	
-	 g_GAPI.setRTargets(1, g_RenderTargetView, DepthStencilViewFree);
-	 g_GAPI.clearRTV(g_RenderTargetView, *ClearColor);											//WIP
-	 g_GAPI.clearDSV(DepthStencilViewFree, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	 g_GAPI.setVBuffer(g_VertexBuffer);
-	 g_GAPI.setIBuffer(g_IndexBuffer);
-
-
-    //
-    // Update variables that change once per frame
-    //
-	
-		
-	g_World = glm::mat4(1.f);
-
-	cb.mWorld = glm::transpose(g_World);
-	cb.vMeshColor = g_MeshColor;
-	
-	g_GAPI.updateSResource(ActiveCamera->m_CBChangesEveryFrame, &cb);
-	g_GAPI.setVShader(g_VertexShader);
-	g_GAPI.setCBuffer(0, ActiveCamera->m_CBNeverChanges);
-	g_GAPI.setCBuffer(1, ActiveCamera->m_CBChangesOnResize);
-	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.setPShader(g_PixelShader);
-	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.setSResource(InactiveSRV);
-	g_GAPI.setSampler(g_SamplerState);
-	g_GAPI.setDrawIndex(36);
-	
-
-
-	temp = NULL;
-	g_GAPI.setSResource(temp);
-
-	g_GAPI.setVBuffer(g_BoardVB);
-	g_GAPI.setIBuffer(g_BoardIB);
-
-	glm::vec3 boardLook = glm::normalize(ActiveCamera->getPos() - boardpos);
-	glm::vec3 boardRight = glm::cross(glm::normalize(ActiveCamera->Up), boardLook);
-	glm::vec3 boardUp = glm::cross(boardLook, boardRight);
-
-	glm::mat4 boarMat(boardRight.x, boardRight.y, boardRight.z, 0, boardUp.x, boardUp.y, boardUp.z, 0, boardLook.x, boardLook.y, boardLook.z, 0, boardpos.x, boardpos.y, boardpos.z, 1);
-
-	g_World = boarMat;
-
-	cb.mWorld = glm::transpose(g_World);
-	cb.vMeshColor = g_MeshColor;
-
-	g_GAPI.updateSResource(ActiveCamera->m_CBChangesEveryFrame, &cb);
-	g_GAPI.setVShader(g_VertexShader);
-	g_GAPI.setCBuffer(0, ActiveCamera->m_CBNeverChanges);
-	g_GAPI.setCBuffer(1, ActiveCamera->m_CBChangesOnResize);
-	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.setPShader(g_PixelShader);
-	g_GAPI.setCBuffer(2, ActiveCamera->m_CBChangesEveryFrame);
-	g_GAPI.setSResource(InactiveSRV);
-	g_GAPI.setSampler(g_SamplerState);
-	g_GAPI.setDrawIndex(6);
-
-	temp = NULL;
-	g_GAPI.setSResource(temp);
-
-    //
-    // Present our back buffer to our front buffer
-    //
+	//
+	// Present our back buffer to our front buffer
+	//
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	g_GAPI.show();

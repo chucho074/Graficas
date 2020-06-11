@@ -39,14 +39,8 @@ public:
 	**/
 	void * getShader();
 
-	/**
-	* @brief	: Getter for the Input Layout.
-	* @bug		: No Bugs known.
-	**/
-	void * getInputLayout();
-
+	
 #ifdef D_DIRECTX
 	ID3D11VertexShader * m_VertexShader;
-	ID3D11InputLayout * m_InputLayout;
 #endif
 };
