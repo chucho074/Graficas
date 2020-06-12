@@ -54,6 +54,7 @@ void * CDevice::getDevice() {
 
 HRESULT CDevice::createRTV(CTexture2D & inTexture, CRenderTargetView & inRTV) {
 #ifdef D_DIRECTX
+	//   g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView)
 	if (FAILED(Device->CreateRenderTargetView(inTexture.m_Texture, NULL, &inRTV.m_RTV))) {
 		return false;
 	}
@@ -163,7 +164,7 @@ HRESULT CDevice::createInputLayoutDescFromVertexShaderSignature(CVertexShader & 
 
 
 	// Try to create Input Layout
-	HRESULT hr = Device->CreateInputLayout(&inputLayoutDesc[0], inputLayoutDesc.size(), inVS.m_Blob->GetBufferPointer(), inVS.m_Blob->GetBufferSize(), (ID3D11InputLayout**)inIL.getInputLayout());
+	HRESULT hr = Device->CreateInputLayout(&inputLayoutDesc[0], inputLayoutDesc.size(), inVS.m_Blob->GetBufferPointer(), inVS.m_Blob->GetBufferSize(), &inIL.m_InputLayout);
 
 	//Free allocation shader reflection memory
 	pVertexShaderReflection->Release();

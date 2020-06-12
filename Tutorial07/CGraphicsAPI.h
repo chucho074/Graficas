@@ -162,7 +162,7 @@ public:
 	* @param	: unsigned int, CRenderTargetView, CDepthStencilView.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV);
+	void setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV);
 	
 	/**
 	* @brief	: Sets in 0's the renderTargets.
@@ -211,7 +211,7 @@ public:
 	* @param	: ID3D11ShaderResourceView.
 	* @bug		: No Bugs known.
 	**/
-	void setSResource(ID3D11ShaderResourceView *inSRV);
+	void setSResource(ID3D11ShaderResourceView * inSRV);
 	
 	/**
 	* @brief	: Sets the Sampler to the DeviceContext.

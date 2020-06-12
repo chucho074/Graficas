@@ -23,6 +23,7 @@ CViewPort::~CViewPort() {
 
 void CViewPort::init(ViewPortDesc inDesc) {
 #ifdef D_DIRECTX
+	m_Viewport.Width	= inDesc.W;
 	m_Viewport.Height	= inDesc.H;
 	m_Viewport.MinDepth = inDesc.minDepth;
 	m_Viewport.MaxDepth = inDesc.maxDepth;

@@ -26,7 +26,7 @@
 #define FIRSTW 800.f
 #define FIRSTH 600.f
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+//extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, unsigned int msg, WPARAM wParam, LPARAM lParam);
 
 //--------------------------------------------------------------------------------------
 // Global Variables
@@ -35,14 +35,14 @@ HINSTANCE                           g_hInst = NULL;
 HWND                                g_hWnd = NULL;
 #ifdef D_DIRECTX
 ID3D11ShaderResourceView*           g_pTextureRV = NULL;
-ID3D11ShaderResourceView*           InactiveSRV = NULL;
+//ID3D11ShaderResourceView*           InactiveSRV = NULL;
 #endif
 glm::vec4							g_MeshColor { 0.0f, 0.8f, 0.1f, 1.0f };
 CCamera								Camera;
-CCameraFP							FirstPerson;
-CTexture2D							InactiveCameraTexture;
-CDepthStencilView					DepthStencilViewFP;
-CRenderTargetView					SecondRTV;
+//CCameraFP							FirstPerson;
+//CTexture2D							InactiveCameraTexture;
+//CDepthStencilView					DepthStencilViewFP;
+//CRenderTargetView					SecondRTV;
 glm::mat4							g_World;
 FEATURE_LEVEL						featureLevel = FEATURE_LEVEL_11_0;
 CGraphicsAPI						g_GAPI;
@@ -55,14 +55,14 @@ CVertexShader						g_VertexShader;
 CPixelShader						g_PixelShader;
 CRenderTargetView					g_RenderTargetView;
 CSamplerState						g_SamplerState;
-CCamera *							ActiveCamera = NULL;
-CCamera *							InactiveCamera = NULL;
-unsigned int						imguiWindowW;
-unsigned int						imguiWindowH;
-CBuffer								g_BoardVB;
-CBuffer								g_BoardIB;
+//CCamera *							ActiveCamera = NULL;
+//CCamera *							InactiveCamera = NULL;
+//unsigned int						imguiWindowW;
+//unsigned int						imguiWindowH;
+//CBuffer								g_BoardVB;
+//CBuffer								g_BoardIB;
 
-glm::vec3 boardpos(-5, 1, 0);
+//glm::vec3 boardpos(-5, 1, 0);
 
 #ifdef D_DIRECTX
 
@@ -81,10 +81,11 @@ unsigned int rbo;
 HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
 HRESULT InitDevice();
 void CleanupDevice();
-LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK WndProc(HWND, unsigned int, WPARAM, LPARAM);
 void Render();
+#endif
 
-
+/*
 #elif OPENGL
 const char* vertexShaderSource = "#version 330 core\n"
 "layout(location = 0) in vec3 aPos;\n"
@@ -176,12 +177,13 @@ void mouse_move_callback(GLFWwindow* window, double xpos, double ypos) {
 }
 
 #endif
-
+*/
 
 //--------------------------------------------------------------------------------------
 // Entry point to the program. Initializes everything and goes into a message processing 
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
+/*
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
@@ -444,8 +446,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		model = boarMat;
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, &model[0][0]);
 		
-		/*unsigned int location = glGetUniformLocation(shaderProgram, "texture_diffuse1");
-		glUniform1i(location, 0);*/
+		//unsigned int location = glGetUniformLocation(shaderProgram, "texture_diffuse1");
+		//glUniform1i(location, 0);
 
 		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
 
@@ -484,10 +486,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 #endif   
 }
 
+*/
 
 //--------------------------------------------------------------------------------------
 // Register class and create window
 //--------------------------------------------------------------------------------------
+/*
 HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow ) {
     // Register class
     WNDCLASSEX wcex;
@@ -522,11 +526,12 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow ) {
 
     return S_OK;
 }
-
+*/
 
 //--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
 //--------------------------------------------------------------------------------------
+/*
 HRESULT InitDevice() {
 	HRESULT hr = S_OK;
 
@@ -593,7 +598,7 @@ HRESULT InitDevice() {
 	DepthDesc.H = height;
 	DepthDesc.mipLevels = 1;
 	DepthDesc.arraySize = 1;
-	DepthDesc.format = FORMAT_D24_UNORM_S8_UINT;
+	DepthDesc.format = FORMAT_D24_UNORM_S8_unsigned int;
 	DepthDesc.sampleDesc.count = 1;
 	DepthDesc.sampleDesc.quality = 0;
 	DepthDesc.usage = USAGE_DEFAULT;
@@ -979,11 +984,12 @@ HRESULT InitDevice() {
 
     return S_OK;
 }
-
+*/
 
 //--------------------------------------------------------------------------------------
 // Clean up the objects we've created
 //--------------------------------------------------------------------------------------
+/*
 void CleanupDevice() {
 #ifdef D_DIRECTX
     if( g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->ClearState();			}	//WIP
@@ -1010,12 +1016,13 @@ void CleanupDevice() {
 	if( g_GAPI.m_Device.Device)						{ g_GAPI.m_Device.Device->Release();						}	//WIP
 #endif
 }
-
+*/
 
 //--------------------------------------------------------------------------------------
 // Called every time the application receives a message
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam ) {
+/*
+LRESULT CALLBACK WndProc( HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam ) {
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam)) {
 		return true;
 	}
@@ -1037,8 +1044,8 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 			if (g_GAPI.m_DContx.m_DeviceContext != nullptr) {		
 				RECT rc;
 				GetClientRect(hWnd, &rc);
-				UINT width = imguiWindowW = rc.right - rc.left;
-				UINT height = imguiWindowH = rc.bottom - rc.top;
+				unsigned int width = imguiWindowW = rc.right - rc.left;
+				unsigned int height = imguiWindowH = rc.bottom - rc.top;
 				g_World = glm::mat4(1.0f);
 				ActiveCamera->setHeigth(height);
 				ActiveCamera->setWidth(width);
@@ -1109,7 +1116,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 					DepthDesc.H = height;
 					DepthDesc.mipLevels = 1;
 					DepthDesc.arraySize = 1;
-					DepthDesc.format = FORMAT_D24_UNORM_S8_UINT;
+					DepthDesc.format = FORMAT_D24_UNORM_S8_unsigned int;
 					DepthDesc.sampleDesc.count = 1;
 					DepthDesc.sampleDesc.quality = 0;
 					DepthDesc.usage = USAGE_DEFAULT;
@@ -1186,11 +1193,13 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
     }
     return 0;
 }
+*/
 
 
 //--------------------------------------------------------------------------------------
 // Render a frame
 //--------------------------------------------------------------------------------------
+/*
 void Render() {																				//WIP
 #ifdef D_DIRECTX
 	// Update our time
@@ -1264,4 +1273,543 @@ void Render() {																				//WIP
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	g_GAPI.show();
 #endif
+}
+*/
+
+
+
+//--------------------------------------------------------------------------------------
+// Testing
+//--------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------
+// Entry point to the program. Initializes everything and goes into a message processing 
+// loop. Idle time is used to render the scene.
+//--------------------------------------------------------------------------------------
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
+
+	UNREFERENCED_PARAMETER(hPrevInstance);
+	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	if (FAILED(InitWindow(hInstance, nCmdShow)))
+		return 0;
+
+	if (FAILED(InitDevice())) {
+		CleanupDevice();
+		return 0;
+	}
+
+	// Main message loop
+	MSG msg = { 0 };
+	while (WM_QUIT != msg.message) {
+		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		else {
+			Render();
+		}
+	}
+
+	CleanupDevice();
+
+	return (int)msg.wParam;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Register class and create window
+//--------------------------------------------------------------------------------------
+HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow) {
+
+	// Register class
+	WNDCLASSEX wcex;
+	wcex.cbSize = sizeof(WNDCLASSEX);
+	wcex.style = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc = WndProc;
+	wcex.cbClsExtra = 0;
+	wcex.cbWndExtra = 0;
+	wcex.hInstance = hInstance;
+	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_TUTORIAL1);
+	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.lpszMenuName = NULL;
+	wcex.lpszClassName = L"TutorialWindowClass";
+	wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_TUTORIAL1);
+	if (!RegisterClassEx(&wcex))
+		return E_FAIL;
+
+	// Create window
+	g_hInst = hInstance;
+	RECT rc = { 0, 0, 640, 480 };
+	AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
+	g_hWnd = CreateWindow(L"TutorialWindowClass", L"Direct3D 11 Tutorial 7", WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
+		NULL);
+	if (!g_hWnd)
+		return E_FAIL;
+
+	ShowWindow(g_hWnd, nCmdShow);
+
+	return S_OK;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Helper for compiling shaders with D3DX11
+//--------------------------------------------------------------------------------------
+HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut) {
+	HRESULT hr = S_OK;
+
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#ifdef D_DIRECTX
+	// Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
+	// Setting this flag improves the shader debugging experience, but still allows 
+	// the shaders to be optimized and to run exactly the way they will run in 
+	// the release configuration of this program.
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+
+	ID3DBlob* pErrorBlob;
+	hr = D3DX11CompileFromFile(szFileName, NULL, NULL, szEntryPoint, szShaderModel,
+		dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL);
+	if (FAILED(hr))
+	{
+		if (pErrorBlob != NULL)
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+		if (pErrorBlob) pErrorBlob->Release();
+		return hr;
+	}
+	if (pErrorBlob) pErrorBlob->Release();
+
+	return S_OK;
+#endif
+}
+
+
+//--------------------------------------------------------------------------------------
+// Create Direct3D device and swap chain
+//--------------------------------------------------------------------------------------
+HRESULT InitDevice() {
+
+	HRESULT hr = S_OK;
+
+	RECT rc;
+	GetClientRect(g_hWnd, &rc);
+	unsigned int width = rc.right - rc.left;
+	unsigned int height = rc.bottom - rc.top;
+
+	
+#ifdef D_DIRECTX || R_DIRECTX
+	DeviceDesc T;
+	T.DeviceFlags = 0;
+#ifdef D_DIRECTX
+	T.DeviceFlags |= 2;
+#endif
+
+
+	T.DriverTypes[0] = DRIVER_TYPE_HARDWARE;
+	T.DriverTypes[1] = DRIVER_TYPE_WARP;
+	T.DriverTypes[2] = DRIVER_TYPE_REFERENCE;
+
+	unsigned int numDriverTypes = ARRAYSIZE(T.DriverTypes);
+	
+	T.FeatureLevels[0] = FEATURE_LEVEL_11_0;
+	T.FeatureLevels[1] = FEATURE_LEVEL_10_1;
+	T.FeatureLevels[2] = FEATURE_LEVEL_10_0;
+
+	T.numFeatureLevels = ARRAYSIZE(T.FeatureLevels);
+	 
+
+	SwapChainDesc S;
+	S.bufferCount = 1;
+	S.W = width;
+	S.H = height;
+	S.format = FORMAT_R8G8B8A8_UNORM;
+	S.refreshNumerator = 60;
+	S.refreshDenominator = 1;
+	S.bufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	S.outputWND = (unsigned int)g_hWnd;
+	S.count = 1;
+	S.quality = 0;
+	S.windowed = TRUE;
+	
+	g_GAPI.init(T,S);
+
+	for (unsigned int driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
+		g_GAPI.setDriverType(driverTypeIndex);
+		hr = g_GAPI.createDevnSC(featureLevel);
+
+		if (SUCCEEDED(hr)) {
+			break;
+		}
+	}
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Create a render target view
+	CTexture2D BackBuffer;
+	hr = g_GAPI.createRTV(BackBuffer, g_RenderTargetView);
+	BackBuffer.m_Texture->Release();
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Create depth stencil texture
+	TextureDesc DepthDesc;
+	DepthDesc.W = width;
+	DepthDesc.H = height;
+	DepthDesc.mipLevels = 1;
+	DepthDesc.arraySize = 1;
+	DepthDesc.format = FORMAT_D24_UNORM_S8_UINT;
+	DepthDesc.sampleDesc.count = 1;
+	DepthDesc.sampleDesc.quality = 0;
+	DepthDesc.usage = USAGE_DEFAULT;
+	DepthDesc.flags = 64;				//D3D11_BIND_DEPTH_STENCIL;
+	DepthDesc.cpuAccessFlags = 0;
+	DepthDesc.miscFlags = 0;
+
+	g_DepthStencil.init(DepthDesc);
+	hr = g_GAPI.createTexture(g_DepthStencil);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Create the depth stencil view
+	DepthStencilViewDesc DSV;
+	DSV.format = g_DepthStencil.m_Data.format;
+	DSV.viewDimension = DSV_DIMENSION_TEXTURE2D;
+	DSV.texture2D.mipSlice = 0;
+
+	DepthStencilViewFree.init(DSV, (FORMAT)g_DepthStencil.m_Desc.Format);
+	if (FAILED(hr)) {
+		return hr;
+	}
+	hr = g_GAPI.createDSV(g_DepthStencil, DepthStencilViewFree);
+
+	g_GAPI.setRTargets(1, g_RenderTargetView, DepthStencilViewFree);
+	
+	// Setup the viewport
+	ViewPortDesc vpStruct;
+	vpStruct.W = width;
+	vpStruct.H = height;
+	vpStruct.minDepth = 0.0f;
+	vpStruct.maxDepth = 1.0f;
+	vpStruct.topLeftX = 0;
+	vpStruct.topLeftY = 0;
+	g_GAPI.createVPort(vpStruct);
+
+
+
+	// Compile the vertex shader
+	// Create the vertex shader
+	hr = g_GAPI.createVShader(g_VertexShader);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+
+	//Create input layout from compiled VS
+	// Set the input layout
+	hr = g_GAPI.createILayout(g_VertexShader, g_ILayout);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Compile the pixel shader
+	// Create the pixel shader
+	hr = g_GAPI.createPShader(g_PixelShader);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+
+	// Create vertex buffer
+	SimpleVertex vertices[] = {
+		{ glm::vec3(-1.0f, 1.0f, -1.0f),		glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(1.0f, 1.0f, -1.0f),			glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(1.0f, 1.0f, 1.0f),			glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(-1.0f, 1.0f, 1.0f),			glm::vec2(0.0f, 1.0f) },
+
+		{ glm::vec3(-1.0f, -1.0f, -1.0f),		glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(1.0f, -1.0f, -1.0f),		glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(1.0f, -1.0f, 1.0f),			glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(-1.0f, -1.0f, 1.0f),		glm::vec2(0.0f, 1.0f) },
+
+		{ glm::vec3(-1.0f, -1.0f, 1.0f),		glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(-1.0f, -1.0f, -1.0f),		glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(-1.0f, 1.0f, -1.0f),		glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(-1.0f, 1.0f, 1.0f),			glm::vec2(0.0f, 1.0f) },
+
+		{ glm::vec3(1.0f, -1.0f, 1.0f),			glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(1.0f, -1.0f, -1.0f),		glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(1.0f, 1.0f, -1.0f),			glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(1.0f, 1.0f, 1.0f),			glm::vec2(0.0f, 1.0f) },
+
+		{ glm::vec3(-1.0f, -1.0f, -1.0f),		glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(1.0f, -1.0f, -1.0f),		glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(1.0f, 1.0f, -1.0f),			glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(-1.0f, 1.0f, -1.0f),		glm::vec2(0.0f, 1.0f) },
+
+		{ glm::vec3(-1.0f, -1.0f, 1.0f),		glm::vec2(0.0f, 0.0f) },
+		{ glm::vec3(1.0f, -1.0f, 1.0f),			glm::vec2(1.0f, 0.0f) },
+		{ glm::vec3(1.0f, 1.0f, 1.0f),			glm::vec2(1.0f, 1.0f) },
+		{ glm::vec3(-1.0f, 1.0f, 1.0f),			glm::vec2(0.0f, 1.0f) },
+	};
+
+
+	BufferDesc bufferstrct;
+	bufferstrct.usage = USAGE_DEFAULT;
+	bufferstrct.byteWidth = sizeof(SimpleVertex) * 24;
+	bufferstrct.bindFlags = 1;			// D3D11_BIND_VERTEX_BUFFER;
+	bufferstrct.cpuAccessFlags = 0;
+
+	SubresourceData subrsrcData;
+	subrsrcData.psysMem = vertices;
+	g_VertexBuffer.init(subrsrcData, bufferstrct);
+	hr = g_GAPI.createBuffer(g_VertexBuffer, true);
+
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Set vertex buffer
+	g_GAPI.setVBuffer(g_VertexBuffer);
+	
+	// Create index buffer
+	// Create vertex buffer
+	WORD indices[] = {
+		3,1,0,
+		2,1,3,
+
+		6,4,5,
+		7,4,6,
+
+		11,9,8,
+		10,9,11,
+
+		14,12,13,
+		15,12,14,
+
+		19,17,16,
+		18,17,19,
+
+		22,20,21,
+		23,20,22
+	};
+
+	bufferstrct.usage = USAGE_DEFAULT;
+	bufferstrct.byteWidth = sizeof(WORD) * 36;
+	bufferstrct.bindFlags = 2;		// D3D11_BIND_INDEX_BUFFER;
+	bufferstrct.cpuAccessFlags = 0;
+
+	subrsrcData.psysMem = indices;
+
+	g_IndexBuffer.init(subrsrcData, bufferstrct);
+	hr = g_GAPI.createBuffer(g_IndexBuffer, true);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Set index buffer
+	g_GAPI.setIBuffer(g_IndexBuffer);
+
+	// Set primitive topology
+	g_GAPI.setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	// Create the constant buffers
+	bufferstrct.usage = USAGE_DEFAULT;
+	bufferstrct.byteWidth = sizeof(CBNeverChanges);
+	bufferstrct.bindFlags = 4;		// D3D11_BIND_CONSTANT_BUFFER;
+	bufferstrct.cpuAccessFlags = 0;
+
+	Camera.m_CBNeverChanges.init(bufferstrct);
+	hr = g_GAPI.createBuffer(Camera.m_CBNeverChanges, false);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	bufferstrct.byteWidth = sizeof(CBChangeOnResize);
+	Camera.m_CBChangesOnResize.init(bufferstrct);
+	hr = g_GAPI.createBuffer(Camera.m_CBChangesOnResize, false);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	bufferstrct.byteWidth = sizeof(CBChangesEveryFrame);
+	Camera.m_CBChangesEveryFrame.init(bufferstrct);
+	hr = g_GAPI.createBuffer(Camera.m_CBChangesEveryFrame, false);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Load the Texture
+	hr = g_GAPI.createSRViewFFile(g_pTextureRV);
+	if (FAILED(hr)) {
+		return hr;
+	}
+
+	// Create the sample state
+	SamplerDesc samplerDsc;
+	ZeroMemory(&samplerDsc, sizeof(samplerDsc));
+	samplerDsc.filter = FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDsc.addresU = TEXTURE_ADDRESS_WRAP;
+	samplerDsc.addresV = TEXTURE_ADDRESS_WRAP;
+	samplerDsc.addresW = TEXTURE_ADDRESS_WRAP;
+	samplerDsc.comparisonFunc = COMPARISON_NEVER;
+	samplerDsc.minLOD = 0;
+	samplerDsc.maxLOD = D3D11_FLOAT32_MAX;
+
+	g_SamplerState.init(samplerDsc);
+	g_GAPI.createSState(g_SamplerState);
+
+	if (FAILED(hr)) {
+		return hr;
+	}
+#endif
+	// Initialize the world matrices
+	g_World = glm::mat4(1.0f);
+
+	// Initialize the view matrix
+	DescCamera MyDesc;
+	MyDesc.Pos = { 0.f, 3.f, -6.f };
+	MyDesc.LAt = { 0.f, 1.f, 0.f };
+	MyDesc.Up_desc = { 0.f, 1.f, 0.f };
+	MyDesc.FOV = PIDIV4;
+	MyDesc.Width = width;
+	MyDesc.Height = height;
+	MyDesc.Near = 0.01f;
+	MyDesc.FarPlane = 100.f;
+
+	Camera.init(MyDesc);
+
+	CBNeverChanges cbNeverChanges;
+	cbNeverChanges.mView = Camera.getVM();
+#ifdef D_DIRECTX
+	g_GAPI.updateSResource(Camera.m_CBNeverChanges, &cbNeverChanges);
+#endif
+
+	CBChangeOnResize cbChangesOnResize;
+	cbChangesOnResize.mProjection = glm::transpose(Camera.getPM());
+#ifdef D_DIRECTX
+	g_GAPI.updateSResource(Camera.m_CBChangesOnResize, &cbChangesOnResize);
+#endif
+	
+	return S_OK;
+
+}
+
+
+//--------------------------------------------------------------------------------------
+// Clean up the objects we've created
+//--------------------------------------------------------------------------------------
+void CleanupDevice() {
+	if (g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->ClearState(); }
+	if (g_SamplerState.m_pSamplerLinear)			{ g_SamplerState.m_pSamplerLinear->Release(); }
+	if (g_pTextureRV)								{ g_pTextureRV->Release(); }
+	if (Camera.m_CBNeverChanges.Buffer)				{ Camera.m_CBNeverChanges.Buffer->Release(); }
+	if (Camera.m_CBChangesOnResize.Buffer)			{ Camera.m_CBChangesOnResize.Buffer->Release(); }
+	if (Camera.m_CBChangesEveryFrame.Buffer)		{ Camera.m_CBChangesEveryFrame.Buffer->Release(); }
+	if (g_VertexBuffer.Buffer)						{ g_VertexBuffer.Buffer->Release(); }
+	if (g_IndexBuffer.Buffer)						{ g_IndexBuffer.Buffer->Release(); }
+	if (g_ILayout.m_InputLayout)					{ g_ILayout.m_InputLayout->Release(); }
+	if (g_VertexShader.m_VertexShader)				{ g_VertexShader.m_VertexShader->Release(); }
+	if (g_PixelShader.m_PixelShader)				{ g_PixelShader.m_PixelShader->Release(); }
+	if (g_DepthStencil.m_Texture)					{ g_DepthStencil.m_Texture->Release(); }
+	if (DepthStencilViewFree.m_pDepthStencilView)	{ DepthStencilViewFree.m_pDepthStencilView->Release(); }
+	if (g_RenderTargetView.m_RTV)					{ g_RenderTargetView.m_RTV->Release(); }
+	if (g_GAPI.m_SChain.m_SwapChain)				{ g_GAPI.m_SChain.m_SwapChain->Release(); }
+	if (g_GAPI.m_DContx.m_DeviceContext)			{ g_GAPI.m_DContx.m_DeviceContext->Release(); }
+	if (g_GAPI.m_Device.Device)						{ g_GAPI.m_Device.Device->Release(); }
+}
+
+
+//--------------------------------------------------------------------------------------
+// Called every time the application receives a message
+//--------------------------------------------------------------------------------------
+LRESULT CALLBACK WndProc(HWND hWnd, unsigned int message, WPARAM wParam, LPARAM lParam) {
+	PAINTSTRUCT ps;
+	HDC hdc;
+
+	switch (message) {
+	case WM_PAINT:
+		hdc = BeginPaint(hWnd, &ps);
+		EndPaint(hWnd, &ps);
+		break;
+
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		break;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+
+	return 0;
+}
+
+
+//--------------------------------------------------------------------------------------
+// Render a frame
+//--------------------------------------------------------------------------------------
+void Render() {
+	// Update our time
+	static float t = 0.0f;
+	if (g_GAPI.m_Device.Desc.DriverType == D3D_DRIVER_TYPE_REFERENCE) {
+		t += (float)XM_PI * 0.0125f;
+	}
+	else {
+		static DWORD dwTimeStart = 0;
+		DWORD dwTimeCur = GetTickCount();
+		if (dwTimeStart == 0)
+			dwTimeStart = dwTimeCur;
+		t = (dwTimeCur - dwTimeStart) / 1000.0f;
+	}
+
+	// Rotate cube around the origin
+	//g_World = XMMatrixRotationY(t);
+	
+
+	// Modify the color
+	g_MeshColor.x = (sinf(t * 1.0f) + 1.0f) * 0.5f;
+	g_MeshColor.y = (cosf(t * 3.0f) + 1.0f) * 0.5f;
+	g_MeshColor.z = (sinf(t * 5.0f) + 1.0f) * 0.5f;
+
+	//
+	// Clear the back buffer
+	//
+	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
+	g_GAPI.clearRTV(g_RenderTargetView, *ClearColor);
+
+	//
+	// Clear the depth buffer to 1.0 (max depth)
+	//
+	g_GAPI.clearDSV(DepthStencilViewFree, D3D11_CLEAR_DEPTH, 1.0f, 0);
+	
+	//
+	// Update variables that change once per frame
+	//
+	CBChangesEveryFrame cb;
+	cb.mWorld = glm::transpose(g_World);
+	cb.vMeshColor = g_MeshColor;
+	g_GAPI.updateSResource(Camera.m_CBChangesEveryFrame, &cb);
+
+	//
+	// Render the cube
+	//
+	g_GAPI.setVShader(g_VertexShader);
+	g_GAPI.setCBuffer(0, Camera.m_CBNeverChanges);
+	g_GAPI.setCBuffer(1, Camera.m_CBChangesOnResize);
+	g_GAPI.setCBuffer(2, Camera.m_CBChangesEveryFrame);
+	g_GAPI.setPShader(g_PixelShader);
+	g_GAPI.setCBuffer(2, Camera.m_CBChangesEveryFrame);
+	g_GAPI.setSResource(g_pTextureRV);
+	g_GAPI.setSampler(g_SamplerState);
+	g_GAPI.setDrawIndex(36);
+
+	//
+	// Present our back buffer to our front buffer
+	//
+	g_GAPI.show();
 }

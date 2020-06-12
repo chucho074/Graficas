@@ -119,7 +119,7 @@ HRESULT CGraphicsAPI::createVShader(CVertexShader & inVShader) {
 }
 
 
-HRESULT CGraphicsAPI::createILayout(CVertexShader & inVShader, CInputLayout &inILayout) {		//WIP
+HRESULT CGraphicsAPI::createILayout(CVertexShader & inVShader, CInputLayout & inILayout) {		//WIP
 	
 #ifdef D_DIRECTX
 	if (FAILED(m_Device.createInputLayoutDescFromVertexShaderSignature(inVShader, inILayout))) {
@@ -235,13 +235,13 @@ HRESULT CGraphicsAPI::resizeBuffers() {
 }
 
 
-HRESULT CGraphicsAPI::setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV) {
+void CGraphicsAPI::setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV) {
 #ifdef D_DIRECTX
 	m_DContx.setRTarget(inNumViews, inRTV, inDSV);
-#elif
-	return E_NOTIMPL;
+
+
 #endif
-	return false;
+	
 }
 
 
@@ -289,13 +289,14 @@ void CGraphicsAPI::setSampler(CSamplerState & inSampler) {
 	m_DContx.setSampler(inSampler);
 }
 
+
 void CGraphicsAPI::setDrawIndex(int inIndex) {
 	m_DContx.setDrawIndexed(inIndex);
 }
 
 
 void CGraphicsAPI::show() {
-	m_SChain.m_SwapChain->Present(0,0);
+	m_SChain.m_SwapChain->Present(0, 0);
 }
 
 
