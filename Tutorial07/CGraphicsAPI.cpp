@@ -1,5 +1,5 @@
 /**
-* @LC		: 08/06/2020
+* @LC		: 15/06/2020
 * @file		: CGraphicsAPI.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -29,9 +29,7 @@ int CGraphicsAPI::init(DeviceDesc & inDevDesc, SwapChainDesc & inSCDesc) {
 	m_Device.init(inDevDesc);
 	m_SChain.init(inSCDesc);
 #ifdef D_DIRECTX
-	//m_ptrDevice = static_cast<ID3D11Device*>(m_Device.getDevice());
-	//m_ptrDContx = static_cast<ID3D11DeviceContext*>(m_DContx.getDeviceContext());
-	//m_ptrSChain = static_cast<IDXGISwapChain*>(m_SChain.getSwapChain());
+	
 
 #endif
 
@@ -184,11 +182,11 @@ HRESULT CGraphicsAPI::createBuffer(CBuffer & inBuffer, bool inUseSRD) {
 }
 
 
-void CGraphicsAPI::setVBuffer(CBuffer & inVBuffer) {
+void CGraphicsAPI::setVBuffer(CBuffer * inVBuffer) {
 	unsigned int stride = sizeof(SimpleVertex);
 	unsigned int offset = 0;
 #ifdef D_DIRECTX
-	m_DContx.m_DeviceContext->IASetVertexBuffers(0, 1, &inVBuffer.Buffer, &stride, &offset);
+	m_DContx.m_DeviceContext->IASetVertexBuffers(0, 1, &inVBuffer->Buffer, &stride, &offset);
 
 #endif
 }
@@ -201,9 +199,16 @@ void CGraphicsAPI::setIBuffer(CBuffer & inVBuffer) {
 }
 
 
-void CGraphicsAPI::setCBuffer(unsigned int inStartLot, CBuffer & inCBuffer) {
+void CGraphicsAPI::setVCBuffer(unsigned int inStartLot, CBuffer & inCBuffer) {
 #ifdef D_DIRECTX
 	m_DContx.m_DeviceContext->VSSetConstantBuffers(inStartLot, 1, &inCBuffer.Buffer);
+#endif
+}
+
+
+void CGraphicsAPI::setPCBuffer(unsigned int inStartLot, CBuffer & inCBuffer) {
+#ifdef D_DIRECTX
+	m_DContx.m_DeviceContext->PSSetConstantBuffers(inStartLot, 1, &inCBuffer.Buffer);
 #endif
 }
 
@@ -306,8 +311,8 @@ void CGraphicsAPI::setTopology(D3D11_PRIMITIVE_TOPOLOGY inTopology) {
 }
 
 
-HRESULT CGraphicsAPI::createSRViewFFile(ID3D11ShaderResourceView *inSRView) {
-	if (FAILED(D3DX11CreateShaderResourceViewFromFile(m_Device.Device, L"seafloor.dds", NULL, NULL, &inSRView, NULL))) {
+HRESULT CGraphicsAPI::createSRViewFFile(ID3D11ShaderResourceView **inSRView) {
+	if (FAILED(D3DX11CreateShaderResourceViewFromFile(m_Device.Device, L"seafloor.dds", NULL, NULL, inSRView, NULL))) {
 		return false;
 	}
 	else { return S_OK; }

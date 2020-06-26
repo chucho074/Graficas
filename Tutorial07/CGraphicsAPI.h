@@ -128,7 +128,7 @@ public:
 	* @param	: CBuffer.
 	* @bug		: No Bugs known.
 	**/
-	void setVBuffer(CBuffer & inVBuffer);
+	void setVBuffer(CBuffer * inVBuffer);
 
 	/**
 	* @brief	: Sets a Index Buffer.
@@ -138,11 +138,18 @@ public:
 	void setIBuffer(CBuffer & inVBuffer);
 
 	/**
-	* @brief	: Sets Constant Buffer.
+	* @brief	: Sets Constant Buffer for VS.
 	* @param	: unsigned int, CBuffer.
 	* @bug		: No Bugs known.
 	**/
-	void setCBuffer(unsigned int inStartLot, CBuffer & inCBuffer);
+	void setVCBuffer(unsigned int inStartLot, CBuffer & inCBuffer);
+	
+	/**
+	* @brief	: Sets Constant Buffer for PS.
+	* @param	: unsigned int, CBuffer.
+	* @bug		: No Bugs known.
+	**/
+	void setPCBuffer(unsigned int inStartLot, CBuffer & inCBuffer);
 
 	/**
 	* @brief	: Create a SamplerState.
@@ -247,7 +254,7 @@ public:
 	* @param	: ID3D11ShaderResourceView.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createSRViewFFile(ID3D11ShaderResourceView * inSRView);
+	HRESULT createSRViewFFile(ID3D11ShaderResourceView ** inSRView);
 
 	/**
 	* @brief	: Create a shader Resource View.

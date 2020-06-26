@@ -19,10 +19,11 @@ CDepthStencilView::CDepthStencilView() {
 #endif 
 }
 
-void CDepthStencilView::init(DepthStencilViewDesc inDesc, FORMAT inFormat) {
+void CDepthStencilView::init(DepthStencilViewDesc inDesc /*, FORMAT inFormat*/) {
 #ifdef D_DIRECTX
 	ZeroMemory(&m_pDepthStencilView, sizeof(m_pDepthStencilView));
-	m_Desc.Format = (DXGI_FORMAT)inFormat;
+	/*m_Desc.Format = (DXGI_FORMAT)inFormat;*/
+	m_Desc.Format = (DXGI_FORMAT)inDesc.format;
 	m_Desc.ViewDimension = (D3D11_DSV_DIMENSION)inDesc.viewDimension;
 	m_Desc.Texture2D.MipSlice = inDesc.texture2D.mipSlice;
 #endif

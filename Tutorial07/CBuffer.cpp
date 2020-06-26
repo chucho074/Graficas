@@ -56,6 +56,12 @@ void CBuffer::clear() {
 	Buffer->Release();
 }
 
+void CBuffer::xfunc(int inNum, void * inPtr, D3D11_CLEAR_FLAG inFlag) {
+
+}
+
+
+
 #ifdef D_DIRECTX
 void CBuffer::createVertexBuffer(int numVertex, const aiScene * model, SimpleVertex * vertex, ID3D11Buffer *& buffer, ID3D11Device * Dev) {
 

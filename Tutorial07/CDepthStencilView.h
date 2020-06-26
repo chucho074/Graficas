@@ -45,12 +45,14 @@ public:
 	**/
 	CDepthStencilView();
 
+
 	/**
 	* @brief	: Initializer.
 	* @param	: DepthStencilViewDesc, FORMAT.
 	* @bug		: No Bugs Known.
 	**/
-	void init(DepthStencilViewDesc inDesc, FORMAT inFormat);
+	void init(DepthStencilViewDesc inDesc );
+	//void init(DepthStencilViewDesc inDesc, FORMAT inFormat);
 
 	/**
 	* @brief	: Getter for the DepthStencilView.

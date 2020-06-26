@@ -69,6 +69,9 @@ public:
 	BufferDesc Desc;
 	
 	void clear();
+
+
+	
 	
 #ifdef D_DIRECTX
 	D3D11_BUFFER_DESC m_bd;

@@ -108,6 +108,7 @@ HRESULT CDevice::createPShader(CPixelShader & inPS) {
 	return false;
 }
 
+#ifdef D_DIRECTX
 HRESULT CDevice::createInputLayoutDescFromVertexShaderSignature(CVertexShader & inVS, CInputLayout & inIL) {
 	
 	// Reflect shader info
@@ -170,5 +171,5 @@ HRESULT CDevice::createInputLayoutDescFromVertexShaderSignature(CVertexShader & 
 	pVertexShaderReflection->Release();
 	return hr;
 	}
-
+#endif
 

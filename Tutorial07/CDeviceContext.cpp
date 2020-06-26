@@ -24,6 +24,7 @@ CDeviceContext::~CDeviceContext() {
 
 }
 
+
 void * CDeviceContext::getDeviceContext() {
 #ifdef D_DIRECTX
 	return m_DeviceContext;
