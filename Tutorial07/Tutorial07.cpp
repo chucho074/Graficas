@@ -6,11 +6,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 #include <windows.h>
+
+#if(defined D_DirectX || defined R_DirectX)
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dcompiler.h>
 #include <xnamath.h>
 #include "resource.h"
+#endif
+
+#if(defined D_OpenGL || defined R_OpenGL)
+#include <glad.h>
+#include <GLFW/glfw3.h>
+#endif
 
 //#include "CBuffer.h"
 #include "CGraphicsAPI.h"
@@ -19,6 +27,7 @@
 //--------------------------------------------------------------------------------------
 // Structures
 //--------------------------------------------------------------------------------------
+#if(defined D_DirectX || defined R_DirectX)
 struct SimpleVertex
 {
     XMFLOAT3 Pos;
@@ -40,6 +49,7 @@ struct CBChangesEveryFrame
     XMMATRIX mWorld;
     XMFLOAT4 vMeshColor;
 };
+#endif
 
 
 //--------------------------------------------------------------------------------------
@@ -52,25 +62,26 @@ HWND                                g_hWnd = NULL;
 //ID3D11Device*                       g_pd3dDevice = NULL;
 //ID3D11DeviceContext*                g_pImmediateContext = NULL;
 //IDXGISwapChain*                     g_pSwapChain = NULL;
-CGraphicsAPI * g_GAPI;
+CGraphicsAPI				* g_GAPI;
+CBuffer                       g_pVertexBuffer;
+CBuffer                       g_pIndexBuffer;
+CBuffer                       g_pCBNeverChanges;
+CBuffer                       g_pCBChangeOnResize;
+CBuffer                       g_pCBChangesEveryFrame;
+#if(defined D_DirectX || defined R_DirectX)
 ID3D11RenderTargetView*             g_pRenderTargetView = NULL;
 ID3D11Texture2D*                    g_pDepthStencil = NULL;
 ID3D11DepthStencilView*             g_pDepthStencilView = NULL;
 ID3D11VertexShader*                 g_pVertexShader = NULL;
 ID3D11PixelShader*                  g_pPixelShader = NULL;
 ID3D11InputLayout*                  g_pVertexLayout = NULL;
-CBuffer                       g_pVertexBuffer;
-CBuffer                       g_pIndexBuffer;
-CBuffer                       g_pCBNeverChanges;
-CBuffer                       g_pCBChangeOnResize;
-CBuffer                       g_pCBChangesEveryFrame;
 ID3D11ShaderResourceView*           g_pTextureRV = NULL;
 ID3D11SamplerState*                 g_pSamplerLinear = NULL;
 XMMATRIX                            g_World;
 XMMATRIX                            g_View;
 XMMATRIX                            g_Projection;
 XMFLOAT4                            g_vMeshColor( 0.7f, 0.7f, 0.7f, 1.0f );
-
+#endif
 
 //--------------------------------------------------------------------------------------
 // Forward declarations
@@ -78,39 +89,70 @@ XMFLOAT4                            g_vMeshColor( 0.7f, 0.7f, 0.7f, 1.0f );
 HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow );
 HRESULT InitDevice();
 void CleanupDevice();
-LRESULT CALLBACK    WndProc( HWND, UINT, WPARAM, LPARAM );
+LRESULT CALLBACK WndProc( HWND, UINT, WPARAM, LPARAM );
 void Render();
+
+
+#if (defined D_OpenGL || defined R_OpenGL)
+const char* vertexShaderSource = "#version 330 core\n"
+"layout(location = 0) in vec3 aPos;\n"
+"layout(location = 1) in vec3 aNormal;\n"
+"layout(location = 2) in vec2 aTexCoords;\n"
+
+"out vec2 TexCoords;\n"
+"uniform mat4 model;\n"
+"uniform mat4 view;\n"
+"uniform mat4 projection;\n"
+"void main()\n"
+"{\n"
+"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
+"TexCoords = aTexCoords;\n"
+"}\n";
+
+const char* fragmentShaderSource = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"in vec2 TexCoords;\n"
+"uniform sampler2D texture_diffuse1;\n"
+"void main()\n"
+"{\n"
+"FragColor = texture(texture_diffuse1, TexCoords);\n"
+"}\n;";
+#endif
 
 
 //--------------------------------------------------------------------------------------
 // Entry point to the program. Initializes everything and goes into a message processing 
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
-int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
-{
+int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow ) {
     UNREFERENCED_PARAMETER( hPrevInstance );
     UNREFERENCED_PARAMETER( lpCmdLine );
 
-    if( FAILED( InitWindow( hInstance, nCmdShow ) ) )
-        return 0;
+#if (defined D_OpenGL || defined R_OpenGL)
+	glfwInit();
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#endif
 
-    if( FAILED( InitDevice() ) )
-    {
+	if (FAILED(InitWindow(hInstance, nCmdShow))) {
+		return 0;
+	}
+
+    if( FAILED( InitDevice() ) ) {
         CleanupDevice();
         return 0;
     }
 
+//#elif (defined D_DirectX || defined R_DirectX)
     // Main message loop
     MSG msg = {0};
-    while( WM_QUIT != msg.message )
-    {
-        if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
-        {
+    while( WM_QUIT != msg.message ) {
+        if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) ) {
             TranslateMessage( &msg );
             DispatchMessage( &msg );
         }
-        else
-        {
+        else {
             Render();
         }
     }
@@ -118,14 +160,15 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     CleanupDevice();
 
     return ( int )msg.wParam;
+//#endif
 }
 
 
 //--------------------------------------------------------------------------------------
 // Register class and create window
 //--------------------------------------------------------------------------------------
-HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow )
-{
+HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow ) {
+#if(defined D_DirectX || defined R_Directx)
     // Register class
     WNDCLASSEX wcex;
     wcex.cbSize = sizeof( WNDCLASSEX );
@@ -140,9 +183,9 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow )
     wcex.lpszMenuName = NULL;
     wcex.lpszClassName = L"TutorialWindowClass";
     wcex.hIconSm = LoadIcon( wcex.hInstance, ( LPCTSTR )IDI_TUTORIAL1 );
-    if( !RegisterClassEx( &wcex ) )
-        return E_FAIL;
-
+	if (!RegisterClassEx(&wcex)) {
+		return E_FAIL;
+	}
     // Create window
     g_hInst = hInstance;
     RECT rc = { 0, 0, 640, 480 };
@@ -150,24 +193,38 @@ HRESULT InitWindow( HINSTANCE hInstance, int nCmdShow )
     g_hWnd = CreateWindow( L"TutorialWindowClass", L"Direct3D 11 Tutorial 7", WS_OVERLAPPEDWINDOW,
                            CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
                            NULL );
-    if( !g_hWnd )
-        return E_FAIL;
 
+	if (!g_hWnd) {
+		return E_FAIL;
+	}
     ShowWindow( g_hWnd, nCmdShow );
 
     return S_OK;
+
+#elif (defined D_OpenGL || defined R_OpenGL)
+	//Initialize GLFW window
+	GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL GLFW Tutorial 7", NULL, NULL);
+	if (window == NULL) {
+		glfwTerminate();
+		return E_FAIL;
+	}
+	glfwMakeContextCurrent(window);
+	
+	return S_OK;
+#endif
 }
 
 
 //--------------------------------------------------------------------------------------
 // Helper for compiling shaders with D3DX11
 //--------------------------------------------------------------------------------------
-HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut )
-{
-    HRESULT hr = S_OK;
+#if (defined D_DirectX || defined R_DirectX)
+HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut ) {
+#if (defined D_DirectX || R_DirectX)
+	HRESULT hr = S_OK;
 
     DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
+#if defined D_Directx || defined( DEBUG )
     // Set the D3DCOMPILE_DEBUG flag to embed debug information in the shaders.
     // Setting this flag improves the shader debugging experience, but still allows 
     // the shaders to be optimized and to run exactly the way they will run in 
@@ -178,26 +235,40 @@ HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR sz
     ID3DBlob* pErrorBlob;
     hr = D3DX11CompileFromFile( szFileName, NULL, NULL, szEntryPoint, szShaderModel, 
         dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
-    if( FAILED(hr) )
-    {
-        if( pErrorBlob != NULL )
-            OutputDebugStringA( (char*)pErrorBlob->GetBufferPointer() );
-        if( pErrorBlob ) pErrorBlob->Release();
+    if( FAILED(hr) ) {
+		if (pErrorBlob != NULL) {
+			OutputDebugStringA((char*)pErrorBlob->GetBufferPointer());
+		}
+		if (pErrorBlob) {
+			pErrorBlob->Release();
+		}
         return hr;
     }
-    if( pErrorBlob ) pErrorBlob->Release();
-
+	if (pErrorBlob) {
+		pErrorBlob->Release();
+	}
     return S_OK;
+#endif
 }
-
+#endif
 
 //--------------------------------------------------------------------------------------
 // Create Direct3D device and swap chain
 //--------------------------------------------------------------------------------------
 HRESULT InitDevice() {
 	g_GAPI = new CGraphicsAPI();
-	HRESULT hr = S_OK;
+#if (defined D_OpenGL || R_OpenGL)
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetKeyCallback(window, key_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetCursorPosCallback(window, mouse_move_callback);
 
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+		return -1;
+	}
+#endif 
+
+	HRESULT hr = S_OK;
 
 	RECT rc;
 	GetClientRect(g_hWnd, &rc);
@@ -205,26 +276,13 @@ HRESULT InitDevice() {
 	UINT height = rc.bottom - rc.top;
 
 	UINT createDeviceFlags = 0;
-#ifdef _DEBUG
+#ifdef D_DirectX
 	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	//D3D_DRIVER_TYPE driverTypes[] =
-	//{
-	//	D3D_DRIVER_TYPE_HARDWARE,
-	//	D3D_DRIVER_TYPE_WARP,
-	//	D3D_DRIVER_TYPE_REFERENCE,
-	//};
-	//UINT numDriverTypes = ARRAYSIZE(driverTypes);
-	//
-	//D3D_FEATURE_LEVEL featureLevels[] =
-	//{
-	//	D3D_FEATURE_LEVEL_11_0,
-	//	D3D_FEATURE_LEVEL_10_1,
-	//	D3D_FEATURE_LEVEL_10_0,
-	//};
-	//UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
+	//Initialize SwapChain
+#if (defined D_DirectX || defined R_DirectX)
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
@@ -238,33 +296,27 @@ HRESULT InitDevice() {
 	sd.SampleDesc.Count = 1;
 	sd.SampleDesc.Quality = 0;
 	sd.Windowed = TRUE;
-
-	//for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; driverTypeIndex++) {
-	//	g_driverType = driverTypes[driverTypeIndex];
-	//	hr = D3D11CreateDeviceAndSwapChain(NULL, g_driverType, NULL, createDeviceFlags, featureLevels, numFeatureLevels,
-	//		D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &g_featureLevel, &g_pImmediateContext);
-	//	if (SUCCEEDED(hr)) {
-	//		break;
-	//	}
-	//}
+	
 	hr = g_GAPI->init(createDeviceFlags, sd);
 
 	if (FAILED(hr)) {
 		return hr;
 	}
-	// Create a render target view
+#endif
+
+	// Create a render target view for backBuffer
+#if (defined D_DirectX || defined R_DirectX)
 	ID3D11Texture2D* pBackBuffer = NULL;
-	//hr = g_pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&pBackBuffer);
-	//if (FAILED(hr)) {
-	//	return hr;
-	//}
-	//hr = g_pd3dDevice->CreateRenderTargetView(pBackBuffer, NULL, &g_pRenderTargetView);
+	
 	hr = g_GAPI->createRTV(pBackBuffer, g_pRenderTargetView);
 	pBackBuffer->Release();
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
+
 	// Create depth stencil texture
+#if (defined D_DirectX || defined R_DirectX)
 	D3D11_TEXTURE2D_DESC descDepth;
 	ZeroMemory(&descDepth, sizeof(descDepth));
 	descDepth.Width = width;
@@ -278,26 +330,29 @@ HRESULT InitDevice() {
 	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
-	//hr = g_pd3dDevice->CreateTexture2D(&descDepth, NULL, &g_pDepthStencil);
 	hr = g_GAPI->createTex2D(descDepth, g_pDepthStencil);
-	if (FAILED(hr))
+	if (FAILED(hr)) {
 		return hr;
+	}
+#endif 
 
 	// Create the depth stencil view
+#if (defined D_DirectX || defined R_DirectX)
 	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
 	ZeroMemory(&descDSV, sizeof(descDSV));
 	descDSV.Format = descDepth.Format;
 	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 	descDSV.Texture2D.MipSlice = 0;
-	//hr = g_pd3dDevice->CreateDepthStencilView(g_pDepthStencil, &descDSV, &g_pDepthStencilView);
 	hr = g_GAPI->createDSV(g_pDepthStencil, descDSV, g_pDepthStencilView);
-	if (FAILED(hr))
+	if (FAILED(hr)) {
 		return hr;
-
-	//g_pImmediateContext->OMSetRenderTargets(1, &g_pRenderTargetView, g_pDepthStencilView);
+	}
 	g_GAPI->setRTargets(1, g_pRenderTargetView, g_pDepthStencilView);
 
+#endif
+
 	// Setup the viewport
+#if (defined D_DirectX || defined R_DirectX)
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)width;
 	vp.Height = (FLOAT)height;
@@ -305,10 +360,11 @@ HRESULT InitDevice() {
 	vp.MaxDepth = 1.0f;
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
-	//g_pImmediateContext->RSSetViewports(1, &vp);
 	g_GAPI->setVPort(vp);
+#endif
 
 	// Compile the vertex shader
+#if (defined D_DirectX || defined R_DirectX)
 	ID3DBlob* pVSBlob = NULL;
 	hr = CompileShaderFromFile(L"Tutorial07.fx", "VS", "vs_4_0", &pVSBlob);
 	if (FAILED(hr)) {
@@ -316,55 +372,65 @@ HRESULT InitDevice() {
 			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
 		return hr;
 	}
+#endif
 
 	// Create the vertex shader
-	//hr = g_pd3dDevice->CreateVertexShader(pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVertexShader);
+#if (defined D_DirectX || defined R_DirectX)
 	hr = g_GAPI->createVS(pVSBlob, NULL, g_pVertexShader);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		pVSBlob->Release();
 		return hr;
 	}
+#endif
 
 	// Define the input layout
-	D3D11_INPUT_ELEMENT_DESC layout[] =
-	{
+#if (defined D_DirectX || defined R_DirectX)
+	D3D11_INPUT_ELEMENT_DESC layout[] = {
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT numElements = ARRAYSIZE(layout);
+#endif
 
 	// Create the input layout
-	//hr = g_pd3dDevice->CreateInputLayout(layout, numElements, pVSBlob->GetBufferPointer(),
-	//	pVSBlob->GetBufferSize(), &g_pVertexLayout);
+#if (defined D_DirectX || defined R_DirectX)
 	hr = g_GAPI->createIL(layout, numElements, pVSBlob, g_pVertexLayout);
 	pVSBlob->Release();
-	if (FAILED(hr))
+	if (FAILED(hr)) {
 		return hr;
+	}
+#endif
 
 	// Set the input layout
+#if (defined D_DirectX || defined R_DirectX)
 	//g_pImmediateContext->IASetInputLayout(g_pVertexLayout);
 	g_GAPI->setIL(g_pVertexLayout);
+#endif
+
 	// Compile the pixel shader
+#if (defined D_DirectX || defined R_DirectX)
 	ID3DBlob* pPSBlob = NULL;
 	hr = CompileShaderFromFile(L"Tutorial07.fx", "PS", "ps_4_0", &pPSBlob);
-	if (FAILED(hr))
-	{
+	if (FAILED(hr)) {
 		MessageBox(NULL,
 			L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK);
 		return hr;
 	}
+#endif
 
 	// Create the pixel shader
+#if (defined D_DirectX || defined R_DirectX)
 	//hr = g_pd3dDevice->CreatePixelShader(pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPixelShader);
 	hr = g_GAPI->createPS(pPSBlob, NULL, g_pPixelShader);
 	pPSBlob->Release();
-	if (FAILED(hr))
+	if (FAILED(hr)) {
 		return hr;
+	}
+#endif
 
 	// Create vertex buffer
-	SimpleVertex vertices[] =
-	{
+#if (defined D_DirectX || defined R_DirectX)
+	SimpleVertex vertices[] = {
 		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
 		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
@@ -396,18 +462,7 @@ HRESULT InitDevice() {
 		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
 	};
 
-	//D3D11_BUFFER_DESC bd;
-	//ZeroMemory(&bd, sizeof(bd));
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(SimpleVertex) * 24;
-	//bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//D3D11_SUBRESOURCE_DATA InitData;
-	//ZeroMemory(&InitData, sizeof(InitData));
-	//InitData.pSysMem = vertices;
-
-	//hr = g_pd3dDevice->CreateBuffer( &bd, &InitData, &g_pVertexBuffer.m_Buffer );
-	
+		
 	BufferDesc desc;
 	desc.usage = D3D11_USAGE_DEFAULT;
 	desc.byteWidth = sizeof(SimpleVertex) * 24;
@@ -415,11 +470,12 @@ HRESULT InitDevice() {
 	desc.cpuAccessFlags = 0;
 	desc.SRD.psysMem = vertices;
 
-	hr = g_pVertexBuffer.setDesc(desc);		//Directo al GAPI
-	
-	hr = g_GAPI->createBuffer(g_pVertexBuffer);
+	//hr = g_pVertexBuffer.setDesc(desc);		//Directo al GAPI
+	hr = g_GAPI->createBuffer(g_pVertexBuffer, desc);
+#endif
 
 	// Set vertex buffer
+#if (defined D_DirectX || defined R_DirectX)
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 	//g_pImmediateContext->IASetVertexBuffers( 0, 1, &g_pVertexBuffer.m_Buffer, &stride, &offset );
@@ -427,10 +483,12 @@ HRESULT InitDevice() {
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
 
 
 	// Create index buffer
 	// Create vertex buffer
+#if (defined D_DirectX || defined R_DirectX)
 	WORD indices[] = {
 		3,1,0,
 		2,1,3,
@@ -451,74 +509,70 @@ HRESULT InitDevice() {
 		23,20,22
 	};
 
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(WORD) * 36;
-	//bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//InitData.pSysMem = indices;
-	//hr = g_pd3dDevice->CreateBuffer(&bd, &InitData, &g_pIndexBuffer.m_Buffer);
+	
 	desc.usage = 0; //D3D11_USAGE_DEFAULT
 	desc.byteWidth = sizeof(WORD) * 36;
 	desc.bindFlags = 2; //D3D11_BIND_INDEX_BUFFER
 	desc.cpuAccessFlags = 0;
 	desc.SRD.psysMem = indices;
-	hr = g_pIndexBuffer.setDesc(desc);
-
+	//hr = g_pIndexBuffer.setDesc(desc);
+	hr = g_GAPI->createBuffer(g_pIndexBuffer, desc);
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
 
 	// Set index buffer
-	//g_pImmediateContext->IASetIndexBuffer(g_pIndexBuffer.m_Buffer, DXGI_FORMAT_R16_UINT, 0);
+#if (defined D_DirectX || defined R_DirectX) 
 	g_GAPI->setIBuffer(DXGI_FORMAT_R16_UINT, &g_pIndexBuffer);
+#endif
 
 	// Set primitive topology
-	//g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+#if (defined D_DirectX || defined R_DirectX)
 	g_GAPI->setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+#endif
 
 	// Create the constant buffers
-	//bd.Usage = D3D11_USAGE_DEFAULT;
-	//bd.ByteWidth = sizeof(CBNeverChanges);
-	//bd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	//bd.CPUAccessFlags = 0;
-	//hr = g_pd3dDevice->CreateBuffer( &bd, NULL, &g_pCBNeverChanges.m_Buffer );
-
+#if (defined D_DirectX || defined R_DirectX)
 	desc.usage = 0; //D3D11_USAGE_DEFAULT
 	desc.byteWidth = sizeof(CBNeverChanges);
 	desc.bindFlags = 0x4L;//4; //D3D11_BIND_CONSTANT_BUFFER
 	desc.cpuAccessFlags = 0;
 	desc.SRD.psysMem = nullptr;
-	g_pCBNeverChanges.setDesc(desc);
-	hr = g_GAPI->createConstBuffer(g_pCBNeverChanges);
+	//g_pCBNeverChanges.setDesc(desc);
+	hr = g_GAPI->createBuffer(g_pCBNeverChanges, desc);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	//bd.ByteWidth = sizeof(CBChangeOnResize);
 	desc.byteWidth = sizeof(CBChangeOnResize);
-	hr = g_pCBChangeOnResize.setDesc(desc);
+	//hr = g_pCBChangeOnResize.setDesc(desc);
 
-	//hr = g_pd3dDevice->CreateBuffer(&bd, NULL, &g_pCBChangeOnResize.m_Buffer);
-	hr = g_GAPI->createConstBuffer(g_pCBChangeOnResize);
+	hr = g_GAPI->createBuffer(g_pCBChangeOnResize, desc);
 	if (FAILED(hr)) {
 		return hr;
 	}
 
-	//bd.ByteWidth = sizeof(CBChangesEveryFrame);
 	desc.byteWidth = sizeof(CBChangesEveryFrame);
-	hr = g_pCBChangesEveryFrame.setDesc(desc);
+	//hr = g_pCBChangesEveryFrame.setDesc(desc);
 
-	//hr = g_pd3dDevice->CreateBuffer(&bd, NULL, &g_pCBChangesEveryFrame.m_Buffer);
-	hr = g_GAPI->createConstBuffer(g_pCBChangesEveryFrame);
+	hr = g_GAPI->createBuffer(g_pCBChangesEveryFrame, desc);
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
+
+
 	// Load the Texture
+#if (defined D_DirectX || defined R_DirectX)
 	hr = D3DX11CreateShaderResourceViewFromFile(g_GAPI->getDev(), L"seafloor.dds", NULL, NULL, &g_pTextureRV, NULL);
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
+
     // Create the sample state
+#if (defined D_DirectX || defined R_DirectX)
     D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory( &sampDesc, sizeof(sampDesc) );
     sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
@@ -528,14 +582,16 @@ HRESULT InitDevice() {
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-	//hr = g_pd3dDevice->CreateSamplerState( &sampDesc, &g_pSamplerLinear );
 	hr = g_GAPI->createSState(sampDesc, g_pSamplerLinear);
 	if (FAILED(hr)) {
 		return hr;
 	}
+#endif
 
     // Initialize the world matrices
+#if (defined D_DirectX || defined R_DirectX)
     g_World = XMMatrixIdentity();
+
 
     // Initialize the view matrix
     XMVECTOR Eye = XMVectorSet( 0.0f, 3.0f, -6.0f, 0.0f );
@@ -545,16 +601,16 @@ HRESULT InitDevice() {
 
     CBNeverChanges cbNeverChanges;
     cbNeverChanges.mView = XMMatrixTranspose( g_View );
-    //g_pImmediateContext->UpdateSubresource( g_pCBNeverChanges.m_Buffer, 0, NULL, &cbNeverChanges, 0, 0 );
-	g_GAPI->updateBuffer(&cbNeverChanges, g_pCBNeverChanges);
+    g_GAPI->updateBuffer(&cbNeverChanges, g_pCBNeverChanges);
+
+
     // Initialize the projection matrix
     g_Projection = XMMatrixPerspectiveFovLH( XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f );
     
     CBChangeOnResize cbChangesOnResize;
     cbChangesOnResize.mProjection = XMMatrixTranspose( g_Projection );
-    //g_pImmediateContext->UpdateSubresource( g_pCBChangeOnResize.m_Buffer, 0, NULL, &cbChangesOnResize, 0, 0 );
-	g_GAPI->updateBuffer(&cbChangesOnResize,  g_pCBChangeOnResize);
-	
+    g_GAPI->updateBuffer(&cbChangesOnResize,  g_pCBChangeOnResize);
+#endif
     return S_OK;
 }
 
@@ -564,28 +620,18 @@ HRESULT InitDevice() {
 //--------------------------------------------------------------------------------------
 void CleanupDevice() {
     //if( g_pImmediateContext ) g_pImmediateContext->ClearState();
-
+#if(defined D_DirectX || defined R_DirectX)
     if( g_pSamplerLinear ) g_pSamplerLinear->Release();
     if( g_pTextureRV ) g_pTextureRV->Release();
-    //if( g_pCBNeverChanges.m_Buffer ) g_pCBNeverChanges.m_Buffer->Release();
-    //if( g_pCBChangeOnResize.m_Buffer ) g_pCBChangeOnResize.m_Buffer->Release();
-    //if( g_pCBChangesEveryFrame.m_Buffer ) g_pCBChangesEveryFrame.m_Buffer ->Release();
-    //if( g_pVertexBuffer.m_Buffer ) g_pVertexBuffer.m_Buffer->Release();
-    //if( g_pIndexBuffer.m_Buffer ) g_pIndexBuffer.m_Buffer->Release();
-	//g_pCBNeverChanges.destroy();
-	//g_pCBChangeOnResize.destroy();
-	//g_pCBChangesEveryFrame.destroy();
-	//g_pVertexBuffer.destroy();
-	//g_pIndexBuffer.destroy();
     if( g_pVertexLayout ) g_pVertexLayout->Release();
     if( g_pVertexShader ) g_pVertexShader->Release();
     if( g_pPixelShader ) g_pPixelShader->Release();
     if( g_pDepthStencil ) g_pDepthStencil->Release();
     if( g_pDepthStencilView ) g_pDepthStencilView->Release();
     if( g_pRenderTargetView ) g_pRenderTargetView->Release();
-    //if( g_pSwapChain ) g_pSwapChain->Release();
-    //if( g_pImmediateContext ) g_pImmediateContext->Release();
-	//if( g_pd3dDevice ) g_pd3dDevice->Release();
+#elif(defined D_OpenGL|| defined R_OpenGL)
+	glfwTerminate();
+#endif
     
 }
 
@@ -619,7 +665,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 // Render a frame
 //--------------------------------------------------------------------------------------
 void Render() {
-	
+#if (defined D_DirectX || defined R_DirectX)
     // Update our time
     static float t = 0.0f;
     if( g_GAPI->getDriverType() == D3D_DRIVER_TYPE_REFERENCE ) {
@@ -645,38 +691,24 @@ void Render() {
     // Clear the back buffer
     //
     float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-    //g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, ClearColor );
 	g_GAPI->clearRTV(g_pRenderTargetView, ClearColor);
     //
     // Clear the depth buffer to 1.0 (max depth)
     //
-    //g_pImmediateContext->ClearDepthStencilView( g_pDepthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0 );
-	g_GAPI->clearDSV(g_pDepthStencilView, D3D11_CLEAR_DEPTH);
+    g_GAPI->clearDSV(g_pDepthStencilView, D3D11_CLEAR_DEPTH);
     //
     // Update variables that change once per frame
     //
     CBChangesEveryFrame cb;
     cb.mWorld = XMMatrixTranspose( g_World );
     cb.vMeshColor = g_vMeshColor;
-    //g_pImmediateContext->UpdateSubresource( g_pCBChangesEveryFrame.m_Buffer, 0, NULL, &cb, 0, 0 );
-	//hr = g_pCBChangesEveryFrame.update(&cb, g_pImmediateContext);
-	g_GAPI->updateBuffer(&cb, g_pCBChangesEveryFrame);
+    g_GAPI->updateBuffer(&cb, g_pCBChangesEveryFrame);
 	
 
     //
     // Render the cube
     //
-    //g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
-	//g_pImmediateContext->PSSetShader(g_pPixelShader, NULL, 0);
-    //g_pImmediateContext->VSSetConstantBuffers( 0, 1, &g_pCBNeverChanges.m_Buffer );
-    //g_pImmediateContext->VSSetConstantBuffers( 1, 1, &g_pCBChangeOnResize.m_Buffer );
-	//g_pImmediateContext->VSSetConstantBuffers( 2, 1, &g_pCBChangesEveryFrame.m_Buffer );
-	//g_pImmediateContext->PSSetConstantBuffers( 2, 1, &g_pCBChangesEveryFrame.m_Buffer );
-    //g_pImmediateContext->PSSetShaderResources( 0, 1, &g_pTextureRV );
-    //g_pImmediateContext->PSSetSamplers( 0, 1, &g_pSamplerLinear );
-    //g_pImmediateContext->DrawIndexed( 36, 0, 0 );
-
-	g_GAPI->setShaders(g_pVertexShader, g_pPixelShader);
+   	g_GAPI->setShaders(g_pVertexShader, g_pPixelShader);
 	g_GAPI->setConstBuffer(0, false, &g_pCBNeverChanges);
 	g_GAPI->setConstBuffer(1, false, &g_pCBChangeOnResize);
 	g_GAPI->setConstBuffer(2, true, &g_pCBChangeOnResize);
@@ -688,6 +720,16 @@ void Render() {
     //
     // Present our back buffer to our front buffer
     //
-    //g_pSwapChain->Present( 0, 0 );
-	g_GAPI->show();
+    g_GAPI->show();
+#elif (defined D_OpenGL || R_OpenGL)
+	glfwSwapBuffers(window);
+	glfwPollEvents();
+	//Bind to Framebuffer and draw inactive camera
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	//Clear FBO content and set background color
+	glClearColor(0.f, 0.f, 0.5f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//Use linked shader
+	glUseProgram(shaderProgram);
+#endif
 }

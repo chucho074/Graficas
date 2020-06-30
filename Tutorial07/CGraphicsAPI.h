@@ -13,12 +13,13 @@
 **/
 #pragma once
 #include <windows.h>
+#if (defined D_DirectX || defined R_DirectX)
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dcompiler.h>
 #include <xnamath.h>
 #include "resource.h"
-
+#endif
 #include "CBuffer.h"
 
 /**
@@ -42,7 +43,9 @@ public:
 	* param		: DeviceFlags, Swapchain Desc.
 	* @bug		: No Bugs known.
 	**/
+#if (defined D_DirectX || defined R_DirectX) 
 	HRESULT init(unsigned int inDevFlag, DXGI_SWAP_CHAIN_DESC inSCDesc);
+#endif
 	/**
 	* @brief	: Update.
 	* param		: .
@@ -60,6 +63,49 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	void destroy();
+	/**
+	* @brief	: Create a buffer.
+	* param		: A descriptor for the buffer.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createBuffer(CBuffer &inBuffer, BufferDesc inDesc);
+	/**
+	* @brief	: Sets Vertex Buffer.
+	* param		: startSlot, Size, VertexBuffer
+	* @bug		: No Bugs known.
+	**/
+	void setVBuffer(int inStartSlot, unsigned int inSize, CBuffer * inVBuffer);
+	/**
+	* @brief	: Sets Index Buffer.
+	* param		: Format, IndexBuffer.
+	* @bug		: No Bugs known.
+	**/
+	void setIBuffer(int inFormat, CBuffer * inIBuffer);
+	/**
+	* @brief	: Sets ConstatnBuffer.
+	* param		: startSlot, set in Vertex and Pixel?, Constant Buffer
+	* @bug		: No Bugs known.
+	**/
+	void setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer * inConstBuffer);
+	/**
+	* @brief	: Update SubResource.
+	* param		: Data, Buffer to update.
+	* @bug		: No Bugs known.
+	**/
+	void updateBuffer(void * inData, CBuffer inBuffer);
+	/**
+	* @brief	: Sets teh num of indexes to draw.
+	* param		: Num of indexes to draw.
+	* @bug		: No Bugs known.
+	**/
+	void draw(unsigned int inNumIndex);
+	/**
+	* @brief	: Make the present from the SwapChain.
+	* @bug		: No Bugs known.
+	**/
+	void show();
+
+#if (defined D_DirectX || defined R_DirectX) 
 	/**
 	* @brief	: Create a render target view with the device.
 	* param		: Texture2D, Render Target View
@@ -84,18 +130,7 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	void setRTargets(unsigned int inNumViews, ID3D11RenderTargetView * inRTV, ID3D11DepthStencilView * inDSV);
-	/**
-	* @brief	: Create a buffer.
-	* param		: A descriptor for the buffer.
-	* @bug		: No Bugs known.
-	**/
-	HRESULT createBuffer(CBuffer &inBuffer);
-	/**
-	* @brief	: Create a Constant Buffer.
-	* param		: A descriptor for the constant buffer.
-	* @bug		: No Bugs known.
-	**/
-	HRESULT createConstBuffer(CBuffer &inBuffer);
+	
 	/**
 	* @brief	: Sets the Viewport to the DeviceContext.
 	* param		: Viewport.
@@ -126,24 +161,7 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createPS(ID3DBlob *& inBlob, ID3D11ClassLinkage * inClass, ID3D11PixelShader *& inPS);
-	/**
-	* @brief	: Sets Vertex Buffer.
-	* param		: startSlot, Size, VertexBuffer
-	* @bug		: No Bugs known.
-	**/
-	void setVBuffer(int inStartSlot, unsigned int inSize, CBuffer * inVBuffer);
-	/**
-	* @brief	: Sets Index Buffer.
-	* param		: Format, IndexBuffer.
-	* @bug		: No Bugs known.
-	**/
-	void setIBuffer(int inFormat, CBuffer * inIBuffer);
-	/**
-	* @brief	: Sets ConstatnBuffer.
-	* param		: startSlot, set in Vertex and Pixel?, Constant Buffer
-	* @bug		: No Bugs known.
-	**/
-	void setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer * inConstBuffer);
+
 	/**
 	* @brief	: Set the topology.
 	* param		: DirectX Topology value
@@ -156,12 +174,6 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	HRESULT createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerState *&inSampler);
-	/**
-	* @brief	: Update SubResource.
-	* param		: Data, Buffer to update.
-	* @bug		: No Bugs known.
-	**/
-	void updateBuffer(void * inData, CBuffer inBuffer);
 	/**
 	* @brief	: Sets the Vertex and pixel Shader.
 	* param		: Vertex shader, Pixel Shader.
@@ -181,20 +193,9 @@ public:
 	**/
 	void setSampler(ID3D11SamplerState * inSS);
 	/**
-	* @brief	: Sets teh num of indexes to draw.
-	* param		: Num of indexes to draw.
-	* @bug		: No Bugs known.
-	**/
-	void draw(unsigned int inNumIndex);
-	/**
-	* @brief	: Make the present from the SwapChain.
-	* @bug		: No Bugs known.
-	**/
-	void show();
-	/**
 	* @brief	: Return the device.
 	* @bug		: No Bugs known.
-	**/
+	**/ 
 	ID3D11Device* getDev();
 	/**
 	* @brief	: Return the Driver Type.
@@ -213,7 +214,9 @@ public:
 	* @bug		: No Bugs known.
 	**/
 	void clearDSV(ID3D11DepthStencilView * inDSV, D3D11_CLEAR_FLAG inFlag);
+#endif
 private:
+#if (defined D_DirectX || defined R_DirectX) 
 	/**
 	* @brief	: Device of DX.
 	* @bug		: No Bugs known.
@@ -239,5 +242,6 @@ private:
 	* @bug		: No Bugs known.
 	**/
 	D3D_FEATURE_LEVEL m_featureLevel;
+#endif
 };
 

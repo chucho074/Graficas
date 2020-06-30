@@ -1,5 +1,5 @@
 /**
-* @LC		: 24/06/2020
+* @LC		: 29/06/2020
 * @file		: CBuffer.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -15,13 +15,16 @@
 
 
 CBuffer::CBuffer() {
+#if (defined D_DirectX || defined R_DirectX) 
 	m_Buffer = nullptr;
+#endif
 }
 
 
 HRESULT CBuffer::setDesc(BufferDesc inDesc) {
 	m_Desc = inDesc;
 	// Clean memory and asign data for the Description	//Pasarlo a GAPI
+#if (defined D_DirectX || defined R_DirectX) 
 	ZeroMemory(&m_DxDesc, sizeof(m_DxDesc));
 	m_DxDesc.Usage = (D3D11_USAGE)m_Desc.usage;
 	m_DxDesc.ByteWidth = m_Desc.byteWidth;
@@ -33,6 +36,7 @@ HRESULT CBuffer::setDesc(BufferDesc inDesc) {
 		ZeroMemory(&m_SRD, sizeof(m_SRD));
 		m_SRD.pSysMem = m_Desc.SRD.psysMem;		
 	} 	
+#endif
 	return false;
 }
 
@@ -82,13 +86,15 @@ HRESULT CBuffer::render(int inStartSlot, unsigned int inSize, int inFormat, bool
 } */
 
 void CBuffer::destroy() {
+#if (defined D_DirectX || defined R_DirectX) 
 	if (m_Buffer) { 
 		m_Buffer->Release(); 
 		m_Buffer = nullptr;
 	}
-
+#endif
 }
 
+#if (defined D_DirectX || defined R_DirectX) 
 D3D11_BUFFER_DESC CBuffer::getDxDesc() {
 	return  m_DxDesc;
 }
@@ -100,9 +106,8 @@ D3D11_SUBRESOURCE_DATA CBuffer::getDxSRD() {
 ID3D11Buffer * CBuffer::getBuffer() {
 	return m_Buffer;
 }
-
+#endif
 
 CBuffer::~CBuffer() {
 	destroy();
-
 }

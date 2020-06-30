@@ -13,12 +13,13 @@
 **/
 #pragma once
 #include <windows.h>
+#if (defined D_DirectX || defined R_DirectX) 
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dcompiler.h>
 #include <xnamath.h>
 #include "resource.h"
-
+#endif
 #include "Defines.h"
 
 
@@ -56,7 +57,7 @@ public:
 	**/
 	void destroy();
 
-
+#if (defined D_DirectX || defined R_DirectX) 
 	D3D11_BUFFER_DESC getDxDesc();
 
 
@@ -81,10 +82,10 @@ public:
 	
 
 //private:
-	BufferDesc m_Desc;
 
 	D3D11_BUFFER_DESC m_DxDesc;
 	D3D11_SUBRESOURCE_DATA m_SRD;
 	ID3D11Buffer * m_Buffer;
-
+#endif
+	BufferDesc m_Desc;
 };
