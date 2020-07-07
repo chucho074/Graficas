@@ -202,7 +202,7 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)glm;$(IncludePath)</IncludePath>
     <LibraryPath>E:\REPOSITORIOS\Graficas\Tutorial07\libs\glfw x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)OutputDir\$(Configuration)\$(PlatformName)</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -211,7 +211,7 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)glm;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)OutputDir\$(Configuration)\$(PlatformName)</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -228,7 +228,7 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(SolutionDir)include\KHR;$(SolutionDir)include\glad;$(SolutionDir)include\x64;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)glm;$(SolutionDir)include\KHR;$(SolutionDir)include\glad;$(SolutionDir)include\x64;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)OutputDir\$(Configuration)\$(PlatformName)</OutDir>
   </PropertyGroup>
@@ -236,7 +236,7 @@
     <LinkIncremental>true</LinkIncremental>
     <GenerateManifest>true</GenerateManifest>
     <ExecutablePath>$(DXSDK_DIR)Utilities\bin\x64;$(DXSDK_DIR)Utilities\bin\x86;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)glm;$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)Lib\x64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)OutputDir\$(Configuration)\$(PlatformName)</OutDir>
   </PropertyGroup>
@@ -871,7 +871,17 @@
   <ItemGroup />
   <ItemGroup>
     <ClCompile Include="CBuffer.cpp" />
+    <ClCompile Include="CDepthStencilView.cpp" />
+    <ClCompile Include="CDevice.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CPixelShader.cpp" />
+    <ClCompile Include="CRenderTargetView.cpp" />
+    <ClCompile Include="CSamplerState.cpp" />
+    <ClCompile Include="CSwapChain.cpp" />
+    <ClCompile Include="CTexture2D.cpp" />
+    <ClCompile Include="CTransform.cpp" />
+    <ClCompile Include="CVertexShader.cpp" />
     <ClCompile Include="Tutorial07.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -879,7 +889,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CBuffer.h" />
+    <ClInclude Include="CDepthStencilView.h" />
+    <ClInclude Include="CDevice.h" />
     <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CPixelShader.h" />
+    <ClInclude Include="CRenderTargetView.h" />
+    <ClInclude Include="CSamplerState.h" />
+    <ClInclude Include="CSwapChain.h" />
+    <ClInclude Include="CTexture2D.h" />
+    <ClInclude Include="CTransform.h" />
+    <ClInclude Include="CVertexShader.h" />
     <ClInclude Include="Defines.h" />
     <CLInclude Include="resource.h" />
     <ResourceCompile Include="Tutorial07.rc" />

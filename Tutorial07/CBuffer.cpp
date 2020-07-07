@@ -25,17 +25,17 @@ HRESULT CBuffer::setDesc(BufferDesc inDesc) {
 	m_Desc = inDesc;
 	// Clean memory and asign data for the Description	//Pasarlo a GAPI
 #if (defined D_DirectX || defined R_DirectX) 
-	ZeroMemory(&m_DxDesc, sizeof(m_DxDesc));
-	m_DxDesc.Usage = (D3D11_USAGE)m_Desc.usage;
-	m_DxDesc.ByteWidth = m_Desc.byteWidth;
-	m_DxDesc.BindFlags = m_Desc.bindFlags;
-	m_DxDesc.CPUAccessFlags = m_Desc.cpuAccessFlags;
-	// Case if use a SRD
-	if (inDesc.SRD.psysMem != nullptr) {
-		// Clean memory and asign data for the SRD
-		ZeroMemory(&m_SRD, sizeof(m_SRD));
-		m_SRD.pSysMem = m_Desc.SRD.psysMem;		
-	} 	
+	//ZeroMemory(&m_DxDesc, sizeof(m_DxDesc));
+	//m_DxDesc.Usage = (D3D11_USAGE)m_Desc.usage;
+	//m_DxDesc.ByteWidth = m_Desc.byteWidth;
+	//m_DxDesc.BindFlags = m_Desc.bindFlags;
+	//m_DxDesc.CPUAccessFlags = m_Desc.cpuAccessFlags;
+	//// Case if use a SRD
+	//if (inDesc.SRD.psysMem != nullptr) {
+	//	// Clean memory and asign data for the SRD
+	//	ZeroMemory(&m_SRD, sizeof(m_SRD));
+	//	m_SRD.pSysMem = &m_Desc.SRD.psysMem;		
+	//} 	
 #endif
 	return false;
 }
@@ -95,13 +95,13 @@ void CBuffer::destroy() {
 }
 
 #if (defined D_DirectX || defined R_DirectX) 
-D3D11_BUFFER_DESC CBuffer::getDxDesc() {
-	return  m_DxDesc;
-}
-
-D3D11_SUBRESOURCE_DATA CBuffer::getDxSRD() {
-	return m_SRD;
-}
+//D3D11_BUFFER_DESC CBuffer::getDxDesc() {
+//	return  m_DxDesc;
+//}
+//
+//D3D11_SUBRESOURCE_DATA CBuffer::getDxSRD() {
+//	return m_SRD;
+//}
 
 ID3D11Buffer * CBuffer::getBuffer() {
 	return m_Buffer;

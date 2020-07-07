@@ -17,6 +17,16 @@
     <ClCompile Include="Tutorial07.cpp" />
     <ClCompile Include="CBuffer.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CTexture2D.cpp" />
+    <ClCompile Include="CDepthStencilView.cpp" />
+    <ClCompile Include="CRenderTargetView.cpp" />
+    <ClCompile Include="CDevice.cpp" />
+    <ClCompile Include="CSwapChain.cpp" />
+    <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CTransform.cpp" />
+    <ClCompile Include="CVertexShader.cpp" />
+    <ClCompile Include="CSamplerState.cpp" />
+    <ClCompile Include="CPixelShader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -33,6 +43,16 @@
     <ClInclude Include="CBuffer.h" />
     <ClInclude Include="Defines.h" />
     <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CTexture2D.h" />
+    <ClInclude Include="CDepthStencilView.h" />
+    <ClInclude Include="CRenderTargetView.h" />
+    <ClInclude Include="CDevice.h" />
+    <ClInclude Include="CSwapChain.h" />
+    <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CTransform.h" />
+    <ClInclude Include="CVertexShader.h" />
+    <ClInclude Include="CSamplerState.h" />
+    <ClInclude Include="CPixelShader.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

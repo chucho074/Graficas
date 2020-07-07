@@ -1,5 +1,5 @@
 /**
-* @LC		: 29/06/2020
+* @LC		: 06/07/2020
 * @file		: CGraphicsAPI.cpp
 * @Author	: Jesús Alberto Del Moral Cupil
 * @Email	: idv18c.jmoral@uartesdigitales.edu.mx
@@ -29,6 +29,7 @@ CGraphicsAPI::CGraphicsAPI() {
 CGraphicsAPI::~CGraphicsAPI() {
 	destroy();
 }
+
 
 #if (defined D_DirectX || defined R_DirectX) 
 HRESULT CGraphicsAPI::init(unsigned int inDevFlag, DXGI_SWAP_CHAIN_DESC inSCDesc) {
@@ -62,6 +63,7 @@ HRESULT CGraphicsAPI::init(unsigned int inDevFlag, DXGI_SWAP_CHAIN_DESC inSCDesc
 	return hr;
 }
 #endif
+
 
 int CGraphicsAPI::update() {
 
@@ -100,16 +102,25 @@ HRESULT CGraphicsAPI::createBuffer(CBuffer & inBuffer, BufferDesc inDesc) {
 	HRESULT hr = S_OK;
 	hr = inBuffer.setDesc(inDesc);
 #if (defined D_DirectX || defined R_DirectX) 
-	hr = m_Device->CreateBuffer(&inBuffer.getDxDesc(), &inBuffer.getDxSRD(), &inBuffer.m_Buffer);
+	D3D11_BUFFER_DESC TempDesc = createDesc(inDesc);
+	ID3D11Buffer * BufferTemp = inBuffer.m_Buffer;
+	if (inBuffer.m_Desc.SRD.psysMem == NULL) {
+		hr = m_Device->CreateBuffer(&TempDesc, NULL, &inBuffer.m_Buffer);
+	}
+	else {
+		D3D11_SUBRESOURCE_DATA  TempSRD = createSRD(inDesc);
+		hr = m_Device->CreateBuffer(&TempDesc, &TempSRD, &inBuffer.m_Buffer);
+	}
 #endif
 	return hr;
 }
 
 
-void CGraphicsAPI::setVBuffer(int inStartSlot, unsigned int inSize, CBuffer * inVBuffer) {
+void CGraphicsAPI::setVBuffer(int inStartSlot, unsigned int inSize, CBuffer & inVBuffer) {
 	unsigned int offset = 0;
 #if (defined D_DirectX || defined R_DirectX) 
-	m_DeviceContext->IASetVertexBuffers(inStartSlot, 1, (*const*)inVBuffer->getBuffer(), &inSize, &offset);
+	ID3D11Buffer * BufferTemp = inVBuffer.getBuffer();
+	m_DeviceContext->IASetVertexBuffers(inStartSlot, 1, &BufferTemp, &inSize, &offset);
 #endif
 }
 
@@ -121,11 +132,19 @@ void CGraphicsAPI::setIBuffer(int inFormat, CBuffer * inIBuffer) {
 }
 
 
-void CGraphicsAPI::setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer * inConstBuffer) {
+void CGraphicsAPI::setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer & inConstBuffer) {
 #if (defined D_DirectX || defined R_DirectX) 
-	m_DeviceContext->VSSetConstantBuffers(inStartSlot, 1, (ID3D11Buffer *const*)inConstBuffer->getBuffer());
-	if (inSetBoth) {
-		m_DeviceContext->PSSetConstantBuffers(inStartSlot, 1, (ID3D11Buffer *const*)inConstBuffer->getBuffer());
+	if (inStartSlot == 0) {
+		m_DeviceContext->VSSetConstantBuffers(0, 1, &inConstBuffer.m_Buffer);
+		if (inSetBoth) {
+			m_DeviceContext->PSSetConstantBuffers(0, 1, &inConstBuffer.m_Buffer);
+		}
+	}
+	else {
+		m_DeviceContext->VSSetConstantBuffers(inStartSlot, 1, &inConstBuffer.m_Buffer);
+		if (inSetBoth) {
+			m_DeviceContext->PSSetConstantBuffers(inStartSlot, 1, &inConstBuffer.m_Buffer);
+		}
 	}
 #endif
 }
@@ -134,7 +153,7 @@ void CGraphicsAPI::setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer * inC
 void CGraphicsAPI::updateBuffer(void * inData, CBuffer inBuffer) {
 	// Compare the size of the Buffer and the input data
 #if (defined D_DirectX || defined R_DirectX) 
-	if (sizeof(inBuffer.m_Desc.SRD.psysMem) == sizeof(inData)) {
+	if (sizeof(&inBuffer.m_Desc.SRD.psysMem) == sizeof(inData)) {
 		//Function de update subresource data 
 		m_DeviceContext->UpdateSubresource(inBuffer.m_Buffer, 0, NULL, &inData, 0, 0);
 	}
@@ -158,33 +177,82 @@ void CGraphicsAPI::show() {
 
 
 #if (defined D_DirectX || defined R_DirectX)
-HRESULT CGraphicsAPI::createRTV(ID3D11Texture2D *& inBBuffer, ID3D11RenderTargetView *& inRTV) {
+D3D11_BUFFER_DESC CGraphicsAPI::createDesc(BufferDesc inDesc) {
+	D3D11_BUFFER_DESC temp;
+	ZeroMemory(&temp, sizeof(temp));
+	temp.Usage = (D3D11_USAGE)inDesc.usage;
+	temp.ByteWidth = inDesc.byteWidth;
+	temp.BindFlags = inDesc.bindFlags;
+	temp.CPUAccessFlags = inDesc.cpuAccessFlags;
+	return temp;
+}
+
+
+D3D11_SUBRESOURCE_DATA CGraphicsAPI::createSRD(BufferDesc inDesc) {
+	D3D11_SUBRESOURCE_DATA  temp;
+	ZeroMemory(&temp, sizeof(temp));
+	temp.pSysMem = inDesc.SRD.psysMem;
+	temp.SysMemPitch = inDesc.SRD.sysMemPitch;
+	temp.SysMemSlicePitch = inDesc.SRD.sysMemSlicePitch;
+	return temp;
+}
+
+
+HRESULT CGraphicsAPI::createRTV(CTexture2D & inBBuffer, CRenderTargetView & inRTV) {
 	HRESULT hr = S_OK;
-	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&inBBuffer);
+	//hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)((ID3D11Texture2D*)inBBuffer.getTexture()));
+	hr = m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&inBBuffer.m_Texture);
 	if (FAILED(hr)) {
 		return hr;
 	}
-	hr = m_Device->CreateRenderTargetView(inBBuffer, NULL, &inRTV);
+	//hr = m_Device->CreateRenderTargetView((ID3D11Texture2D*)inBBuffer.m_Texture, NULL, (ID3D11RenderTargetView**)&inRTV.getRTV());
+	hr = m_Device->CreateRenderTargetView(inBBuffer.m_Texture, NULL, &inRTV.m_RTV);
+	if (FAILED(hr)) {
+		return hr;
+	}
 	return hr;
 }
 
 
-HRESULT CGraphicsAPI::createTex2D(D3D11_TEXTURE2D_DESC inDesc, ID3D11Texture2D *& inTex) {
+HRESULT CGraphicsAPI::createTex2D(TextureDesc inDesc, CTexture2D & inTex) {
 	HRESULT hr = S_OK;
-	hr = m_Device->CreateTexture2D(&inDesc, NULL, &inTex);
+	inTex.setDesc(inDesc);
+	D3D11_TEXTURE2D_DESC tempDesc;
+	ZeroMemory(&tempDesc, sizeof(tempDesc));
+	tempDesc.Width = inTex.m_Desc.W;
+	tempDesc.Height = inTex.m_Desc.H;
+	tempDesc.MipLevels = inTex.m_Desc.mipLevels;
+	tempDesc.ArraySize = inTex.m_Desc.arraySize;
+	tempDesc.Format = (DXGI_FORMAT)inTex.m_Desc.format;
+	tempDesc.SampleDesc.Count = inTex.m_Desc.sampleDesc.count;
+	tempDesc.SampleDesc.Quality = inTex.m_Desc.sampleDesc.quality;
+	tempDesc.Usage = (D3D11_USAGE)inTex.m_Desc.usage;
+	tempDesc.BindFlags = (D3D11_BIND_FLAG)inTex.m_Desc.flags;
+	tempDesc.CPUAccessFlags = inTex.m_Desc.cpuAccessFlags;
+	tempDesc.MiscFlags = inTex.m_Desc.miscFlags;
+	//hr = m_Device->CreateTexture2D(&tempDesc, NULL, (ID3D11Texture2D**)inTex.getTexture());
+	hr = m_Device->CreateTexture2D(&tempDesc, NULL, &inTex.m_Texture);
 	return hr;
 }
 
 
-HRESULT CGraphicsAPI::createDSV(ID3D11Texture2D *& inDS, D3D11_DEPTH_STENCIL_VIEW_DESC inDSVDesc, ID3D11DepthStencilView *& inDSV) {
+HRESULT CGraphicsAPI::createDSV(CTexture2D & inDS, DepthStencilViewDesc inDSVDesc, CDepthStencilView & inDSV) {
 	HRESULT hr = S_OK;
-	hr = m_Device->CreateDepthStencilView(inDS, &inDSVDesc, &inDSV);
+	
+	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	ZeroMemory(&descDSV, sizeof(descDSV));
+	descDSV.Format = (DXGI_FORMAT)inDSVDesc.format;
+	descDSV.ViewDimension = (D3D11_DSV_DIMENSION)inDSVDesc.viewDimension;
+	descDSV.Texture2D.MipSlice = inDSVDesc.texture2D.mipSlice;
+	//hr = m_Device->CreateDepthStencilView((ID3D11Texture2D *)inDS.getTexture(), &descDSV, (ID3D11DepthStencilView **)inDSV.getDSV());
+	hr = m_Device->CreateDepthStencilView(inDS.m_Texture, &descDSV, &inDSV.m_pDepthStencilView);
 	return hr;
 }
 
 
-void CGraphicsAPI::setRTargets(unsigned int inNumViews, ID3D11RenderTargetView * inRTV, ID3D11DepthStencilView * inDSV) {
-	m_DeviceContext->OMSetRenderTargets(inNumViews, &inRTV, inDSV);
+void CGraphicsAPI::setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV) {
+	ID3D11RenderTargetView *tempRTV = (ID3D11RenderTargetView *)inRTV.getRTV();
+	m_DeviceContext->OMSetRenderTargets(inNumViews, &tempRTV, (ID3D11DepthStencilView*)inDSV.getDSV());
 }
 
 
@@ -193,14 +261,14 @@ void CGraphicsAPI::setVPort(D3D11_VIEWPORT inVP) {
 }
 
 
-HRESULT CGraphicsAPI::createVS(ID3DBlob *& inBlob, ID3D11ClassLinkage * inClass, ID3D11VertexShader *& inVS) {
+HRESULT CGraphicsAPI::createVS(ID3DBlob * inBlob, ID3D11ClassLinkage * inClass, ID3D11VertexShader *& inVS) {
 	HRESULT hr = S_OK;
 	hr = m_Device->CreateVertexShader(inBlob->GetBufferPointer(), inBlob->GetBufferSize(), inClass, &inVS);
 	return hr;
 }
 
 
-HRESULT CGraphicsAPI::createIL(D3D11_INPUT_ELEMENT_DESC * inILDesc, unsigned int inNumElem, ID3DBlob *& inBlob, ID3D11InputLayout *& inIL) {
+HRESULT CGraphicsAPI::createIL(D3D11_INPUT_ELEMENT_DESC * inILDesc, unsigned int inNumElem, ID3DBlob * inBlob, ID3D11InputLayout * inIL) {
 	HRESULT hr = S_OK;
 	hr = m_Device->CreateInputLayout(inILDesc, inNumElem, inBlob->GetBufferPointer(),
 		inBlob->GetBufferSize(), &inIL);
@@ -213,7 +281,7 @@ void CGraphicsAPI::setIL(ID3D11InputLayout * inIL) {
 }
 
 
-HRESULT CGraphicsAPI::createPS(ID3DBlob *& inBlob, ID3D11ClassLinkage * inClass, ID3D11PixelShader *& inPS) {
+HRESULT CGraphicsAPI::createPS(ID3DBlob * inBlob, ID3D11ClassLinkage * inClass, ID3D11PixelShader * inPS) {
 	HRESULT hr = S_OK;
 	hr = m_Device->CreatePixelShader(inBlob->GetBufferPointer(), inBlob->GetBufferSize(), inClass, &inPS);
 
@@ -226,7 +294,7 @@ void CGraphicsAPI::setTopology(D3D_PRIMITIVE_TOPOLOGY inTopology) {
 }
 
 
-HRESULT CGraphicsAPI::createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerState *& inSampler) {
+HRESULT CGraphicsAPI::createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerState * inSampler) {
 	HRESULT hr = S_OK;
 	hr = m_Device->CreateSamplerState(&inSSDesc, &inSampler);
 	return hr;
@@ -259,14 +327,14 @@ D3D_DRIVER_TYPE CGraphicsAPI::getDriverType() {
 }
 
 
-void CGraphicsAPI::clearRTV(ID3D11RenderTargetView * inRTV, float inColor[4]) {
-	m_DeviceContext->ClearRenderTargetView(inRTV, inColor);
+void CGraphicsAPI::clearRTV(CRenderTargetView & inRTV, float inColor[4]) {
+	m_DeviceContext->ClearRenderTargetView((ID3D11RenderTargetView *)inRTV.getRTV(), inColor);
 
 }
 
 
-void CGraphicsAPI::clearDSV(ID3D11DepthStencilView * inDSV, D3D11_CLEAR_FLAG inFlag) {
-	m_DeviceContext->ClearDepthStencilView(inDSV, inFlag, 1.0f, 0);
+void CGraphicsAPI::clearDSV(CDepthStencilView & inDSV, D3D11_CLEAR_FLAG inFlag) {
+	m_DeviceContext->ClearDepthStencilView((ID3D11DepthStencilView*)inDSV.getDSV(), inFlag, 1.0f, 0);
 }
 
 #endif

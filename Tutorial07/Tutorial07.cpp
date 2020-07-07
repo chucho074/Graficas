@@ -20,8 +20,18 @@
 #include <GLFW/glfw3.h>
 #endif
 
+#include "glm/vec2.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec4.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 //#include "CBuffer.h"
 #include "CGraphicsAPI.h"
+#include "CDepthStencilView.h"
+#include "CTexture2D.h"
+#include "CRenderTargetView.h"
+
+using namespace glm;
 
 
 //--------------------------------------------------------------------------------------
@@ -30,24 +40,24 @@
 #if(defined D_DirectX || defined R_DirectX)
 struct SimpleVertex
 {
-    XMFLOAT3 Pos;
-    XMFLOAT2 Tex;
+    vec3 Pos;
+    vec2 Tex;
 };
 
 struct CBNeverChanges
 {
-    XMMATRIX mView;
+    mat4 mView;
 };
 
 struct CBChangeOnResize
 {
-    XMMATRIX mProjection;
+    mat4 mProjection;
 };
 
 struct CBChangesEveryFrame
 {
-    XMMATRIX mWorld;
-    XMFLOAT4 vMeshColor;
+    mat4 mWorld;
+    vec4 vMeshColor;
 };
 #endif
 
@@ -68,19 +78,22 @@ CBuffer                       g_pIndexBuffer;
 CBuffer                       g_pCBNeverChanges;
 CBuffer                       g_pCBChangeOnResize;
 CBuffer                       g_pCBChangesEveryFrame;
+CDepthStencilView             g_pDepthStencilView;
+CTexture2D                    g_pDepthStencil;
+CRenderTargetView             g_pRenderTargetView;
 #if(defined D_DirectX || defined R_DirectX)
-ID3D11RenderTargetView*             g_pRenderTargetView = NULL;
-ID3D11Texture2D*                    g_pDepthStencil = NULL;
-ID3D11DepthStencilView*             g_pDepthStencilView = NULL;
+//ID3D11RenderTargetView*             g_pRenderTargetView = NULL;
+//ID3D11Texture2D*                    g_pDepthStencil = NULL;
+//ID3D11DepthStencilView*             g_pDepthStencilView = NULL;
 ID3D11VertexShader*                 g_pVertexShader = NULL;
 ID3D11PixelShader*                  g_pPixelShader = NULL;
 ID3D11InputLayout*                  g_pVertexLayout = NULL;
 ID3D11ShaderResourceView*           g_pTextureRV = NULL;
 ID3D11SamplerState*                 g_pSamplerLinear = NULL;
-XMMATRIX                            g_World;
-XMMATRIX                            g_View;
-XMMATRIX                            g_Projection;
-XMFLOAT4                            g_vMeshColor( 0.7f, 0.7f, 0.7f, 1.0f );
+mat4                            g_World;
+mat4                            g_View;
+mat4                            g_Projection;
+vec4                            g_vMeshColor( 0.7f, 0.7f, 0.7f, 1.0f );
 #endif
 
 //--------------------------------------------------------------------------------------
@@ -94,29 +107,8 @@ void Render();
 
 
 #if (defined D_OpenGL || defined R_OpenGL)
-const char* vertexShaderSource = "#version 330 core\n"
-"layout(location = 0) in vec3 aPos;\n"
-"layout(location = 1) in vec3 aNormal;\n"
-"layout(location = 2) in vec2 aTexCoords;\n"
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
-"out vec2 TexCoords;\n"
-"uniform mat4 model;\n"
-"uniform mat4 view;\n"
-"uniform mat4 projection;\n"
-"void main()\n"
-"{\n"
-"gl_Position = projection * view * model * vec4(aPos, 1.0);\n"
-"TexCoords = aTexCoords;\n"
-"}\n";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec2 TexCoords;\n"
-"uniform sampler2D texture_diffuse1;\n"
-"void main()\n"
-"{\n"
-"FragColor = texture(texture_diffuse1, TexCoords);\n"
-"}\n;";
 #endif
 
 
@@ -258,14 +250,9 @@ HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR sz
 HRESULT InitDevice() {
 	g_GAPI = new CGraphicsAPI();
 #if (defined D_OpenGL || R_OpenGL)
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	glfwSetKeyCallback(window, key_callback);
-	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetCursorPosCallback(window, mouse_move_callback);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		return -1;
-	}
+	//if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+	//	return -1;
+	//}
 #endif 
 
 	HRESULT hr = S_OK;
@@ -281,8 +268,8 @@ HRESULT InitDevice() {
 #endif
 
 
-	//Initialize SwapChain
 #if (defined D_DirectX || defined R_DirectX)
+	//Initialize SwapChain
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferCount = 1;
@@ -306,10 +293,10 @@ HRESULT InitDevice() {
 
 	// Create a render target view for backBuffer
 #if (defined D_DirectX || defined R_DirectX)
-	ID3D11Texture2D* pBackBuffer = NULL;
+	CTexture2D pBackBuffer;
 	
 	hr = g_GAPI->createRTV(pBackBuffer, g_pRenderTargetView);
-	pBackBuffer->Release();
+	//pBackBuffer->Release();
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -317,19 +304,22 @@ HRESULT InitDevice() {
 
 	// Create depth stencil texture
 #if (defined D_DirectX || defined R_DirectX)
-	D3D11_TEXTURE2D_DESC descDepth;
-	ZeroMemory(&descDepth, sizeof(descDepth));
-	descDepth.Width = width;
-	descDepth.Height = height;
-	descDepth.MipLevels = 1;
-	descDepth.ArraySize = 1;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1;
-	descDepth.SampleDesc.Quality = 0;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	descDepth.CPUAccessFlags = 0;
-	descDepth.MiscFlags = 0;
+	
+	TextureDesc descDepth;
+	descDepth.W = width;
+	descDepth.H = height;
+	descDepth.mipLevels = 1;
+	descDepth.arraySize = 1;
+	descDepth.format = FORMAT_D24_UNORM_S8_UINT;
+	descDepth.sampleDesc.count = 1;
+	descDepth.sampleDesc.quality = 0;
+	descDepth.usage = USAGE_DEFAULT;
+	descDepth.flags = 64;
+	descDepth.cpuAccessFlags = 0;
+	descDepth.miscFlags = 0;
+
+	//g_pDepthStencil.setDesc(descDepth);
+
 	hr = g_GAPI->createTex2D(descDepth, g_pDepthStencil);
 	if (FAILED(hr)) {
 		return hr;
@@ -338,11 +328,15 @@ HRESULT InitDevice() {
 
 	// Create the depth stencil view
 #if (defined D_DirectX || defined R_DirectX)
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	ZeroMemory(&descDSV, sizeof(descDSV));
-	descDSV.Format = descDepth.Format;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0;
+	//D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+	//ZeroMemory(&descDSV, sizeof(descDSV));
+	//descDSV.Format = descDepth.Format;
+	//descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	//descDSV.Texture2D.MipSlice = 0;
+	DepthStencilViewDesc descDSV;
+	descDSV.format = descDepth.format;
+	descDSV.viewDimension = DSV_DIMENSION_TEXTURE2D;
+	descDSV.texture2D.mipSlice = 0;
 	hr = g_GAPI->createDSV(g_pDepthStencil, descDSV, g_pDepthStencilView);
 	if (FAILED(hr)) {
 		return hr;
@@ -431,35 +425,35 @@ HRESULT InitDevice() {
 	// Create vertex buffer
 #if (defined D_DirectX || defined R_DirectX)
 	SimpleVertex vertices[] = {
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(-1.0f, 1.0f, -1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(1.0f, 1.0f, -1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(-1.0f, 1.0f, 1.0f), vec2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(-1.0f, -1.0f, -1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(1.0f, -1.0f, -1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(1.0f, -1.0f, 1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(-1.0f, -1.0f, 1.0f), vec2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(-1.0f, -1.0f, 1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(-1.0f, -1.0f, -1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(-1.0f, 1.0f, -1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(-1.0f, 1.0f, 1.0f), vec2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(1.0f, -1.0f, 1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(1.0f, -1.0f, -1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(1.0f, 1.0f, -1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(1.0f, 1.0f, 1.0f), vec2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(-1.0f, -1.0f, -1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(1.0f, -1.0f, -1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(1.0f, 1.0f, -1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(-1.0f, 1.0f, -1.0f), vec2(0.0f, 1.0f) },
 
-		{ XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
-		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
-		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+		{ vec3(-1.0f, -1.0f, 1.0f), vec2(0.0f, 0.0f) },
+		{ vec3(1.0f, -1.0f, 1.0f), vec2(1.0f, 0.0f) },
+		{ vec3(1.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f) },
+		{ vec3(-1.0f, 1.0f, 1.0f), vec2(0.0f, 1.0f) },
 	};
 
 		
@@ -479,7 +473,7 @@ HRESULT InitDevice() {
 	UINT stride = sizeof(SimpleVertex);
 	UINT offset = 0;
 	//g_pImmediateContext->IASetVertexBuffers( 0, 1, &g_pVertexBuffer.m_Buffer, &stride, &offset );
-	g_GAPI->setVBuffer(0, 1, &g_pVertexBuffer);
+	g_GAPI->setVBuffer(0, 1, g_pVertexBuffer);
 	if (FAILED(hr)) {
 		return hr;
 	}
@@ -590,25 +584,26 @@ HRESULT InitDevice() {
 
     // Initialize the world matrices
 #if (defined D_DirectX || defined R_DirectX)
-    g_World = XMMatrixIdentity();
+    g_World = mat4(1);
 
 
     // Initialize the view matrix
-    XMVECTOR Eye = XMVectorSet( 0.0f, 3.0f, -6.0f, 0.0f );
-    XMVECTOR At = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-    XMVECTOR Up = XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-    g_View = XMMatrixLookAtLH( Eye, At, Up );
+    vec3 Eye( 0.0f, 3.0f, -6.0f );
+    vec3 At( 0.0f, 1.0f, 0.0f );
+    vec3 Up( 0.0f, 1.0f, 0.0f );
+    //g_View = XMMatrixLookAtLH( Eye, At, Up );
+	g_View = lookAtLH(Eye, At, Up);
 
     CBNeverChanges cbNeverChanges;
-    cbNeverChanges.mView = XMMatrixTranspose( g_View );
+    cbNeverChanges.mView = transpose( g_View );
     g_GAPI->updateBuffer(&cbNeverChanges, g_pCBNeverChanges);
 
 
     // Initialize the projection matrix
-    g_Projection = XMMatrixPerspectiveFovLH( XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f );
-    
+    //g_Projection = XMMatrixPerspectiveFovLH( XM_PIDIV4, width / (FLOAT)height, 0.01f, 100.0f );
+	g_Projection = perspectiveFovLH(0.785398163f, (float)width, (float)height, 0.01f, 100.0f);
     CBChangeOnResize cbChangesOnResize;
-    cbChangesOnResize.mProjection = XMMatrixTranspose( g_Projection );
+    cbChangesOnResize.mProjection = transpose( g_Projection );
     g_GAPI->updateBuffer(&cbChangesOnResize,  g_pCBChangeOnResize);
 #endif
     return S_OK;
@@ -626,9 +621,9 @@ void CleanupDevice() {
     if( g_pVertexLayout ) g_pVertexLayout->Release();
     if( g_pVertexShader ) g_pVertexShader->Release();
     if( g_pPixelShader ) g_pPixelShader->Release();
-    if( g_pDepthStencil ) g_pDepthStencil->Release();
-    if( g_pDepthStencilView ) g_pDepthStencilView->Release();
-    if( g_pRenderTargetView ) g_pRenderTargetView->Release();
+    //if( g_pDepthStencil ) g_pDepthStencil->Release();
+    //if( g_pDepthStencilView ) g_pDepthStencilView->Release();
+    //if( g_pRenderTargetView ) g_pRenderTargetView->Release();
 #elif(defined D_OpenGL|| defined R_OpenGL)
 	glfwTerminate();
 #endif
@@ -667,21 +662,23 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 void Render() {
 #if (defined D_DirectX || defined R_DirectX)
     // Update our time
-    static float t = 0.0f;
+    //static float t = 0.0f;
+    float t = 0.0f;
     if( g_GAPI->getDriverType() == D3D_DRIVER_TYPE_REFERENCE ) {
         t += ( float )XM_PI * 0.0125f;
     }
     else {
         static DWORD dwTimeStart = 0;
         DWORD dwTimeCur = GetTickCount();
-        if( dwTimeStart == 0 )
-            dwTimeStart = dwTimeCur;
+		if (dwTimeStart == 0) {
+			dwTimeStart = dwTimeCur;
+		}
         t = ( dwTimeCur - dwTimeStart ) / 1000.0f;
     }
 
     // Rotate cube around the origin
-    g_World = XMMatrixRotationY( t );
-
+    //g_World = XMMatrixRotationY( t );
+	rotate(g_World, t, vec3());
     // Modify the color
     g_vMeshColor.x = ( sinf( t * 1.0f ) + 1.0f ) * 0.5f;
     g_vMeshColor.y = ( cosf( t * 3.0f ) + 1.0f ) * 0.5f;
@@ -700,7 +697,7 @@ void Render() {
     // Update variables that change once per frame
     //
     CBChangesEveryFrame cb;
-    cb.mWorld = XMMatrixTranspose( g_World );
+    cb.mWorld = transpose( g_World );
     cb.vMeshColor = g_vMeshColor;
     g_GAPI->updateBuffer(&cb, g_pCBChangesEveryFrame);
 	
@@ -709,9 +706,9 @@ void Render() {
     // Render the cube
     //
    	g_GAPI->setShaders(g_pVertexShader, g_pPixelShader);
-	g_GAPI->setConstBuffer(0, false, &g_pCBNeverChanges);
-	g_GAPI->setConstBuffer(1, false, &g_pCBChangeOnResize);
-	g_GAPI->setConstBuffer(2, true, &g_pCBChangeOnResize);
+	g_GAPI->setConstBuffer(0, false, g_pCBNeverChanges);
+	g_GAPI->setConstBuffer(1, false, g_pCBChangeOnResize);
+	g_GAPI->setConstBuffer(2, true, g_pCBChangeOnResize);
 	g_GAPI->setSResource(g_pTextureRV);
 	g_GAPI->setSampler(g_pSamplerLinear);
 	g_GAPI->draw(36);
@@ -722,14 +719,14 @@ void Render() {
     //
     g_GAPI->show();
 #elif (defined D_OpenGL || R_OpenGL)
-	glfwSwapBuffers(window);
-	glfwPollEvents();
-	//Bind to Framebuffer and draw inactive camera
-	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	//Clear FBO content and set background color
-	glClearColor(0.f, 0.f, 0.5f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//Use linked shader
-	glUseProgram(shaderProgram);
+	//glfwSwapBuffers(window);
+	//glfwPollEvents();
+	////Bind to Framebuffer and draw inactive camera
+	//glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	////Clear FBO content and set background color
+	//glClearColor(0.f, 0.f, 0.5f, 1.f);
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	////Use linked shader
+	//glUseProgram(shaderProgram);
 #endif
 }

@@ -23,6 +23,30 @@
 #include "Defines.h"
 
 
+/**
+* @brief	: SubResource Data.
+* @bug		: No Bugs known.
+**/
+struct SubresourceData {
+	const void * psysMem = nullptr;
+	unsigned int sysMemPitch = 0;
+	unsigned int sysMemSlicePitch = 0;
+};
+
+/**
+* @brief	: Descriptor for Buffers.
+* @bug		: No Bugs known.
+**/
+struct BufferDesc {
+	unsigned int byteWidth = 0;
+	unsigned short usage = 0;
+	unsigned int bindFlags = 0;
+	unsigned int cpuAccessFlags = 0;
+	unsigned int miscFlags = 0;
+	unsigned int structureByteStride = 0;
+	SubresourceData SRD;
+};
+
 
 /**
 * @brief	: Buffer class.
@@ -58,12 +82,11 @@ public:
 	void destroy();
 
 #if (defined D_DirectX || defined R_DirectX) 
-	D3D11_BUFFER_DESC getDxDesc();
+	//D3D11_BUFFER_DESC getDxDesc();
+	
+	//D3D11_SUBRESOURCE_DATA getDxSRD();
 
-
-	D3D11_SUBRESOURCE_DATA getDxSRD();
-
-	ID3D11Buffer *getBuffer();
+	ID3D11Buffer * getBuffer();
 	/**
 	* @brief	: Update the resource for Buffers.
 	* param		: .
@@ -83,8 +106,8 @@ public:
 
 //private:
 
-	D3D11_BUFFER_DESC m_DxDesc;
-	D3D11_SUBRESOURCE_DATA m_SRD;
+	//D3D11_BUFFER_DESC m_DxDesc;
+	//D3D11_SUBRESOURCE_DATA  m_SRD;
 	ID3D11Buffer * m_Buffer;
 #endif
 	BufferDesc m_Desc;

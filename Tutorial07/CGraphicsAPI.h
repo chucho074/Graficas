@@ -20,7 +20,13 @@
 #include <xnamath.h>
 #include "resource.h"
 #endif
+#include "CDevice.h"
+#include "CSwapChain.h"
+
 #include "CBuffer.h"
+#include "CTexture2D.h"
+#include "CDepthStencilView.h"
+#include "CRenderTargetView.h"
 
 /**
 * @brief	: Abstraction for Graphics API.
@@ -74,7 +80,7 @@ public:
 	* param		: startSlot, Size, VertexBuffer
 	* @bug		: No Bugs known.
 	**/
-	void setVBuffer(int inStartSlot, unsigned int inSize, CBuffer * inVBuffer);
+	void setVBuffer(int inStartSlot, unsigned int inSize, CBuffer & inVBuffer);
 	/**
 	* @brief	: Sets Index Buffer.
 	* param		: Format, IndexBuffer.
@@ -83,10 +89,10 @@ public:
 	void setIBuffer(int inFormat, CBuffer * inIBuffer);
 	/**
 	* @brief	: Sets ConstatnBuffer.
-	* param		: startSlot, set in Vertex and Pixel?, Constant Buffer
+	* param		: startSlot, set in Vertex and Pixel
 	* @bug		: No Bugs known.
 	**/
-	void setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer * inConstBuffer);
+	void setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer & inConstBuffer);
 	/**
 	* @brief	: Update SubResource.
 	* param		: Data, Buffer to update.
@@ -107,29 +113,41 @@ public:
 
 #if (defined D_DirectX || defined R_DirectX) 
 	/**
-	* @brief	: Create a render target view with the device.
-	* param		: Texture2D, Render Target View
+	* @brief	: Create a D3D11 Buffer Description.
+	* param		: BufferDesc.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createRTV(ID3D11Texture2D *& inBBuffer, ID3D11RenderTargetView *& inRTV);
+	D3D11_BUFFER_DESC createDesc(BufferDesc inDesc);
 	/**
-	* @brief	: Create a texture with the device.
+	* @brief	: Create a D3D11 Buffer SRD.
+	* param		: BufferDesc.
+	* @bug		: No Bugs known.
+	**/
+	D3D11_SUBRESOURCE_DATA createSRD(BufferDesc inDesc);
+	/**
+	* @brief	: Create a render target view with the device.
+	* param		: Texture2D, Render Target View.
+	* @bug		: No Bugs known.
+	**/
+	HRESULT createRTV(CTexture2D & inBBuffer, CRenderTargetView & inRTV);
+	/**
+	* @brief	: Create a texture with the device. 
 	* param		: Texture desc, Texture2d. 
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createTex2D(D3D11_TEXTURE2D_DESC inDesc, ID3D11Texture2D *& inTex);
+	HRESULT createTex2D(TextureDesc inDesc, CTexture2D & inTex);
 	/**
 	* @brief	: Create a depth Stencil View with the device.
 	* param		: Texture2D, DSV Desc, depth stencil View.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createDSV(ID3D11Texture2D *& inDS, D3D11_DEPTH_STENCIL_VIEW_DESC inDSVDesc, ID3D11DepthStencilView *& inDSV);
+	HRESULT createDSV(CTexture2D & inDS, DepthStencilViewDesc inDSVDesc, CDepthStencilView & inDSV);
 	/**
 	* @brief	: Sets the render target.
 	* param		: num of views, RTV, DSV.
 	* @bug		: No Bugs known.
 	**/
-	void setRTargets(unsigned int inNumViews, ID3D11RenderTargetView * inRTV, ID3D11DepthStencilView * inDSV);
+	void setRTargets(unsigned int inNumViews, CRenderTargetView & inRTV, CDepthStencilView & inDSV);
 	
 	/**
 	* @brief	: Sets the Viewport to the DeviceContext.
@@ -142,13 +160,13 @@ public:
 	* param		: Blob, ClassLinkage, VertexShader.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createVS(ID3DBlob *& inBlob, ID3D11ClassLinkage * inClass, ID3D11VertexShader *& inVS);
+	HRESULT createVS(ID3DBlob * inBlob, ID3D11ClassLinkage * inClass, ID3D11VertexShader *& inVS);
 	/**
 	* @brief	: Create Input Layout.
 	* param		: IL Desc, num of elements, blob, IL.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createIL(D3D11_INPUT_ELEMENT_DESC * inILDesc, unsigned int inNumElem, ID3DBlob *& inBlob, ID3D11InputLayout *& inIL);
+	HRESULT createIL(D3D11_INPUT_ELEMENT_DESC * inILDesc, unsigned int inNumElem, ID3DBlob * inBlob, ID3D11InputLayout * inIL);
 	/**
 	* @brief	: Sets the Input Layout.
 	* param		: InputLayout.
@@ -160,7 +178,7 @@ public:
 	* param		: Blob, ClassLinkage, PixelShader.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createPS(ID3DBlob *& inBlob, ID3D11ClassLinkage * inClass, ID3D11PixelShader *& inPS);
+	HRESULT createPS(ID3DBlob * inBlob, ID3D11ClassLinkage * inClass, ID3D11PixelShader * inPS);
 
 	/**
 	* @brief	: Set the topology.
@@ -173,7 +191,7 @@ public:
 	* param		: Sampler Desc, SamplerState.
 	* @bug		: No Bugs known.
 	**/
-	HRESULT createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerState *&inSampler);
+	HRESULT createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerState *inSampler);
 	/**
 	* @brief	: Sets the Vertex and pixel Shader.
 	* param		: Vertex shader, Pixel Shader.
@@ -207,20 +225,21 @@ public:
 	* param		: RenderTarget view, color.
 	* @bug		: No Bugs known.
 	**/
-	void clearRTV(ID3D11RenderTargetView * inRTV, float inColor[4]);
+	void clearRTV(CRenderTargetView & inRTV, float inColor[4]);
 	/**
 	* @brief	: Clears the DepthStencil View.
 	* param		: DSV, ClearFlag
 	* @bug		: No Bugs known.
 	**/
-	void clearDSV(ID3D11DepthStencilView * inDSV, D3D11_CLEAR_FLAG inFlag);
+	void clearDSV(CDepthStencilView & inDSV, D3D11_CLEAR_FLAG inFlag);
 #endif
 private:
 #if (defined D_DirectX || defined R_DirectX) 
 	/**
-	* @brief	: Device of DX.
+	* @brief	: Device.
 	* @bug		: No Bugs known.
 	**/
+	//CDevice * m_Device;
 	ID3D11Device * m_Device;
 	/**
 	* @brief	: DeviceContext of DX.
