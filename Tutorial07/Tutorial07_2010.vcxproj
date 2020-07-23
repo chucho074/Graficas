@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -873,8 +873,12 @@
     <ClCompile Include="CBuffer.cpp" />
     <ClCompile Include="CDepthStencilView.cpp" />
     <ClCompile Include="CDevice.cpp" />
+    <ClCompile Include="CDeviceContext.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CInputLayout.cpp" />
+    <ClCompile Include="CMaterial.cpp" />
     <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CModel.cpp" />
     <ClCompile Include="CPixelShader.cpp" />
     <ClCompile Include="CRenderTargetView.cpp" />
     <ClCompile Include="CSamplerState.cpp" />
@@ -882,6 +886,7 @@
     <ClCompile Include="CTexture2D.cpp" />
     <ClCompile Include="CTransform.cpp" />
     <ClCompile Include="CVertexShader.cpp" />
+    <ClCompile Include="CViewport.cpp" />
     <ClCompile Include="Tutorial07.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -891,8 +896,12 @@
     <ClInclude Include="CBuffer.h" />
     <ClInclude Include="CDepthStencilView.h" />
     <ClInclude Include="CDevice.h" />
+    <ClInclude Include="CDeviceContext.h" />
     <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CInputLayout.h" />
+    <ClInclude Include="CMaterial.h" />
     <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CModel.h" />
     <ClInclude Include="CPixelShader.h" />
     <ClInclude Include="CRenderTargetView.h" />
     <ClInclude Include="CSamplerState.h" />
@@ -900,6 +909,7 @@
     <ClInclude Include="CTexture2D.h" />
     <ClInclude Include="CTransform.h" />
     <ClInclude Include="CVertexShader.h" />
+    <ClInclude Include="CViewport.h" />
     <ClInclude Include="Defines.h" />
     <CLInclude Include="resource.h" />
     <ResourceCompile Include="Tutorial07.rc" />

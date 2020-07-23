@@ -19,7 +19,7 @@ HRESULT CDevice::createBuffer(CBuffer & inBuffer, D3D11_BUFFER_DESC inDesc, D3D1
 		//D3D11_SUBRESOURCE_DATA  TempSRD = createSRD(inDesc);
 		hr = m_Device->CreateBuffer(&inDesc, &inSRD, &inBuffer.m_Buffer);
 	}
-	return E_NOTIMPL;
+	return hr;
 }
 
 HRESULT CDevice::createRTV(CTexture2D & inTexture, CRenderTargetView & inRTV) {

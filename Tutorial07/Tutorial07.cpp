@@ -380,8 +380,10 @@ HRESULT InitDevice() {
 	// Define the input layout
 #if (defined D_DirectX || defined R_DirectX)
 	D3D11_INPUT_ELEMENT_DESC layout[] = {
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		//{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	UINT numElements = ARRAYSIZE(layout);
 #endif
@@ -518,7 +520,7 @@ HRESULT InitDevice() {
 
 	// Set index buffer
 #if (defined D_DirectX || defined R_DirectX) 
-	g_GAPI->setIBuffer(DXGI_FORMAT_R16_UINT, &g_pIndexBuffer);
+	g_GAPI->setIBuffer(DXGI_FORMAT_R16_UINT, g_pIndexBuffer);
 #endif
 
 	// Set primitive topology
@@ -684,6 +686,22 @@ void Render() {
     g_vMeshColor.y = ( cosf( t * 3.0f ) + 1.0f ) * 0.5f;
     g_vMeshColor.z = ( sinf( t * 5.0f ) + 1.0f ) * 0.5f;
 
+#if (defined D_DirectX || defined R_DirectX)
+	RECT rc;
+	GetClientRect(g_hWnd, &rc);
+	UINT width = rc.right - rc.left;
+	UINT height = rc.bottom - rc.top;
+	D3D11_VIEWPORT vp;
+	vp.Width = (FLOAT)width;
+	vp.Height = (FLOAT)height;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0;
+	vp.TopLeftY = 0;
+	g_GAPI->setVPort(vp);
+#endif
+
+	g_GAPI->setRTargets(1, g_pRenderTargetView, g_pDepthStencilView);
     //
     // Clear the back buffer
     //
@@ -693,6 +711,7 @@ void Render() {
     // Clear the depth buffer to 1.0 (max depth)
     //
     g_GAPI->clearDSV(g_pDepthStencilView, D3D11_CLEAR_DEPTH);
+
     //
     // Update variables that change once per frame
     //
@@ -705,10 +724,17 @@ void Render() {
     //
     // Render the cube
     //
-   	g_GAPI->setShaders(g_pVertexShader, g_pPixelShader);
-	g_GAPI->setConstBuffer(0, false, g_pCBNeverChanges);
-	g_GAPI->setConstBuffer(1, false, g_pCBChangeOnResize);
-	g_GAPI->setConstBuffer(2, true, g_pCBChangeOnResize);
+
+	g_GAPI->setVBuffer(0, 1, g_pVertexBuffer);
+	g_GAPI->setIBuffer(DXGI_FORMAT_R16_UINT, g_pIndexBuffer);
+
+   	g_GAPI->setVShader(g_pVertexShader);
+	g_GAPI->setVSConstBuffer(0, g_pCBNeverChanges);
+	g_GAPI->setVSConstBuffer(1, g_pCBChangeOnResize);
+	g_GAPI->setVSConstBuffer(2, g_pCBChangesEveryFrame);
+	g_GAPI->setIL(g_pVertexLayout);
+   	g_GAPI->setPShader(g_pPixelShader);
+	g_GAPI->setPSConstBuffer(2, g_pCBChangesEveryFrame);
 	g_GAPI->setSResource(g_pTextureRV);
 	g_GAPI->setSampler(g_pSamplerLinear);
 	g_GAPI->draw(36);

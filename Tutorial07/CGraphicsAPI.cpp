@@ -116,7 +116,7 @@ HRESULT CGraphicsAPI::createBuffer(CBuffer & inBuffer, BufferDesc inDesc) {
 }
 
 
-void CGraphicsAPI::setVBuffer(int inStartSlot, unsigned int inSize, CBuffer & inVBuffer) {
+void CGraphicsAPI::setVBuffer(unsigned int inStartSlot, unsigned int inSize, CBuffer & inVBuffer) {
 	unsigned int offset = 0;
 #if (defined D_DirectX || defined R_DirectX) 
 	ID3D11Buffer * BufferTemp = inVBuffer.getBuffer();
@@ -125,32 +125,34 @@ void CGraphicsAPI::setVBuffer(int inStartSlot, unsigned int inSize, CBuffer & in
 }
 
 
-void CGraphicsAPI::setIBuffer(int inFormat, CBuffer * inIBuffer) {
+//void CGraphicsAPI::setIBuffer(int inFormat, CMesh & inMesh) {
+void CGraphicsAPI::setIBuffer(int inFormat, CBuffer & inIBuffer) {
 #if (defined D_DirectX || defined R_DirectX) 
-	m_DeviceContext->IASetIndexBuffer((ID3D11Buffer*)inIBuffer->getBuffer(), (DXGI_FORMAT)inFormat, 0);
+	m_DeviceContext->IASetIndexBuffer((ID3D11Buffer*)inIBuffer.getBuffer(), (DXGI_FORMAT)inFormat, 0);
 #endif
 }
 
 
-void CGraphicsAPI::setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer & inConstBuffer) {
+void CGraphicsAPI::setVSConstBuffer(unsigned int inStartSlot, CBuffer & inConstBuffer) {
 #if (defined D_DirectX || defined R_DirectX) 
 	if (inStartSlot == 0) {
 		m_DeviceContext->VSSetConstantBuffers(0, 1, &inConstBuffer.m_Buffer);
-		if (inSetBoth) {
-			m_DeviceContext->PSSetConstantBuffers(0, 1, &inConstBuffer.m_Buffer);
-		}
 	}
 	else {
 		m_DeviceContext->VSSetConstantBuffers(inStartSlot, 1, &inConstBuffer.m_Buffer);
-		if (inSetBoth) {
-			m_DeviceContext->PSSetConstantBuffers(inStartSlot, 1, &inConstBuffer.m_Buffer);
-		}
 	}
 #endif
 }
 
 
-void CGraphicsAPI::updateBuffer(void * inData, CBuffer inBuffer) {
+void CGraphicsAPI::setPSConstBuffer(unsigned int inStartSlot, CBuffer & inConstBuffer) {
+#if (defined D_DirectX || defined R_DirectX) 
+	m_DeviceContext->PSSetConstantBuffers(0, 1, &inConstBuffer.m_Buffer);
+#endif
+}
+
+
+void CGraphicsAPI::updateBuffer(void * inData, CBuffer & inBuffer) {
 	// Compare the size of the Buffer and the input data
 #if (defined D_DirectX || defined R_DirectX) 
 	if (sizeof(&inBuffer.m_Desc.SRD.psysMem) == sizeof(inData)) {
@@ -301,8 +303,12 @@ HRESULT CGraphicsAPI::createSState(D3D11_SAMPLER_DESC inSSDesc, ID3D11SamplerSta
 }
 
 
-void CGraphicsAPI::setShaders(ID3D11VertexShader * inVS, ID3D11PixelShader * inPS) {	//Setear en distintas funciones
+void CGraphicsAPI::setVShader(ID3D11VertexShader * inVS) {	//Setear en distintas funciones
 	m_DeviceContext->VSSetShader(inVS, NULL, 0);
+	
+}
+void CGraphicsAPI::setPShader(ID3D11PixelShader * inPS) {	//Setear en distintas funciones
+	
 	m_DeviceContext->PSSetShader(inPS, NULL, 0);
 }
 

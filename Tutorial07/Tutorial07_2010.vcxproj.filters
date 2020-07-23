@@ -27,6 +27,9 @@
     <ClCompile Include="CVertexShader.cpp" />
     <ClCompile Include="CSamplerState.cpp" />
     <ClCompile Include="CPixelShader.cpp" />
+    <ClCompile Include="CDeviceContext.cpp" />
+    <ClCompile Include="CViewport.cpp" />
+    <ClCompile Include="CInputLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -53,6 +56,9 @@
     <ClInclude Include="CVertexShader.h" />
     <ClInclude Include="CSamplerState.h" />
     <ClInclude Include="CPixelShader.h" />
+    <ClInclude Include="CDeviceContext.h" />
+    <ClInclude Include="CViewport.h" />
+    <ClInclude Include="CInputLayout.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

@@ -80,25 +80,27 @@ public:
 	* param		: startSlot, Size, VertexBuffer
 	* @bug		: No Bugs known.
 	**/
-	void setVBuffer(int inStartSlot, unsigned int inSize, CBuffer & inVBuffer);
+	//void setVBuffer(unsigned int inStartSlot, unsigned int inSize, CMesh & inMesh);
+	void setVBuffer(unsigned int inStartSlot, unsigned int inSize, CBuffer & inVBuffer);
 	/**
 	* @brief	: Sets Index Buffer.
 	* param		: Format, IndexBuffer.
 	* @bug		: No Bugs known.
 	**/
-	void setIBuffer(int inFormat, CBuffer * inIBuffer);
+	void setIBuffer(int inFormat, CBuffer & inIBuffer);
 	/**
 	* @brief	: Sets ConstatnBuffer.
 	* param		: startSlot, set in Vertex and Pixel
 	* @bug		: No Bugs known.
 	**/
-	void setConstBuffer(int inStartSlot, bool inSetBoth, CBuffer & inConstBuffer);
+	void setVSConstBuffer(unsigned int inStartSlot, CBuffer & inConstBuffer);
+	void setPSConstBuffer(unsigned int inStartSlot, CBuffer & inConstBuffer);
 	/**
 	* @brief	: Update SubResource.
 	* param		: Data, Buffer to update.
 	* @bug		: No Bugs known.
 	**/
-	void updateBuffer(void * inData, CBuffer inBuffer);
+	void updateBuffer(void * inData, CBuffer &inBuffer);
 	/**
 	* @brief	: Sets teh num of indexes to draw.
 	* param		: Num of indexes to draw.
@@ -197,7 +199,8 @@ public:
 	* param		: Vertex shader, Pixel Shader.
 	* @bug		: No Bugs known.
 	**/
-	void setShaders(ID3D11VertexShader * inVS, ID3D11PixelShader * inPS);
+	void setVShader(ID3D11VertexShader * inVS);
+	void setPShader( ID3D11PixelShader * inPS);
 	/**
 	* @brief	: Sets shader Resource View.
 	* param		: ShaderResource View.

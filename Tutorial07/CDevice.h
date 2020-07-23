@@ -25,6 +25,9 @@
 #include "CRenderTargetView.h"
 #include "CDepthStencilView.h"
 #include "CSamplerState.h"
+#include "CPixelShader.h"
+#include "CVertexShader.h"
+
 
 class CDevice {
 public:
@@ -70,9 +73,14 @@ public:
 	* @param	: CVertexShader.
 	* @bug		: No Bugs known.
 	**/
+	//HRESULT createVShader(ID3D11ClassLinkage * inClass, CVertexShader * inVS);
 	HRESULT createVShader(ID3DBlob * inBlob, ID3D11ClassLinkage * inClass, ID3D11VertexShader *& inVS);
-
 	///Create Input Layout
+	/**
+	* @brief	: Create a Vertex Shader in the Device.
+	* @param	: CVertexShader.
+	* @bug		: No Bugs known.
+	**/
 	HRESULT createILayout(D3D11_INPUT_ELEMENT_DESC * inILDesc, unsigned int inNumElem, ID3DBlob *& inBlob, ID3D11InputLayout *& inIL);
 	///Create Pixel Shader
 	/**
@@ -80,6 +88,7 @@ public:
 	* @param	: CPixelShader.
 	* @bug		: No Bugs known.
 	**/
+	//HRESULT createPShader(CPixelShader * inPS);
 	HRESULT createPShader(ID3DBlob * inBlob, ID3D11PixelShader * inPS);
 	///Create SamplerState
 	/**
