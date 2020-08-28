@@ -90,10 +90,10 @@ public:
 	*/
 
 
+	IDXGISwapChain * m_SwapChain;
 private:
 	ID3D11Device * m_Device;
 	ID3D11DeviceContext * m_DContext;
-	IDXGISwapChain * m_SwapChain;
 	unsigned int m_Width;
 	unsigned int m_Height;
 

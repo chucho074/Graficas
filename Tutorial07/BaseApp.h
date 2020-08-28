@@ -56,10 +56,10 @@ public:
 	*/
 	static LRESULT CALLBACK handleWindowEvent(HWND inHw, UINT msg, WPARAM wParam, LPARAM lParam);
 
-private:
 	int m_Width = 0;
 	int m_Height = 0;
 	void * m_window = nullptr;
+private:
 
 
 };

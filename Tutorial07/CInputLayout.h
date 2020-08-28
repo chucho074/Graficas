@@ -14,6 +14,7 @@ struct InputLayoutDesc {
 	unsigned int format;
 	unsigned int inputSlot;
 	unsigned int alignedByteOffset;
+	unsigned int inputSlotClass;
 	unsigned int instanceDataStepRate;
 };
 
@@ -23,9 +24,9 @@ public:
 	~CInputLayout();
 	void init(InputLayoutDesc * inDesc, int inNumElements);
 
-private:
 	ID3D11InputLayout * m_IL;
 	std::vector<D3D11_INPUT_ELEMENT_DESC> m_Descriptors;
+private:
 
 protected:
 

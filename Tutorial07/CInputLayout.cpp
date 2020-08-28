@@ -16,7 +16,7 @@ void CInputLayout::init(InputLayoutDesc * inDesc, int inNumElements) {
 		layout.Format = (DXGI_FORMAT)inDesc[i].format;
 		layout.InputSlot = inDesc[i].inputSlot;
 		layout.AlignedByteOffset = inDesc[i].alignedByteOffset;
-		layout.InputSlotClass = (D3D11_INPUT_CLASSIFICATION)inDesc[i].inputSlot;
+		layout.InputSlotClass = (D3D11_INPUT_CLASSIFICATION)inDesc[i].inputSlotClass;
 		layout.InstanceDataStepRate = inDesc[i].instanceDataStepRate;
 		m_Descriptors.push_back(layout);
 	}
