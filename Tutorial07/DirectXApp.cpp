@@ -95,8 +95,8 @@ void DirectXApp::onCreate() {
 		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
 	};
 
-	VB = GAPI.createBuffer(sizeof(SimpleVertex) * 24, 0x1L, sizeof(SimpleVertex), vertices);
-	
+	VB = GAPI.createBuffer(sizeof(SimpleVertex) * 24, 0x1L, 0, vertices);
+	//GAPI.m_
 
 
 }

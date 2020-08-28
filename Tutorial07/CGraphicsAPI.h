@@ -85,15 +85,12 @@ public:
 	*/
 	CBuffer & createBuffer(unsigned int inByteWidth, unsigned int inBindFlags, unsigned int inOffset, void * inBufferData);
 	
-	/*
-	* @brief	: Creates the InputLayout
-	*/
-
+	
 
 	IDXGISwapChain * m_SwapChain;
+	ID3D11DeviceContext * m_DContext;
 private:
 	ID3D11Device * m_Device;
-	ID3D11DeviceContext * m_DContext;
 	unsigned int m_Width;
 	unsigned int m_Height;
 
