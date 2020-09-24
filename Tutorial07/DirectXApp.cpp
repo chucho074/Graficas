@@ -100,6 +100,7 @@ void DirectXApp::onCreate() {
 
 
 }
+
 void DirectXApp::onDestroy() {
 
 }
