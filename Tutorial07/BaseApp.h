@@ -14,7 +14,7 @@ protected:
 	*/
 	virtual void onCreate();
 	/*
-	* @brief	: Virtual Method in charge of destroying the settings and members .
+	* @brief	: Virtual Method in charge of destroying the settings and members.
 	*/
 	virtual void onDestroy();
 	/*

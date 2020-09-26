@@ -1,6 +1,6 @@
 #include "DirectXApp.h"
 
 DirectXApp App;
-int main() {
+int _Winmain() {
 	return App.run();
 }

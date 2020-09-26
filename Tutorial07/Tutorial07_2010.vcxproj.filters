@@ -12,27 +12,65 @@
       <UniqueIdentifier>{2c3d4c8c-5d1a-459a-a05a-a4e4b608a44e}</UniqueIdentifier>
       <Extensions>fx;fxh;hlsl</Extensions>
     </Filter>
+    <Filter Include="Headers">
+      <UniqueIdentifier>{f44bf784-8e26-4492-a84e-5687dc7e3abc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources">
+      <UniqueIdentifier>{f49655a9-1f91-4925-a47f-b3d509630eac}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BaseApp.cpp" />
-    <ClCompile Include="DirectXApp.cpp" />
-    <ClCompile Include="DXMain.cpp" />
-    <ClCompile Include="CGraphicsAPI.cpp" />
-    <ClCompile Include="CTexture2D.cpp" />
-    <ClCompile Include="CDepthStencilView.cpp" />
-    <ClCompile Include="CRenderTargetView.cpp" />
-    <ClCompile Include="CViewPort.cpp" />
-    <ClCompile Include="CShader.cpp" />
-    <ClCompile Include="CVertexShader.cpp" />
-    <ClCompile Include="CPixelShader.cpp" />
-    <ClCompile Include="CInputLayout.cpp" />
-    <ClCompile Include="CBuffer.cpp" />
-    <ClCompile Include="CPass.cpp" />
-    <ClCompile Include="CSampler.cpp" />
-    <ClCompile Include="CCamera.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Tutorial07.cpp" />
+    <ClCompile Include="BaseApp.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CBuffer.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CCamera.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CDepthStencilView.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CGraphicsAPI.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CInputLayout.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CPass.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CPixelShader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CRenderTargetView.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CSampler.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CShader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CTexture2D.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CVertexShader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CViewPort.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectXApp.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="DXMain.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial07.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -46,23 +84,57 @@
     <ResourceCompile Include="Tutorial07.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ClInclude Include="BaseApp.h" />
-    <ClInclude Include="DirectXApp.h" />
-    <ClInclude Include="CGraphicsAPI.h" />
-    <ClInclude Include="Module.h" />
-    <ClInclude Include="CTexture2D.h" />
-    <ClInclude Include="CDepthStencilView.h" />
-    <ClInclude Include="CRenderTargetView.h" />
-    <ClInclude Include="CViewPort.h" />
-    <ClInclude Include="CShader.h" />
-    <ClInclude Include="CVertexShader.h" />
-    <ClInclude Include="CPixelShader.h" />
-    <ClInclude Include="CInputLayout.h" />
-    <ClInclude Include="Defines.h" />
-    <ClInclude Include="CBuffer.h" />
-    <ClInclude Include="CPass.h" />
-    <ClInclude Include="CSampler.h" />
-    <ClInclude Include="CCamera.h" />
+    <ClInclude Include="BaseApp.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CBuffer.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CCamera.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CDepthStencilView.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CGraphicsAPI.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CInputLayout.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CPass.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CPixelShader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CRenderTargetView.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CSampler.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CShader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CTexture2D.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CVertexShader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CViewPort.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Defines.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXApp.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="Module.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

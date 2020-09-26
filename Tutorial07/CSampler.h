@@ -25,9 +25,9 @@ public:
 	void init(SamplerDesc inDesc);
 
 
-private:
 	ID3D11SamplerState * m_Sampler;
 	D3D11_SAMPLER_DESC m_Desc;
+private:
 
 protected:
 

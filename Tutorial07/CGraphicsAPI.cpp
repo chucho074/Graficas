@@ -7,6 +7,7 @@
 #include "CPixelShader.h"
 #include "CBuffer.h"
 #include "CInputLayout.h"
+#include "CSampler.h"
 
 CGraphicsAPI::CGraphicsAPI() {
 	m_Device = nullptr;
@@ -111,7 +112,8 @@ CDepthStencilView & CGraphicsAPI::createDSV(DepthStencilViewDesc inDesc) {
 	descDSV.ViewDimension = (D3D11_DSV_DIMENSION)inDesc.viewDimension;
 	descDSV.Texture2D.MipSlice = inDesc.mipSlice;
 
-	m_Device->CreateDepthStencilView(DepthStencil.m_Texture, &descDSV, &tempDSV.m_pDepthStencilView);
+	m_Device->CreateDepthStencilView(DepthStencil.m_Texture, &descDSV, 
+									&tempDSV.m_pDepthStencilView);
 
 	return tempDSV;
 }
@@ -171,7 +173,11 @@ CInputLayout & CGraphicsAPI::createIL(InputLayoutDesc * inDesc, int inNumElement
 	return tempIL;
 }
 
-CBuffer & CGraphicsAPI::createBuffer(unsigned int inByteWidth, unsigned int inBindFlags, unsigned int inOffset, void * inBufferData) {
+
+CBuffer & CGraphicsAPI::createBuffer(unsigned int inByteWidth, 
+									 unsigned int inBindFlags, 
+									 unsigned int inOffset, 
+									 void * inBufferData) {
 	//SmartPointers 
 	/*auto buffer = std::make_shared<CBuffer>();
 	auto tempBuffer = reinterpret_cast<CBuffer*>(buffer.get());*/
@@ -200,5 +206,13 @@ CBuffer & CGraphicsAPI::createBuffer(unsigned int inByteWidth, unsigned int inBi
 		return tempBuffer;
 	}
 		return tempBuffer;
+}
+
+
+CSampler CGraphicsAPI::createSampler(SamplerDesc inDesc) {
+	CSampler tmpSampler;
+	tmpSampler.init(inDesc);
+	m_Device->CreateSamplerState(&tmpSampler.m_Desc, &tmpSampler.m_Sampler);
+	return tmpSampler;
 }
 
