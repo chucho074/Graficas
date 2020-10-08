@@ -2,6 +2,8 @@
 
 CBuffer::CBuffer() {
 	m_Buffer = nullptr;
+	m_BufferData = nullptr;
+	memset(&m_Desc, 0, sizeof(m_Desc));
 }
 
 CBuffer::~CBuffer() {
@@ -25,3 +27,5 @@ void CBuffer::init(BufferDesc inDesc) {
 		m_BufferData = inDesc.SRD;
 	}
 }
+
+

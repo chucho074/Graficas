@@ -9,7 +9,7 @@ CInputLayout::~CInputLayout() {
 }
 
 void CInputLayout::init(InputLayoutDesc * inDesc, int inNumElements) {
-	for (int i = 0; i < inNumElements; i) {
+	for (int i = 0; i < inNumElements; i++) {
 		D3D11_INPUT_ELEMENT_DESC layout;
 		layout.SemanticName = inDesc[i].semanticName.c_str();
 		layout.SemanticIndex = inDesc[i].semanticIndex;

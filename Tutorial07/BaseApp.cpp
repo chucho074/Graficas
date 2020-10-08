@@ -5,9 +5,6 @@ BaseApp::~BaseApp() {
 }
 
 int BaseApp::run() {
-	m_Width = 1350;
-	m_Height = 300;
-
 	createWindow();
 	initSystems();
 	//Send message to device
@@ -22,6 +19,8 @@ int BaseApp::run() {
 			DispatchMessage(&msg);
 		}
 		else {
+			//Eventos
+
 			//Update Time
 			static float t = 0.0f;
 			static int dwTimeStart = 0;
@@ -36,16 +35,16 @@ int BaseApp::run() {
 			render();
 		}
 	}
-	// OnDestroy(Release)
+	onDestroy();
 
-	//Destroy all Systems
+	
 	return 0;
 }
 
-void BaseApp::onCreate() {
-
-
-}
+//void BaseApp::onCreate() {
+//
+//
+//}
 
 void BaseApp::onDestroy() {
 }
@@ -66,9 +65,9 @@ bool BaseApp::createWindow() {
 	wcex.cbWndExtra = 0;
 	wcex.hInstance = hInstance;
 	wcex.hIcon = LoadIcon(hInstance, (LPCTSTR)IDI_APPLICATION);
-	wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-	wcex.lpszMenuName = NULL;
+	wcex.lpszMenuName = nullptr;
 	wcex.lpszClassName = L"TutorialWindowClass";
 	wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR)IDI_APPLICATION);
 	if (!RegisterClassEx(&wcex)) {
@@ -101,6 +100,7 @@ bool BaseApp::createWindow() {
 	m_Width = clientRect.right - clientRect.left;
 	m_Height = clientRect.bottom - clientRect.top;
 	m_window = reinterpret_cast<void*>(hWd);
+	ShowWindow(hWd, 10);
 
 	return false;
 }
@@ -111,10 +111,14 @@ void BaseApp::update(float inDeltaTime) {
 
 void BaseApp::render() {
 	onRender();
+	//Set RT
+	//Present
+
 }
 
 void BaseApp::initSystems() {
 	CGraphicsAPI::Prepare();
+	g_GraphicsAPI().init(m_window, m_Width, m_Height);
 }
 
 void BaseApp::destroySystems() {
@@ -124,4 +128,8 @@ void BaseApp::destroySystems() {
 LRESULT BaseApp::handleWindowEvent(HWND inHw, UINT inMsg, WPARAM inwParam, LPARAM inlParam) {
 	
 	return DefWindowProc(inHw, inMsg, inwParam, inlParam);
+}
+
+CGraphicsAPI& g_GraphicsAPI() {
+	return CGraphicsAPI::getSingleton();
 }

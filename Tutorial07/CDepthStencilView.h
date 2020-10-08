@@ -46,7 +46,7 @@ public:
 	**/
 	~CDepthStencilView();
 
-	ID3D11DepthStencilView * m_pDepthStencilView;
+	ID3D11DepthStencilView * m_DSV;
 	DepthStencilViewDesc m_DSVDesc;
 private:
 

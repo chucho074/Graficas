@@ -12,7 +12,7 @@ protected:
 	/*
 	* @brief	: Virtual Method in charge of creating a virtual method.
 	*/
-	virtual void onCreate();
+	virtual void onCreate() = 0;
 	/*
 	* @brief	: Virtual Method in charge of destroying the settings and members.
 	*/
@@ -56,8 +56,8 @@ public:
 	*/
 	static LRESULT CALLBACK handleWindowEvent(HWND inHw, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	int m_Width = 0;
-	int m_Height = 0;
+	int m_Width = 640;
+	int m_Height = 480;
 	void * m_window = nullptr;
 private:
 

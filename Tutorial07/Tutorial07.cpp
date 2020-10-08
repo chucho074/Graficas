@@ -82,39 +82,39 @@ void Render();
 // Entry point to the program. Initializes everything and goes into a message processing 
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
-{
-    UNREFERENCED_PARAMETER(hPrevInstance);
-    UNREFERENCED_PARAMETER(lpCmdLine);
-
-    if (FAILED(InitWindow(hInstance, nCmdShow)))
-        return 0;
-
-    if (FAILED(InitDevice()))
-    {
-        CleanupDevice();
-        return 0;
-    }
-
-    // Main message loop
-    MSG msg = { 0 };
-    while (WM_QUIT != msg.message)
-    {
-        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else
-        {
-            Render();
-        }
-    }
-
-    CleanupDevice();
-
-    return (int)msg.wParam;
-}
+//int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
+//{
+//    UNREFERENCED_PARAMETER(hPrevInstance);
+//    UNREFERENCED_PARAMETER(lpCmdLine);
+//    
+//    if (FAILED(InitWindow(hInstance, nCmdShow)))
+//        return 0;
+//    
+//    if (FAILED(InitDevice()))
+//    {
+//        CleanupDevice();
+//        return 0;
+//    }
+//    
+//    // Main message loop
+//    MSG msg = { 0 };
+//    while (WM_QUIT != msg.message)
+//    {
+//        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+//        {
+//            TranslateMessage(&msg);
+//            DispatchMessage(&msg);
+//        }
+//        else
+//        {
+//            Render();
+//        }
+//    }
+//    
+//    CleanupDevice();
+//    
+//    return (int)msg.wParam;
+//}
 
 
 //--------------------------------------------------------------------------------------

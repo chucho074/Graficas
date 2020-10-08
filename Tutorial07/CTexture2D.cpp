@@ -7,5 +7,3 @@ CTexture2D::CTexture2D() {
 CTexture2D::~CTexture2D()
 {
 }
-
-

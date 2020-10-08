@@ -11,6 +11,9 @@
 #include "CBuffer.h"
 #include "CInputLayout.h"
 #include "CSampler.h"
+#include "CVertexShader.h"
+#include "CPixelShader.h"
+
 
 struct SimpleVertex {
 	XMFLOAT3 Pos;
@@ -41,20 +44,20 @@ public:
 	void onRender() override;
 
 private:
-	CGraphicsAPI GAPI;
-	CTexture2D backBuffer = CTexture2D();
-	CDepthStencilView DS = CDepthStencilView();
-	CRenderTargetView RTV1 = CRenderTargetView();
-	CViewPort VP = CViewPort();
-	CInputLayout IL = CInputLayout();
-	CSampler Sampler = CSampler();
-	CBuffer VB = CBuffer();
-	CBuffer IB = CBuffer();
-	CBuffer CB_NC = CBuffer();	//CCamera?
-	CBuffer CB_COR = CBuffer();	//CCamera
-	CBuffer CB_CEF = CBuffer();
-	XMMATRIX World;
-	XMMATRIX VM;				//CCamera
-	XMMATRIX PM;				//CCamera
+
+	CInputLayout * m_IL = nullptr;
+	CSampler *m_Sampler = nullptr;
+	CBuffer * m_VB = nullptr;
+	CBuffer * m_IB = nullptr;
+	CBuffer * m_CB_NC = nullptr;	//CCamera?
+	CBuffer * m_CB_COR = nullptr;	//CCamera?
+	CBuffer * m_CB_CEF = nullptr;
+	CVertexShader *m_VS = nullptr;
+	CPixelShader * m_PS = nullptr;
+	XMMATRIX m_World;
+	XMMATRIX m_VM;				//CCamera?
+	XMMATRIX m_PM;				//CCamera?
+	XMFLOAT4 m_MeshColor;
+	ID3D11ShaderResourceView* m_SRV = nullptr;
 };
 
