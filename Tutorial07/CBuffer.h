@@ -16,6 +16,8 @@ struct BufferDesc {
 	unsigned int stride = 0;
 	unsigned int offset = 0;
 	void * SRD = nullptr;
+	unsigned int memPitch = 0;
+	unsigned int memSlicePitch = 0;
 };
 
 class CBuffer {
@@ -24,8 +26,9 @@ public:
 	~CBuffer();
 	void init(BufferDesc inDesc);
 
-	void * m_BufferData;
+	
 	ID3D11Buffer * m_Buffer;
+	//No deberian existir aqui / 
 	D3D11_BUFFER_DESC m_Desc;
 	D3D11_SUBRESOURCE_DATA m_SRD;
 private:

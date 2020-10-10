@@ -8,6 +8,7 @@
 #include "CBuffer.h"
 #include "CInputLayout.h"
 #include "CSampler.h"
+#include <intrin.h>
 
 CGraphicsAPI::CGraphicsAPI() {
 	m_Device = nullptr;
@@ -16,7 +17,7 @@ CGraphicsAPI::CGraphicsAPI() {
 }
 
 CGraphicsAPI::~CGraphicsAPI() {
-
+	delete m_backBuffer;
 }
 
 void CGraphicsAPI::init(void * inWindow, int inWidth, int inHeight) {
@@ -74,21 +75,28 @@ HRESULT CGraphicsAPI::createDeviceAndSwpaChain(void* inWindow, int inWidth, int 
 			return hr;
 		}
 	}
-	
+	m_backBuffer = new CTexture2D();
 
 	//Get a texture from Swap Chain
 	m_SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&m_backBuffer->m_Texture);
 
 	//Create RTV
-	m_defaultRTV = createRTV(m_backBuffer);
+	if (FAILED(m_Device->CreateRenderTargetView(m_backBuffer->m_Texture,
+												nullptr,
+												&m_backBuffer->m_RTV))) {
+
+		__debugbreak();
+	}
+	
+
+	//m_defaultRTV = createTex2D(inWidth, inHeight, 1, DXGI_FORMAT_,D3D11_BIND_RENDER_TARGET);
 
 	//Create DSV
-	DepthStencilViewDesc descDepth;
-	descDepth.format = 45;
-	descDepth.mipSlice = 0;
-	descDepth.viewDimension = 3;
-
-	m_defaultDSV = createDSV(descDepth);
+	m_defaultDSV = createTex2D(inWidth, 
+							   inHeight, 
+							   1, 
+							   DXGI_FORMAT_D24_UNORM_S8_UINT,
+							   D3D11_BIND_DEPTH_STENCIL);
 
 	//Create and set a ViewPort
 	m_defaultVP = createVP(inWidth, inHeight);
@@ -97,52 +105,64 @@ HRESULT CGraphicsAPI::createDeviceAndSwpaChain(void* inWindow, int inWidth, int 
 	return hr;
 }
 
-CTexture2D * CGraphicsAPI::createTex2D(TextureDesc inDesc) {
+//Cambiar parametros
+CTexture2D * CGraphicsAPI::createTex2D(int inWidth,
+									   int inHeigh,
+									   int inMipLevels,
+									   DXGI_FORMAT inFormat,
+									   int inBindFlags) {
+	
 	
 	CTexture2D *temp = new CTexture2D();
 	CD3D11_TEXTURE2D_DESC tempDesc;
 	memset(&tempDesc, 0, sizeof(tempDesc));
-	tempDesc.Width = inDesc.W;
-	tempDesc.Height = inDesc.H;
-	tempDesc.MipLevels = inDesc.mipLevels;
-	tempDesc.ArraySize = inDesc.arraySize;
-	tempDesc.Format = (DXGI_FORMAT)inDesc.format;
-	tempDesc.SampleDesc.Count = inDesc.sampleDescCount;
-	tempDesc.SampleDesc.Quality = inDesc.sampleDescQuality;
-	tempDesc.Usage = (D3D11_USAGE)inDesc.usage;
-	tempDesc.BindFlags = (D3D11_BIND_FLAG)inDesc.flags;
-	tempDesc.CPUAccessFlags = inDesc.cpuAccessFlags;
-	tempDesc.MiscFlags = inDesc.miscFlags;
-	m_Device->CreateTexture2D(&tempDesc, nullptr, &temp->m_Texture);
+	tempDesc.Width = inWidth;
+	tempDesc.Height = inHeigh;
+	tempDesc.MipLevels = inMipLevels;
+	tempDesc.ArraySize = 1;
+	tempDesc.Format = inFormat;
+	tempDesc.SampleDesc.Count = 1;
+	tempDesc.SampleDesc.Quality = 0;
+	tempDesc.Usage = D3D11_USAGE_DEFAULT;
+	tempDesc.BindFlags = (D3D11_BIND_FLAG)inBindFlags;
+	tempDesc.CPUAccessFlags = 0;
+	tempDesc.MiscFlags = 0;
+	if (FAILED(m_Device->CreateTexture2D(&tempDesc, nullptr, &temp->m_Texture))) {
+		//Send error message
+		//Pone un breakpoint cuando llegue aqui
+		__debugbreak();
+		return nullptr;
+	}
 
 	//Meter aqui los casos para las distintas creaciones de objetos que usen Texturas
+	if (D3D11_BIND_RENDER_TARGET & inBindFlags) {
+		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
+		memset(&rtvDesc, 0, sizeof(rtvDesc));
+		rtvDesc.Format = tempDesc.Format;
+		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		rtvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		if (FAILED(m_Device->CreateRenderTargetView(temp->m_Texture, nullptr, &temp->m_RTV))) {
+			__debugbreak();
+			return nullptr;
+		}
 
+	}
+	if (D3D11_BIND_DEPTH_STENCIL & inBindFlags) {
+		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
+		memset(&dsvDesc, 0, sizeof(dsvDesc));
+		dsvDesc.Format = tempDesc.Format;
+		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+		dsvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		if (FAILED(m_Device->CreateDepthStencilView(temp->m_Texture, nullptr, &temp->m_DSV))) {
+			__debugbreak();
+			return nullptr;
+		}
+	}
 	
 	return temp;
 	
 }
 
-CDepthStencilView * CGraphicsAPI::createDSV(DepthStencilViewDesc inDesc) {
-	//Ya no va aqui
-	CTexture2D * DepthStencil = new CTexture2D();
-	CDepthStencilView *tempDSV = new CDepthStencilView();
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
-	memset(&descDSV, 0, sizeof(descDSV));
-	descDSV.Format = (DXGI_FORMAT)inDesc.format;
-	descDSV.ViewDimension = (D3D11_DSV_DIMENSION)inDesc.viewDimension;
-	descDSV.Texture2D.MipSlice = inDesc.mipSlice;
-
-	m_Device->CreateDepthStencilView(DepthStencil->m_Texture, &descDSV, 
-									&tempDSV->m_DSV);
-
-	return tempDSV;
-}
-
-CRenderTargetView * CGraphicsAPI::createRTV(CTexture2D * inBackBuffer) {
-	CRenderTargetView * RTV = new CRenderTargetView();
-	m_Device->CreateRenderTargetView(inBackBuffer->m_Texture, nullptr, &RTV->m_RTV);
-	return RTV;
-}
 
 CViewPort *CGraphicsAPI::createVP(int inWidth, int inHeight) {
 	CViewPort * temp = new CViewPort();
@@ -167,10 +187,15 @@ CVertexShader *CGraphicsAPI::createVS(WCHAR * inFileName,
 
 	CVertexShader * tempVS = new CVertexShader();
 	tempVS->init(inFileName, inEntryPoint, inShaderModel);
-	m_Device->CreateVertexShader(tempVS->m_CompiledVShader->GetBufferPointer(),
-								 tempVS->m_CompiledVShader->GetBufferSize(), 
-								 nullptr, 
-								 &tempVS->m_VS);
+	if(FAILED(m_Device->CreateVertexShader(tempVS->m_CompiledVShader->GetBufferPointer(),
+										   tempVS->m_CompiledVShader->GetBufferSize(), 
+										   nullptr, 
+										   &tempVS->m_VS))) {
+	
+		__debugbreak();
+		return nullptr;
+	}
+
 
 	return tempVS;
 }
@@ -180,17 +205,31 @@ CPixelShader *CGraphicsAPI::createPS(WCHAR * inFileName,
 									LPCSTR inShaderModel) {
 	CPixelShader *tempPS = new CPixelShader();
 	tempPS->init(inFileName, inEntryPoint, inShaderModel);
-	m_Device->CreatePixelShader(tempPS->m_CompiledPShader->GetBufferPointer(),
+	if(FAILED(m_Device->CreatePixelShader(tempPS->m_CompiledPShader->GetBufferPointer(),
 								tempPS->m_CompiledPShader->GetBufferSize(),
 								nullptr,
-								&tempPS->m_PS);
+								&tempPS->m_PS))){
+
+		__debugbreak();
+		return nullptr;
+	}
 
 	return tempPS;
 }
 
-CInputLayout * CGraphicsAPI::createIL(InputLayoutDesc * inDesc, int inNumElements) {
+CInputLayout * CGraphicsAPI::createIL(std::vector<InputLayoutDesc> & inDesc, 
+									  CVertexShader* inShader) {
+
 	CInputLayout *tempIL = new CInputLayout();
-	tempIL->init(inDesc, inNumElements);
+	tempIL->init(inDesc);
+	if(FAILED(m_Device->CreateInputLayout(tempIL->m_Descriptors.data(), 
+									 inDesc.size(), 
+									 inShader->m_CompiledVShader->GetBufferPointer(),
+									 inShader->m_CompiledVShader->GetBufferSize(),
+									 &tempIL->m_InputLayout))) {
+		__debugbreak();
+		return nullptr;
+	}
 	return tempIL;
 }
 
@@ -213,27 +252,41 @@ CBuffer * CGraphicsAPI::createBuffer(unsigned int inByteWidth,
 	tempDesc.offset = inOffset;
 	tempDesc.stride = 0;
 	tempDesc.SRD = inBufferData;
+	tempDesc.memPitch = inByteWidth;
+	tempDesc.memSlicePitch = 0;
+
 	tempBuffer->init(tempDesc);
-	if (nullptr != tempBuffer->m_BufferData) {
-		m_Device->CreateBuffer(&tempBuffer->m_Desc,
+	if (nullptr != tempBuffer->m_SRD.pSysMem) {
+		if(FAILED(m_Device->CreateBuffer(&tempBuffer->m_Desc,
 							   &tempBuffer->m_SRD,
-							   &tempBuffer->m_Buffer);
+							   &tempBuffer->m_Buffer))) {
+		
+			__debugbreak();
+			return nullptr;
+		}
 		//return tempBuffer;
 	}
 	else {
-		m_Device->CreateBuffer(&tempBuffer->m_Desc,
-							   nullptr,
-							   &tempBuffer->m_Buffer);
+		if(FAILED(m_Device->CreateBuffer(&tempBuffer->m_Desc,
+										 nullptr,
+										 &tempBuffer->m_Buffer))) {
+		
+			__debugbreak();
+			return nullptr;
+		}
 		//return tempBuffer;
 	}
 	return tempBuffer;
 }
 
 
-CSampler CGraphicsAPI::createSampler(SamplerDesc inDesc) {
-	CSampler tmpSampler;
-	tmpSampler.init(inDesc);
-	m_Device->CreateSamplerState(&tmpSampler.m_Desc, &tmpSampler.m_Sampler);
+CSampler * CGraphicsAPI::createSampler(SamplerDesc inDesc) {
+	CSampler *tmpSampler = new CSampler();
+	tmpSampler->init(inDesc);
+	if(FAILED(m_Device->CreateSamplerState(&tmpSampler->m_Desc, &tmpSampler->m_Sampler))) {
+		__debugbreak();
+		return nullptr;
+	}
 	return tmpSampler;
 }
 
@@ -254,30 +307,16 @@ void CGraphicsAPI::setTopology(D3D_PRIMITIVE_TOPOLOGY inTopotology) {
 	m_DContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void CGraphicsAPI::updateSubresource(CBuffer* inBuffer, void* inData) {
-	m_DContext->UpdateSubresource(inBuffer->m_Buffer, 0, NULL, inData, 0, 0);
+void CGraphicsAPI::updateSubresource(CBuffer* inBuffer, void* inData, unsigned int inPitch) {
+	m_DContext->UpdateSubresource(inBuffer->m_Buffer, 0, NULL, inData, inPitch, 0);
 }
 
-void CGraphicsAPI::clearRTV(CRenderTargetView * inRTV, float inColor[4]) {
-	//Case for default
-	if (nullptr == inRTV) {
-		m_DContext->ClearRenderTargetView(m_defaultRTV->m_RTV, inColor);
-	}
-	//Case for use the input
-	else {
-		m_DContext->ClearRenderTargetView(inRTV->m_RTV, inColor);
-	}
+void CGraphicsAPI::clearRTV(CTexture2D* inRTV, float inColor[4]) {
+	m_DContext->ClearRenderTargetView(inRTV->m_RTV, inColor);
 }
 
-void CGraphicsAPI::clearDSV(CDepthStencilView* inDSV) {
-	//Case for default
-	if (nullptr == inDSV) {
-		m_DContext->ClearDepthStencilView(m_defaultDSV->m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	}
-	//Case for use the input
-	else {
-		m_DContext->ClearDepthStencilView(inDSV->m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
-	}
+void CGraphicsAPI::clearDSV(CTexture2D* inDSV) {
+	m_DContext->ClearDepthStencilView(inDSV->m_DSV, D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void CGraphicsAPI::vsSetShader(CVertexShader* inVShader) {
@@ -302,6 +341,15 @@ void CGraphicsAPI::psSetShaderResource(unsigned int inSlot, ID3D11ShaderResource
 
 void CGraphicsAPI::psSetSampler(unsigned int inSlot, unsigned int inNumSamplers, CSampler* inSampler) {
 	m_DContext->PSSetSamplers(inSlot, inNumSamplers, &inSampler->m_Sampler);
+}
+
+void CGraphicsAPI::aiSetInputLayout(CInputLayout* inInputLayout) {
+	m_DContext->IASetInputLayout(inInputLayout->m_InputLayout);
+}
+
+void CGraphicsAPI::omSetRenderTarget(CTexture2D* inRT, CTexture2D* inDS) {
+	m_DContext->OMSetRenderTargets(1, &inRT->m_RTV, inDS->m_DSV);
+
 }
 
 void CGraphicsAPI::draw(unsigned int inNumIndexes, unsigned int inStartLocation) {

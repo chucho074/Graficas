@@ -36,7 +36,7 @@ void DirectXApp::onCreate() {
 	layoutDesc[1].inputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	layoutDesc[1].instanceDataStepRate = 0;
 
-	m_IL->init(&layoutDesc[0], 2);
+	m_InputLayout = GAPI.createIL(layoutDesc, m_VS);
 
 	//Create Pixel Shader
 	m_PS = GAPI.createPS(L"Tutorial07.fx", "PS", "ps_4_0");
@@ -128,7 +128,7 @@ void DirectXApp::onCreate() {
 	sampDesc.comparisonFunc = 1;
 	sampDesc.minLOD = 0;
 	sampDesc.maxLOD = 3.402823466e+38f;
-	GAPI.createSampler(sampDesc);
+	m_Sampler = GAPI.createSampler(sampDesc);
 
 	//Initialize world matrix
 	m_World = XMMatrixIdentity();
@@ -142,14 +142,14 @@ void DirectXApp::onCreate() {
 
 	CBNeverChanges cbNeverChanges;
 	cbNeverChanges.mView = XMMatrixTranspose(m_VM);
-	GAPI.updateSubresource(m_CB_NC, &cbNeverChanges);
+	GAPI.updateSubresource(m_CB_NC, &cbNeverChanges, sizeof(cbNeverChanges));
 
 	// Initialize the projection matrix
 	m_PM = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Width/m_Height, 0.01f, 100.0f);
 
 	CBChangeOnResize cbChangesOnResize;
 	cbChangesOnResize.mProjection = XMMatrixTranspose(m_PM);
-	GAPI.updateSubresource(m_CB_COR, &cbChangesOnResize);
+	GAPI.updateSubresource(m_CB_COR, &cbChangesOnResize, sizeof(cbChangesOnResize));
 
 }
 
@@ -169,18 +169,24 @@ void DirectXApp::onRender() {
 
 	auto& GAPI = g_GraphicsAPI();
 
+	//Set Render Target & Depth Stencil
+	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+
+	//Set Input Layout
+	GAPI.aiSetInputLayout(m_InputLayout);
+
 	// Clear the back buffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-	GAPI.clearRTV(nullptr, ClearColor);
+	GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
 
 	// Clear the depth buffer to 1.0 (max depth)
-	GAPI.clearDSV(nullptr);
+	GAPI.clearDSV(GAPI.getDefaultDephtStencil());
 
 	// Update variables that change once per frame
 	CBChangesEveryFrame cb;
 	cb.mWorld = XMMatrixTranspose(m_World);
 	cb.vMeshColor = m_MeshColor;
-	GAPI.updateSubresource(m_CB_CEF, &cb);
+	GAPI.updateSubresource(m_CB_CEF, &cb, sizeof(cb));
 
 	// Render the cube
 	GAPI.vsSetShader(m_VS);

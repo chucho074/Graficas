@@ -38,10 +38,16 @@ public:
 	* @brief	: Object for direct management of the texture.
 	* @bug		: No Bugs known.
 	**/
-	ID3D11Texture2D * m_Texture;
 
-	TextureDesc m_TexDesc;
+protected:
+	friend class CGraphicsAPI;
+
+	ID3D11Texture2D * m_Texture = nullptr;
+	TextureDesc m_TexDesc;							//no debe de existir
+	ID3D11ShaderResourceView * m_SRV = nullptr;
+	ID3D11DepthStencilView* m_DSV = nullptr;
+	ID3D11RenderTargetView* m_RTV = nullptr;
+
 private:
-	ID3D11ShaderResourceView * m_SRV;
 };
 

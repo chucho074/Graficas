@@ -22,13 +22,15 @@ class CInputLayout {
 public:
 	CInputLayout();
 	~CInputLayout();
-	void init(InputLayoutDesc * inDesc, int inNumElements);
-
-	ID3D11InputLayout * m_IL;
-	std::vector<D3D11_INPUT_ELEMENT_DESC> m_Descriptors;
-private:
+	void init(const std::vector<InputLayoutDesc> & inDesc);
 
 protected:
+	friend class CGraphicsAPI;
+
+	ID3D11InputLayout * m_InputLayout;
+	std::vector<D3D11_INPUT_ELEMENT_DESC> m_Descriptors;
+
+private:
 
 };
 

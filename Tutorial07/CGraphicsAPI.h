@@ -47,15 +47,12 @@ public:
 	/**
 	* @brief	: Creates the texture in the Device
 	**/
-	CTexture2D * CGraphicsAPI::createTex2D(TextureDesc inDesc);
-	/**
-	* @brief	: Creates the DSV in the Device
-	**/
-	CDepthStencilView * CGraphicsAPI::createDSV(DepthStencilViewDesc inDesc);
-	/**
-	* @brief	: Creates the RTV in the Device
-	**/
-	CRenderTargetView * CGraphicsAPI::createRTV(CTexture2D *inBackBuffer);
+	CTexture2D * CGraphicsAPI::createTex2D(int inWidth,
+										   int inHeigh,
+										   int inMipLevels,
+										   DXGI_FORMAT inFormat,
+										   int inBindFlags);
+	
 	/**
 	* @brief	: Creates the VP in the Device
 	**/
@@ -79,7 +76,7 @@ public:
 	/**
 	* @brief	: Creates the InputLayout
 	**/
-	CInputLayout * createIL(InputLayoutDesc * inDesc, int inNumElements);
+	CInputLayout * createIL(std::vector<InputLayoutDesc> & inDesc, CVertexShader * inShader);
 
 	/**
 	* @brief	: Creates a buffer
@@ -90,7 +87,7 @@ public:
 	/**
 	* @brief	: Creates a Sampler
 	**/
-	CSampler createSampler(SamplerDesc inDesc);
+	CSampler * createSampler(SamplerDesc inDesc);
 
 	/**
 	* @brief	: Creates a Sampler
@@ -107,13 +104,13 @@ public:
 	void setTopology(D3D_PRIMITIVE_TOPOLOGY inTopotology);
 
 	//Update Subresource
-	void updateSubresource(CBuffer * inBuffer, void * inData);
+	void updateSubresource(CBuffer * inBuffer, void * inData, unsigned int inPitch);
 
 	//Clear RTV
-	void clearRTV(CRenderTargetView * inRTV, float inColor[4] );
+	void clearRTV(CTexture2D* inRTV, float inColor[4] );
 
 	//Clear DSV
-	void clearDSV(CDepthStencilView * inDSV);
+	void clearDSV(CTexture2D* inDSV);
 
 	//VSSetShader
 	void vsSetShader(CVertexShader * inVShader);
@@ -135,8 +132,17 @@ public:
 					  unsigned int inNumSamplers, 
 					  CSampler * inSampler);
 
+	//IASetInputLayout
+	void aiSetInputLayout(CInputLayout * inInputLayout);
+
+	//OMSetRenderTargets
+	void omSetRenderTarget(CTexture2D * inRT, CTexture2D* inDS);
+
 	//DrawIndex
 	void draw(unsigned int inNumIndexes, unsigned int inStartLocation);
+
+	CTexture2D* getDefaultRenderTarget() { return m_backBuffer; }
+	CTexture2D* getDefaultDephtStencil() { return m_defaultDSV; }
 
   private:
 	ID3D11Device* m_Device;
@@ -144,8 +150,7 @@ public:
 	IDXGISwapChain* m_SwapChain;
 
 	CTexture2D  * m_backBuffer = nullptr;
-	CRenderTargetView * m_defaultRTV = nullptr;
-	CDepthStencilView * m_defaultDSV = nullptr;
+	CTexture2D  * m_defaultDSV = nullptr;
 	CViewPort * m_defaultVP = nullptr;
 };
 

@@ -45,7 +45,7 @@ public:
 
 private:
 
-	CInputLayout * m_IL = nullptr;
+	CInputLayout * m_InputLayout = nullptr;
 	CSampler *m_Sampler = nullptr;
 	CBuffer * m_VB = nullptr;
 	CBuffer * m_IB = nullptr;
