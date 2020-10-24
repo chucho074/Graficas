@@ -38,7 +38,7 @@ public:
 	* @brief	: Object for direct management of the texture.
 	* @bug		: No Bugs known.
 	**/
-
+	ID3D11ShaderResourceView* getSRV() { return m_SRV; }
 protected:
 	friend class CGraphicsAPI;
 

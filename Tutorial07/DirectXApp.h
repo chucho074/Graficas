@@ -13,6 +13,7 @@
 #include "CSampler.h"
 #include "CVertexShader.h"
 #include "CPixelShader.h"
+#include "CImageLoader.h"
 
 
 struct SimpleVertex {
@@ -52,12 +53,14 @@ private:
 	CBuffer * m_CB_NC = nullptr;	//CCamera?
 	CBuffer * m_CB_COR = nullptr;	//CCamera?
 	CBuffer * m_CB_CEF = nullptr;
-	CVertexShader *m_VS = nullptr;
+	CVertexShader * m_VS = nullptr;
 	CPixelShader * m_PS = nullptr;
 	XMMATRIX m_World;
 	XMMATRIX m_VM;				//CCamera?
 	XMMATRIX m_PM;				//CCamera?
 	XMFLOAT4 m_MeshColor;
-	ID3D11ShaderResourceView* m_SRV = nullptr;
+	CTexture2D * m_ColorTexture = nullptr;
+	
+	CTexture2D * m_MyRenderTarget = nullptr;
 };
 

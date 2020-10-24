@@ -8,6 +8,7 @@
 #include "CBuffer.h"
 #include "CInputLayout.h"
 #include "CSampler.h"
+#include "CImageLoader.h"
 #include <intrin.h>
 
 CGraphicsAPI::CGraphicsAPI() {
@@ -82,15 +83,14 @@ HRESULT CGraphicsAPI::createDeviceAndSwpaChain(void* inWindow, int inWidth, int 
 
 	//Create RTV
 	if (FAILED(m_Device->CreateRenderTargetView(m_backBuffer->m_Texture,
-												nullptr,
-												&m_backBuffer->m_RTV))) {
+	/******************************************/nullptr,
+	/******************************************/&m_backBuffer->m_RTV))) {
 
 		__debugbreak();
 	}
 	
 
-	//m_defaultRTV = createTex2D(inWidth, inHeight, 1, DXGI_FORMAT_,D3D11_BIND_RENDER_TARGET);
-
+	
 	//Create DSV
 	m_defaultDSV = createTex2D(inWidth, 
 							   inHeight, 
@@ -105,12 +105,12 @@ HRESULT CGraphicsAPI::createDeviceAndSwpaChain(void* inWindow, int inWidth, int 
 	return hr;
 }
 
-//Cambiar parametros
+
 CTexture2D * CGraphicsAPI::createTex2D(int inWidth,
-									   int inHeigh,
-									   int inMipLevels,
-									   DXGI_FORMAT inFormat,
-									   int inBindFlags) {
+/*************************************/int inHeigh,
+/*************************************/int inMipLevels,
+/*************************************/DXGI_FORMAT inFormat,
+/*************************************/int inBindFlags) {
 	
 	
 	CTexture2D *temp = new CTexture2D();
@@ -127,6 +127,7 @@ CTexture2D * CGraphicsAPI::createTex2D(int inWidth,
 	tempDesc.BindFlags = (D3D11_BIND_FLAG)inBindFlags;
 	tempDesc.CPUAccessFlags = 0;
 	tempDesc.MiscFlags = 0;
+
 	if (FAILED(m_Device->CreateTexture2D(&tempDesc, nullptr, &temp->m_Texture))) {
 		//Send error message
 		//Pone un breakpoint cuando llegue aqui
@@ -134,26 +135,42 @@ CTexture2D * CGraphicsAPI::createTex2D(int inWidth,
 		return nullptr;
 	}
 
-	//Meter aqui los casos para las distintas creaciones de objetos que usen Texturas
 	if (D3D11_BIND_RENDER_TARGET & inBindFlags) {
 		D3D11_RENDER_TARGET_VIEW_DESC rtvDesc;
 		memset(&rtvDesc, 0, sizeof(rtvDesc));
 		rtvDesc.Format = tempDesc.Format;
 		rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-		rtvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		//rtvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		rtvDesc.Texture2D.MipSlice = 0;
 		if (FAILED(m_Device->CreateRenderTargetView(temp->m_Texture, nullptr, &temp->m_RTV))) {
 			__debugbreak();
 			return nullptr;
 		}
 
 	}
+
 	if (D3D11_BIND_DEPTH_STENCIL & inBindFlags) {
 		D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc;
 		memset(&dsvDesc, 0, sizeof(dsvDesc));
 		dsvDesc.Format = tempDesc.Format;
 		dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-		dsvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		//dsvDesc.Texture2D.MipSlice = tempDesc.MipLevels;
+		dsvDesc.Texture2D.MipSlice = 0;
 		if (FAILED(m_Device->CreateDepthStencilView(temp->m_Texture, nullptr, &temp->m_DSV))) {
+			__debugbreak();
+			return nullptr;
+		}
+	}
+
+	if (D3D11_BIND_SHADER_RESOURCE & inBindFlags) {
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		memset(&srvDesc, 0, sizeof(srvDesc));
+		srvDesc.Format = tempDesc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		//srvDesc.Texture2D.MipLevels = tempDesc.MipLevels;
+		srvDesc.Texture2D.MipLevels = 0;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		if (FAILED(m_Device->CreateShaderResourceView(temp->m_Texture, nullptr, &temp->m_SRV))) {
 			__debugbreak();
 			return nullptr;
 		}
@@ -182,8 +199,8 @@ void CGraphicsAPI::setVP(CViewPort &inVP) {
 }
 
 CVertexShader *CGraphicsAPI::createVS(WCHAR * inFileName, 
-									 LPCSTR inEntryPoint, 
-									 LPCSTR inShaderModel) {
+/************************************/LPCSTR inEntryPoint, 
+/************************************/LPCSTR inShaderModel) {
 
 	CVertexShader * tempVS = new CVertexShader();
 	tempVS->init(inFileName, inEntryPoint, inShaderModel);
@@ -201,8 +218,8 @@ CVertexShader *CGraphicsAPI::createVS(WCHAR * inFileName,
 }
 
 CPixelShader *CGraphicsAPI::createPS(WCHAR * inFileName, 
-									LPCSTR inEntryPoint, 
-									LPCSTR inShaderModel) {
+/***********************************/LPCSTR inEntryPoint, 
+/***********************************/LPCSTR inShaderModel) {
 	CPixelShader *tempPS = new CPixelShader();
 	tempPS->init(inFileName, inEntryPoint, inShaderModel);
 	if(FAILED(m_Device->CreatePixelShader(tempPS->m_CompiledPShader->GetBufferPointer(),
@@ -218,7 +235,7 @@ CPixelShader *CGraphicsAPI::createPS(WCHAR * inFileName,
 }
 
 CInputLayout * CGraphicsAPI::createIL(std::vector<InputLayoutDesc> & inDesc, 
-									  CVertexShader* inShader) {
+/************************************/CVertexShader* inShader) {
 
 	CInputLayout *tempIL = new CInputLayout();
 	tempIL->init(inDesc);
@@ -235,9 +252,9 @@ CInputLayout * CGraphicsAPI::createIL(std::vector<InputLayoutDesc> & inDesc,
 
 
 CBuffer * CGraphicsAPI::createBuffer(unsigned int inByteWidth, 
-									 unsigned int inBindFlags, 
-									 unsigned int inOffset, 
-									 void * inBufferData) {
+/***********************************/unsigned int inBindFlags, 
+/***********************************/unsigned int inOffset, 
+/***********************************/void * inBufferData) {
 	//SmartPointers 
 	/*auto buffer = std::make_shared<CBuffer>();
 	auto tempBuffer = reinterpret_cast<CBuffer*>(buffer.get());*/
@@ -290,6 +307,7 @@ CSampler * CGraphicsAPI::createSampler(SamplerDesc inDesc) {
 	return tmpSampler;
 }
 
+
 void CGraphicsAPI::show() {
 	m_SwapChain->Present(0, 0);
 }
@@ -311,6 +329,19 @@ void CGraphicsAPI::updateSubresource(CBuffer* inBuffer, void* inData, unsigned i
 	m_DContext->UpdateSubresource(inBuffer->m_Buffer, 0, NULL, inData, inPitch, 0);
 }
 
+void CGraphicsAPI::updateTexture(CTexture2D* inTexture, 
+/*******************************/const void* inData, 
+/*******************************/unsigned int inPitch, 
+/*******************************/unsigned int inDepthPitch) {
+
+	m_DContext->UpdateSubresource(inTexture->m_Texture, 
+								  0, 
+								  NULL, 
+								  inData, 
+								  inPitch, 
+								  inDepthPitch);
+}
+
 void CGraphicsAPI::clearRTV(CTexture2D* inRTV, float inColor[4]) {
 	m_DContext->ClearRenderTargetView(inRTV->m_RTV, inColor);
 }
@@ -320,7 +351,12 @@ void CGraphicsAPI::clearDSV(CTexture2D* inDSV) {
 }
 
 void CGraphicsAPI::vsSetShader(CVertexShader* inVShader) {
-	m_DContext->VSSetShader(inVShader->m_VS, NULL, 0);
+
+	ID3D11VertexShader* tmpVShader = nullptr;
+	if (nullptr != inVShader) {
+		tmpVShader = inVShader->m_VS;
+	}
+	m_DContext->VSSetShader(tmpVShader, NULL, 0);
 }
 
 void CGraphicsAPI::vsSetConstantBuffer(unsigned int inSlot, CBuffer* inBuffer) {
@@ -328,15 +364,27 @@ void CGraphicsAPI::vsSetConstantBuffer(unsigned int inSlot, CBuffer* inBuffer) {
 }
 
 void CGraphicsAPI::psSetShader(CPixelShader* inPShader) {
-	m_DContext->PSSetShader(inPShader->m_PS, NULL, 0);
+	
+	ID3D11PixelShader* tmpPShader = nullptr;
+	if (nullptr != inPShader) {
+		tmpPShader = inPShader->m_PS;
+	}
+
+	m_DContext->PSSetShader(tmpPShader, NULL, 0);
 }
 
 void CGraphicsAPI::psSetConstantBuffer(unsigned int inSlot, CBuffer* inBuffer) {
 	m_DContext->PSSetConstantBuffers(inSlot, 1, &inBuffer->m_Buffer);
 }
 
-void CGraphicsAPI::psSetShaderResource(unsigned int inSlot, ID3D11ShaderResourceView* inSRV) {
-	m_DContext->PSSetShaderResources(inSlot, 1, &inSRV);
+void CGraphicsAPI::psSetShaderResource(unsigned int inSlot, CTexture2D* inTexture) {
+	
+	ID3D11ShaderResourceView *  tmpSRV = nullptr;
+	if (nullptr != inTexture) {
+		tmpSRV = inTexture->getSRV();
+	}
+
+	m_DContext->PSSetShaderResources(inSlot, 1, &tmpSRV);
 }
 
 void CGraphicsAPI::psSetSampler(unsigned int inSlot, unsigned int inNumSamplers, CSampler* inSampler) {
@@ -348,7 +396,31 @@ void CGraphicsAPI::aiSetInputLayout(CInputLayout* inInputLayout) {
 }
 
 void CGraphicsAPI::omSetRenderTarget(CTexture2D* inRT, CTexture2D* inDS) {
-	m_DContext->OMSetRenderTargets(1, &inRT->m_RTV, inDS->m_DSV);
+
+	ID3D11RenderTargetView* tmpRTV[D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT];
+	for (int i = 0; i < D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i) {
+		tmpRTV[i] = nullptr;
+	}
+
+
+	ID3D11DepthStencilView* tmpDSV = nullptr;
+
+	if (nullptr != inDS) {
+		tmpDSV = inDS->m_DSV;
+	}
+
+	if (nullptr != inRT) {
+		tmpRTV[0] = inRT->m_RTV;
+	}
+	else {
+		m_DContext->OMSetRenderTargets(D3D11_SIMULTANEOUS_RENDER_TARGET_COUNT, 
+									   tmpRTV, 
+									   tmpDSV);
+		return;
+	}
+	
+
+	m_DContext->OMSetRenderTargets(1, tmpRTV, tmpDSV);
 
 }
 

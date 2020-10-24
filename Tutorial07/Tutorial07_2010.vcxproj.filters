@@ -71,6 +71,9 @@
     <ClCompile Include="Tutorial07.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CImageLoader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -133,6 +136,9 @@
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="Module.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CImageLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>

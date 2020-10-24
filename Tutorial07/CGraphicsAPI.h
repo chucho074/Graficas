@@ -7,6 +7,7 @@
 #include <d3dcompiler.h>
 #include <xnamath.h>
 #include "resource.h"
+#include <string>
 
 class CTexture2D;
 class CDepthStencilView;
@@ -17,6 +18,7 @@ class CPixelShader;
 class CBuffer;
 class CInputLayout;
 class CSampler;
+class CImageLoader;
 
 struct TextureDesc;
 struct DepthStencilViewDesc;
@@ -68,29 +70,29 @@ public:
 									     LPCSTR inEntryPoint,
 									     LPCSTR inShaderModel);
 	/**
-	* @brief	: Sets the VP in the DeviceContext
+	* @brief	: Sets the VP in the DeviceContext.
 	**/
 	CPixelShader * CGraphicsAPI::createPS(WCHAR* inFileName,
 									     LPCSTR inEntryPoint,
 									     LPCSTR inShaderModel);
 	/**
-	* @brief	: Creates the InputLayout
+	* @brief	: Creates the InputLayout.
 	**/
 	CInputLayout * createIL(std::vector<InputLayoutDesc> & inDesc, CVertexShader * inShader);
 
 	/**
-	* @brief	: Creates a buffer
+	* @brief	: Creates a buffer.
 	**/
 	CBuffer * createBuffer(unsigned int inByteWidth, unsigned int inBindFlags, 
 						   unsigned int inOffset, void * inBufferData);
 	
 	/**
-	* @brief	: Creates a Sampler
+	* @brief	: Creates a Sampler.
 	**/
 	CSampler * createSampler(SamplerDesc inDesc);
 
 	/**
-	* @brief	: Creates a Sampler
+	* @brief	: Present.
 	**/
 	void show();
 
@@ -105,6 +107,9 @@ public:
 
 	//Update Subresource
 	void updateSubresource(CBuffer * inBuffer, void * inData, unsigned int inPitch);
+	//Update Texture
+	void updateTexture(CTexture2D * inTexture, const void * inData, unsigned int inPitch, unsigned int inDepthPitch);
+
 
 	//Clear RTV
 	void clearRTV(CTexture2D* inRTV, float inColor[4] );
@@ -113,19 +118,19 @@ public:
 	void clearDSV(CTexture2D* inDSV);
 
 	//VSSetShader
-	void vsSetShader(CVertexShader * inVShader);
+	void vsSetShader(CVertexShader * inVShader = nullptr);
 
 	//VSSetConstantBuffer
 	void vsSetConstantBuffer(unsigned int inSlot, CBuffer * inBuffer);
 
 	//PSSetShader
-	void psSetShader(CPixelShader * inPShader);
+	void psSetShader(CPixelShader * inPShader = nullptr);
 
 	//PSSetConstantBuffer
 	void psSetConstantBuffer(unsigned int inSlot, CBuffer * inBuffer);
 
 	//PSSetShaderResource
-	void psSetShaderResource(unsigned int inSlot, ID3D11ShaderResourceView * inSRV);
+	void psSetShaderResource(unsigned int inSlot, CTexture2D * inTexture = nullptr);
 
 	//PSSetSamplers
 	void psSetSampler(unsigned int inSlot, 
@@ -136,13 +141,14 @@ public:
 	void aiSetInputLayout(CInputLayout * inInputLayout);
 
 	//OMSetRenderTargets
-	void omSetRenderTarget(CTexture2D * inRT, CTexture2D* inDS);
+	void omSetRenderTarget(CTexture2D * inRT = nullptr, CTexture2D* inDS = nullptr);
 
 	//DrawIndex
 	void draw(unsigned int inNumIndexes, unsigned int inStartLocation);
 
 	CTexture2D* getDefaultRenderTarget() { return m_backBuffer; }
 	CTexture2D* getDefaultDephtStencil() { return m_defaultDSV; }
+
 
   private:
 	ID3D11Device* m_Device;

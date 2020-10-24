@@ -379,6 +379,7 @@
     <ClCompile Include="CCamera.cpp" />
     <ClCompile Include="CDepthStencilView.cpp" />
     <ClCompile Include="CGraphicsAPI.cpp" />
+    <ClCompile Include="CImageLoader.cpp" />
     <ClCompile Include="CInputLayout.cpp" />
     <ClCompile Include="CPass.cpp" />
     <ClCompile Include="CPixelShader.cpp" />
@@ -401,6 +402,7 @@
     <ClInclude Include="CCamera.h" />
     <ClInclude Include="CDepthStencilView.h" />
     <ClInclude Include="CGraphicsAPI.h" />
+    <ClInclude Include="CImageLoader.h" />
     <ClInclude Include="CInputLayout.h" />
     <ClInclude Include="CPass.h" />
     <ClInclude Include="CPixelShader.h" />

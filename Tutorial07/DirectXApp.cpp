@@ -19,6 +19,7 @@ void DirectXApp::onCreate() {
 	//Create Input Layout
 	std::vector<InputLayoutDesc> layoutDesc;
 	layoutDesc.resize(2);
+
 	// Positions
 	layoutDesc[0].semanticName = "POSITION";
 	layoutDesc[0].semanticIndex = 0;
@@ -27,6 +28,7 @@ void DirectXApp::onCreate() {
 	layoutDesc[0].alignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	layoutDesc[0].inputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	layoutDesc[0].instanceDataStepRate = 0;
+
 	//texcoords
 	layoutDesc[1].semanticName = "TEXCOORD";
 	layoutDesc[1].semanticIndex = 0;
@@ -117,7 +119,19 @@ void DirectXApp::onCreate() {
 	m_CB_CEF = GAPI.createBuffer(sizeof(CBChangesEveryFrame), 0x4L, 0, nullptr);
 
 	//Load Texture
-	//No se xd
+	CImageLoader imgLoader;
+	imgLoader.loadBMP("Test.bmp");
+	m_ColorTexture = GAPI.createTex2D(imgLoader.getWidth(),
+									  imgLoader.getHeight(),
+									  0,
+									  DXGI_FORMAT_R8G8B8A8_UNORM,
+									  D3D11_BIND_SHADER_RESOURCE);
+									//0xaabbggrr
+	GAPI.updateTexture(m_ColorTexture, 
+					   imgLoader.getImgData(), 
+					   imgLoader.getPitch(), 
+					   imgLoader.getImgSize());
+
 
 	//Create Sampler
 	SamplerDesc sampDesc;
@@ -134,7 +148,7 @@ void DirectXApp::onCreate() {
 	m_World = XMMatrixIdentity();
 
 	//Initialize Camera
-	// Initialize the view matrix
+	//Initialize the view matrix
 	XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
 	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
@@ -151,6 +165,14 @@ void DirectXApp::onCreate() {
 	cbChangesOnResize.mProjection = XMMatrixTranspose(m_PM);
 	GAPI.updateSubresource(m_CB_COR, &cbChangesOnResize, sizeof(cbChangesOnResize));
 
+	//Other Render Target
+	m_MyRenderTarget = GAPI.createTex2D(m_Width,
+					   				    m_Height,
+					   				    1,
+					   				    DXGI_FORMAT_R8G8B8A8_UNORM,
+					   				    D3D11_BIND_RENDER_TARGET | 
+										D3D11_BIND_SHADER_RESOURCE);
+	
 }
 
 
@@ -170,14 +192,17 @@ void DirectXApp::onRender() {
 	auto& GAPI = g_GraphicsAPI();
 
 	//Set Render Target & Depth Stencil
-	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+	//GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+	GAPI.omSetRenderTarget(m_MyRenderTarget);
+	
 
 	//Set Input Layout
 	GAPI.aiSetInputLayout(m_InputLayout);
 
 	// Clear the back buffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-	GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
+	//GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
+	GAPI.clearRTV(m_MyRenderTarget, ClearColor);
 
 	// Clear the depth buffer to 1.0 (max depth)
 	GAPI.clearDSV(GAPI.getDefaultDephtStencil());
@@ -195,13 +220,23 @@ void DirectXApp::onRender() {
 	GAPI.vsSetConstantBuffer(2, m_CB_CEF);
 	GAPI.psSetShader(m_PS);
 	GAPI.psSetConstantBuffer(2, m_CB_CEF);
-	GAPI.psSetShaderResource(0, m_SRV);
+	GAPI.psSetShaderResource(0, m_ColorTexture);
 	GAPI.psSetSampler(0, 1, m_Sampler);
+	GAPI.draw(36, 0);
+
+	//Render to the other Render Target
+	/*GAPI.psSetShader();
+	GAPI.psSetShader(m_PS);
+	GAPI.omSetRenderTarget();*/
+	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+	GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
+	GAPI.psSetShaderResource(0, m_MyRenderTarget);
 	GAPI.draw(36, 0);
 
 	//Make it show
 	GAPI.show();
 }
+
 
 CGraphicsAPI& g_GraphicsAPI() {
 	return CGraphicsAPI::getSingleton();
