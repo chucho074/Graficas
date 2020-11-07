@@ -56,10 +56,30 @@ PS_INPUT VS( VS_INPUT input )
 }
 
 
+PS_INPUT VS_REFLECT( VS_INPUT input )
+{
+    PS_INPUT output = (PS_INPUT)0;
+    output.Pos = mul( input.Pos, World );
+    output.Pos = mul( output.Pos, View );
+    output.Pos = mul( output.Pos, Projection );
+    output.Tex = input.Tex;
+    
+    return output;
+}
+
+
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
 float4 PS( PS_INPUT input) : SV_Target
 {
     return txDiffuse.Sample( samLinear, input.Tex ) /* * vMeshColor*/;
+}
+
+
+float4 PS_REFLECT(float4 vPos : SV_Position) : SV_Target
+{
+    float2 texSize = float2(1280, 720);     //Luego pasarlos en un constant buffer
+    float2 texCoord = vPos.xy / texSize;
+    return txDiffuse.Sample( samLinear, texCoord ) /* * vMeshColor*/;
 }

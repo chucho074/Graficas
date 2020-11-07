@@ -83,8 +83,10 @@ public:
 	/**
 	* @brief	: Creates a buffer.
 	**/
-	CBuffer * createBuffer(unsigned int inByteWidth, unsigned int inBindFlags, 
-						   unsigned int inOffset, void * inBufferData);
+	CBuffer * createBuffer(unsigned int inByteWidth, 
+						   unsigned int inBindFlags, 
+						   unsigned int inOffset, 
+						   void * inBufferData);
 	
 	/**
 	* @brief	: Creates a Sampler.
@@ -121,7 +123,7 @@ public:
 	void vsSetShader(CVertexShader * inVShader = nullptr);
 
 	//VSSetConstantBuffer
-	void vsSetConstantBuffer(unsigned int inSlot, CBuffer * inBuffer);
+	void vsSetConstantBuffer(unsigned int inSlot, CBuffer * inBuffer = nullptr);
 
 	//PSSetShader
 	void psSetShader(CPixelShader * inPShader = nullptr);

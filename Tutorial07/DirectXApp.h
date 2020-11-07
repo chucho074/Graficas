@@ -14,6 +14,7 @@
 #include "CVertexShader.h"
 #include "CPixelShader.h"
 #include "CImageLoader.h"
+#include "CCamera.h"
 
 
 struct SimpleVertex {
@@ -21,13 +22,13 @@ struct SimpleVertex {
 	XMFLOAT2 Tex;
 };
 
-struct CBNeverChanges {
-	XMMATRIX mView;
-};
-
-struct CBChangeOnResize {
-	XMMATRIX mProjection;
-};
+//struct CBNeverChanges {
+//	XMMATRIX mView;
+//};
+//
+//struct CBChangeOnResize {
+//	XMMATRIX mProjection;
+//};
 
 struct CBChangesEveryFrame {
 	XMMATRIX mWorld;
@@ -43,24 +44,29 @@ public:
 	void onDestroy() override;
 	void onUpdate(float inDeltaTime = 0) override;
 	void onRender() override;
+	void onEvent(UINT inMsg, WPARAM inwParam) override;
 
 private:
 
+	CCamera m_MainCamera;
 	CInputLayout * m_InputLayout = nullptr;
 	CSampler *m_Sampler = nullptr;
 	CBuffer * m_VB = nullptr;
 	CBuffer * m_IB = nullptr;
-	CBuffer * m_CB_NC = nullptr;	//CCamera?
-	CBuffer * m_CB_COR = nullptr;	//CCamera?
+	CBuffer * m_CB_NC = nullptr;	
+	CBuffer * m_CB_COR = nullptr;	
 	CBuffer * m_CB_CEF = nullptr;
 	CVertexShader * m_VS = nullptr;
+	CVertexShader * m_VS_Reflect = nullptr;
 	CPixelShader * m_PS = nullptr;
+	CPixelShader * m_PS_Reflect = nullptr;
 	XMMATRIX m_World;
-	XMMATRIX m_VM;				//CCamera?
-	XMMATRIX m_PM;				//CCamera?
 	XMFLOAT4 m_MeshColor;
 	CTexture2D * m_ColorTexture = nullptr;
 	
+
+	CBuffer* m_PlaneVB = nullptr;
+	CBuffer* m_PlaneIB = nullptr;
 	CTexture2D * m_MyRenderTarget = nullptr;
 };
 

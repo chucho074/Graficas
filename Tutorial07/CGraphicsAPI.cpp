@@ -360,7 +360,11 @@ void CGraphicsAPI::vsSetShader(CVertexShader* inVShader) {
 }
 
 void CGraphicsAPI::vsSetConstantBuffer(unsigned int inSlot, CBuffer* inBuffer) {
-	m_DContext->VSSetConstantBuffers(inSlot, 1, &inBuffer->m_Buffer);
+	ID3D11Buffer* tmpBuffer = nullptr;
+	if (nullptr != inBuffer) {
+		tmpBuffer = inBuffer->m_Buffer;
+	}
+	m_DContext->VSSetConstantBuffers(inSlot, 1, &tmpBuffer);
 }
 
 void CGraphicsAPI::psSetShader(CPixelShader* inPShader) {

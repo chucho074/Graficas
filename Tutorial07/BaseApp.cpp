@@ -12,14 +12,15 @@ int BaseApp::run() {
 	//ImGUI
 	
 	//Main Loop
-	MSG msg = { nullptr };
+	MSG msg = { 0 };
 	while (WM_QUIT != msg.message) {
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+			//Eventos propios
+			onEvent(msg.message, msg.wParam);
 		}
 		else {
-			//Eventos
 
 			//Update Time
 			static float t = 0.0f;
@@ -50,6 +51,10 @@ void BaseApp::onDestroy() {
 }
 
 void BaseApp::onRender() {
+}
+
+void BaseApp::onEvent(UINT inMsg, WPARAM inwParam) {
+
 }
 
 bool BaseApp::createWindow() {
@@ -127,7 +132,28 @@ void BaseApp::destroySystems() {
 
 LRESULT BaseApp::handleWindowEvent(HWND inHw, UINT inMsg, WPARAM inwParam, LPARAM inlParam) {
 	
-	return DefWindowProc(inHw, inMsg, inwParam, inlParam);
+	PAINTSTRUCT ps;
+	HDC hdc;
+	switch (inMsg) {
+	case WM_PAINT: {
+		hdc = BeginPaint(inHw, &ps);
+		EndPaint(inHw, &ps);
+		break;
+	}
+	case WM_DESTROY: {
+		PostQuitMessage(0);
+		break;
+	}
+	
+	
+	default: {
+		
+		return DefWindowProc(inHw, inMsg, inwParam, inlParam);
+		break;
+	}
+	}
+
+
 }
 
 CGraphicsAPI& g_GraphicsAPI() {

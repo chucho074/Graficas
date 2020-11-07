@@ -16,6 +16,9 @@ void DirectXApp::onCreate() {
 	//Create Vertex Shader 
 	m_VS = GAPI.createVS(L"Tutorial07.fx", "VS", "vs_4_0");
 
+	//Create Vertex Shader 
+	m_VS_Reflect = GAPI.createVS(L"Tutorial07.fx", "VS_REFLECT", "vs_4_0");
+
 	//Create Input Layout
 	std::vector<InputLayoutDesc> layoutDesc;
 	layoutDesc.resize(2);
@@ -42,6 +45,9 @@ void DirectXApp::onCreate() {
 
 	//Create Pixel Shader
 	m_PS = GAPI.createPS(L"Tutorial07.fx", "PS", "ps_4_0");
+
+	//Create Pixel Shader for the Reflection
+	m_PS_Reflect = GAPI.createPS(L"Tutorial07.fx", "PS_REFLECT", "ps_4_0");
 
 
 	SimpleVertex vertices[] = {
@@ -77,11 +83,18 @@ void DirectXApp::onCreate() {
 	};
 	//Create VB
 	m_VB = GAPI.createBuffer(sizeof(SimpleVertex) * 24, 0x1L, 0, vertices);
+
+	//Plane
+	SimpleVertex vertices4Plane[] = {
+		{ XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) },
+		{ XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+		{ XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+	};
+	//Create VB
+	m_PlaneVB = GAPI.createBuffer(sizeof(SimpleVertex) * 4, 0x1L, 0, vertices4Plane);
+
 	
-	// Set vertex buffer
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
-	GAPI.setVertexBuffer(m_VB, stride);
 
 
 	WORD indices[] = {
@@ -105,9 +118,17 @@ void DirectXApp::onCreate() {
 	};
 	//Create IB
 	m_IB = GAPI.createBuffer(sizeof(WORD) * 36, 0x2L, 0, indices);
-	//Set IB
-	GAPI.setIndexBuffer(m_IB, DXGI_FORMAT_R16_UINT);
 	
+	
+	//Plane
+	WORD indices4Plane[] = {
+		3,1,0,
+		2,1,3
+	};
+
+	//Create IB
+	m_PlaneIB = GAPI.createBuffer(sizeof(WORD) * 6, 0x2L, 0, indices4Plane);
+
 	//Set Topology
 	GAPI.setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -148,22 +169,11 @@ void DirectXApp::onCreate() {
 	m_World = XMMatrixIdentity();
 
 	//Initialize Camera
-	//Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet(0.0f, 3.0f, -6.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	m_VM = XMMatrixLookAtLH(Eye, At, Up);
+	m_MainCamera.init(XM_PIDIV4, (m_Width/m_Height), 0.01f, 100.0f);
+	
+	GAPI.updateSubresource(m_CB_NC, &m_MainCamera.m_NC, sizeof(m_MainCamera.m_NC));
 
-	CBNeverChanges cbNeverChanges;
-	cbNeverChanges.mView = XMMatrixTranspose(m_VM);
-	GAPI.updateSubresource(m_CB_NC, &cbNeverChanges, sizeof(cbNeverChanges));
-
-	// Initialize the projection matrix
-	m_PM = XMMatrixPerspectiveFovLH(XM_PIDIV4, m_Width/m_Height, 0.01f, 100.0f);
-
-	CBChangeOnResize cbChangesOnResize;
-	cbChangesOnResize.mProjection = XMMatrixTranspose(m_PM);
-	GAPI.updateSubresource(m_CB_COR, &cbChangesOnResize, sizeof(cbChangesOnResize));
+	GAPI.updateSubresource(m_CB_COR, &m_MainCamera.m_COR, sizeof(m_MainCamera.m_COR));
 
 	//Other Render Target
 	m_MyRenderTarget = GAPI.createTex2D(m_Width,
@@ -183,7 +193,7 @@ void DirectXApp::onDestroy() {
 
 void DirectXApp::onUpdate(float inDeltaTime) {
 	//Movimiento de objetos
-	m_World = XMMatrixRotationY(inDeltaTime);
+	//m_World = XMMatrixRotationY(inDeltaTime);
 }
 
 
@@ -192,16 +202,15 @@ void DirectXApp::onRender() {
 	auto& GAPI = g_GraphicsAPI();
 
 	//Set Render Target & Depth Stencil
-	//GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
-	GAPI.omSetRenderTarget(m_MyRenderTarget);
+	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+	//GAPI.omSetRenderTarget(m_MyRenderTarget);
 	
-
 	//Set Input Layout
 	GAPI.aiSetInputLayout(m_InputLayout);
 
 	// Clear the back buffer
 	float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red, green, blue, alpha
-	//GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
+	GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
 	GAPI.clearRTV(m_MyRenderTarget, ClearColor);
 
 	// Clear the depth buffer to 1.0 (max depth)
@@ -209,6 +218,7 @@ void DirectXApp::onRender() {
 
 	// Update variables that change once per frame
 	CBChangesEveryFrame cb;
+	m_World = XMMatrixIdentity();
 	cb.mWorld = XMMatrixTranspose(m_World);
 	cb.vMeshColor = m_MeshColor;
 	GAPI.updateSubresource(m_CB_CEF, &cb, sizeof(cb));
@@ -222,22 +232,100 @@ void DirectXApp::onRender() {
 	GAPI.psSetConstantBuffer(2, m_CB_CEF);
 	GAPI.psSetShaderResource(0, m_ColorTexture);
 	GAPI.psSetSampler(0, 1, m_Sampler);
+	
+	// Set vertex buffer
+	UINT stride = sizeof(SimpleVertex);
+	GAPI.setVertexBuffer(m_VB, stride);
+
+	//Set IB
+	GAPI.setIndexBuffer(m_IB, DXGI_FORMAT_R16_UINT);
+
+	GAPI.draw(36, 0);
+	
+					//Render to the other Render Target
+	GAPI.omSetRenderTarget(m_MyRenderTarget);
+
+	m_World = XMMatrixIdentity();
+	XMVECTOR tmpVect = { 0.f, 1.f, 0.f };
+	m_World *= XMMatrixReflect(tmpVect);
+
 	GAPI.draw(36, 0);
 
-	//Render to the other Render Target
-	/*GAPI.psSetShader();
-	GAPI.psSetShader(m_PS);
-	GAPI.omSetRenderTarget();*/
 	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
-	GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
-	GAPI.psSetShaderResource(0, m_MyRenderTarget);
-	GAPI.draw(36, 0);
 
+
+	//Set vertex buffer
+	GAPI.setVertexBuffer(m_PlaneVB, stride);
+	
+	//Set IB
+	GAPI.setIndexBuffer(m_PlaneIB, DXGI_FORMAT_R16_UINT);
+
+	m_World = XMMatrixIdentity();
+	m_World *= XMMatrixScaling(2.f, 2.f, 2.f);
+	//m_World *= XMMatrixRotationY(45);
+	m_World *= XMMatrixTranslation(0.f, -3.0f, -2.f);
+
+	cb.mWorld = XMMatrixTranspose(m_World);
+	cb.vMeshColor = m_MeshColor;
+	GAPI.updateSubresource(m_CB_CEF, &cb, sizeof(cb));
+	GAPI.vsSetConstantBuffer(2, m_CB_CEF);
+	GAPI.psSetConstantBuffer(2, m_CB_CEF);
+	
+	//GAPI.clearRTV(m_MyRenderTarget, ClearColor);
+	//GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
+	//GAPI.clearRTV(GAPI.getDefaultRenderTarget(), ClearColor);
+	///GAPI.psSetShaderResource(0, m_MyRenderTarget);
+	///GAPI.vsSetShader(m_VS_Reflect);
+	///GAPI.psSetShader(m_PS_Reflect);
+	GAPI.draw(6, 0);
+	
 	//Make it show
 	GAPI.show();
+}
+
+
+void DirectXApp::onEvent(UINT inMsg, WPARAM inwParam) {
+
+	auto& GAPI = g_GraphicsAPI();
+
+	switch (inMsg) {
+	case WM_KEYDOWN: {
+		if ((inwParam == VK_UP) || (inwParam == 'W' || inwParam == 'w')) {
+			XMVECTOR tmpVect = { 0.f, 0.f, 0.1f };
+			m_MainCamera.move(tmpVect);
+		}
+		else if ((inwParam == VK_DOWN) || (inwParam == 'S' || inwParam == 's')) {
+			XMVECTOR tmpVect = { 0.f, 0.f, -0.1f };
+			m_MainCamera.move(tmpVect);
+		}
+		if ((inwParam == VK_LEFT) || (inwParam == 'A' || inwParam == 'a')) {
+			XMVECTOR tmpVect = { -0.1f, 0.f, 0.f };
+			m_MainCamera.move(tmpVect);
+		}
+		else if ((inwParam == VK_RIGHT) || (inwParam == 'D' || inwParam == 'd')) {
+			XMVECTOR tmpVect = { 0.1f, 0.f, 0.f };
+			m_MainCamera.move(tmpVect);
+		}
+		if (inwParam == 'E' || inwParam == 'e') {
+			XMVECTOR tmpVect = { 0.f, 0.1f, 0.f };
+			m_MainCamera.move(tmpVect);
+		}
+		else if (inwParam == 'Q' || inwParam == 'q') {
+			XMVECTOR tmpVect = { 0.f, -0.1f, 0.f };
+			m_MainCamera.move(tmpVect);
+		}
+
+		GAPI.updateSubresource(m_CB_NC, &m_MainCamera.m_NC, sizeof(m_MainCamera.m_NC));
+	}
+	default:
+		break;
+	}
+	
 }
 
 
 CGraphicsAPI& g_GraphicsAPI() {
 	return CGraphicsAPI::getSingleton();
 }
+
+

@@ -27,6 +27,8 @@ protected:
 	*/
 	virtual void onRender();
 
+	virtual void onEvent(UINT inMsg, WPARAM inwParam);
+
 private:
 	/*
 	* @brief	: Method in charge of drawing on the screen all the visual info.
@@ -48,6 +50,7 @@ private:
 	* @brief	: Method that destroys the systems of the engine.
 	*/
 	void destroySystems();
+
 
 public:
 	//CallBack
