@@ -7,3 +7,4 @@ int WINAPI wWinMain(HINSTANCE hInstance,
 				    int nCmdShow) {
 	return App.run();
 }
+

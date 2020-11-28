@@ -24,18 +24,17 @@ class CBuffer {
 public:
 	CBuffer();
 	~CBuffer();
-	void init(BufferDesc inDesc);
 
 	
-	ID3D11Buffer * m_Buffer;
-	//No deberian existir aqui / 
-	D3D11_BUFFER_DESC m_Desc;
-	D3D11_SUBRESOURCE_DATA m_SRD;
+	ID3D11Buffer * m_Buffer = nullptr;
+
+
 private:
-	unsigned int m_StartSlot;
-	unsigned int m_NumBuffer;
-	unsigned int m_Stride;
-	unsigned int m_Offset;
+	//No deberian existir aqui / 
+	unsigned int m_StartSlot = 0;
+	unsigned int m_NumBuffer = 1;
+	unsigned int m_Stride = 0;
+	unsigned int m_Offset = 0;
 
 };
 

@@ -258,42 +258,22 @@ CBuffer * CGraphicsAPI::createBuffer(unsigned int inByteWidth,
 	//SmartPointers 
 	/*auto buffer = std::make_shared<CBuffer>();
 	auto tempBuffer = reinterpret_cast<CBuffer*>(buffer.get());*/
-	CBuffer * tempBuffer = new CBuffer();
-	BufferDesc tempDesc;
-	tempDesc.usage = D3D11_USAGE_DEFAULT;
-	tempDesc.byteWidth = inByteWidth;
-	tempDesc.bindFlags = inBindFlags;
-	tempDesc.CPUAccessFlags = 0;
-	tempDesc.startSlot = 0;
-	tempDesc.numBuffers = 1;
-	tempDesc.offset = inOffset;
-	tempDesc.stride = 0;
-	tempDesc.SRD = inBufferData;
-	tempDesc.memPitch = inByteWidth;
-	tempDesc.memSlicePitch = 0;
-
-	tempBuffer->init(tempDesc);
-	if (nullptr != tempBuffer->m_SRD.pSysMem) {
-		if(FAILED(m_Device->CreateBuffer(&tempBuffer->m_Desc,
-							   &tempBuffer->m_SRD,
-							   &tempBuffer->m_Buffer))) {
-		
-			__debugbreak();
-			return nullptr;
-		}
-		//return tempBuffer;
-	}
-	else {
-		if(FAILED(m_Device->CreateBuffer(&tempBuffer->m_Desc,
-										 nullptr,
-										 &tempBuffer->m_Buffer))) {
-		
-			__debugbreak();
-			return nullptr;
-		}
-		//return tempBuffer;
-	}
-	return tempBuffer;
+	CBuffer * tmpBuffer = new CBuffer();
+	CD3D11_BUFFER_DESC tmpDesc(inByteWidth, inBindFlags);
+	D3D11_SUBRESOURCE_DATA tmpData;
+	tmpData.pSysMem = inBufferData;
+	tmpData.SysMemPitch = inByteWidth;
+	tmpData.SysMemSlicePitch = 0;
+	
+	if(FAILED(m_Device->CreateBuffer(&tmpDesc,
+	/*******************************/(inBufferData == nullptr ? nullptr : &tmpData),
+	/*******************************/&tmpBuffer->m_Buffer))) {
+	
+		__debugbreak();
+		return nullptr;
+	}	
+	
+	return tmpBuffer;
 }
 
 

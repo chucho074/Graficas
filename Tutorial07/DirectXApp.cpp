@@ -5,9 +5,11 @@ DirectXApp::DirectXApp() {
   m_Height = 720;
 }
 
+
 DirectXApp::~DirectXApp() {
 
 }
+
 
 void DirectXApp::onCreate() {
 
@@ -21,7 +23,7 @@ void DirectXApp::onCreate() {
 
 	//Create Input Layout
 	std::vector<InputLayoutDesc> layoutDesc;
-	layoutDesc.resize(2);
+	layoutDesc.resize(3);
 
 	// Positions
 	layoutDesc[0].semanticName = "POSITION";
@@ -40,6 +42,15 @@ void DirectXApp::onCreate() {
 	layoutDesc[1].alignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	layoutDesc[1].inputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	layoutDesc[1].instanceDataStepRate = 0;
+	
+	//normals
+	layoutDesc[2].semanticName = "NORMAL";
+	layoutDesc[2].semanticIndex = 0;
+	layoutDesc[2].format = DXGI_FORMAT_R32G32_FLOAT;
+	layoutDesc[2].inputSlot = 0;
+	layoutDesc[2].alignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	layoutDesc[2].inputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	layoutDesc[2].instanceDataStepRate = 0;
 
 	m_InputLayout = GAPI.createIL(layoutDesc, m_VS);
 
@@ -94,8 +105,6 @@ void DirectXApp::onCreate() {
 	//Create VB
 	m_PlaneVB = GAPI.createBuffer(sizeof(SimpleVertex) * 4, 0x1L, 0, vertices4Plane);
 
-	
-
 
 	WORD indices[] = {
 		3,1,0,
@@ -129,6 +138,12 @@ void DirectXApp::onCreate() {
 	//Create IB
 	m_PlaneIB = GAPI.createBuffer(sizeof(WORD) * 6, 0x2L, 0, indices4Plane);
 
+	//Aqui iria la carga de modelos :D
+	m_Yoshi.loadModel("yoshipirate.obj");
+	//Cargar de esta forma las texturas
+	/*CImageLoader imgLoader;
+	imgLoader.loadBMP("Test.bmp");*/
+
 	//Set Topology
 	GAPI.setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -143,15 +158,15 @@ void DirectXApp::onCreate() {
 	CImageLoader imgLoader;
 	imgLoader.loadBMP("Test.bmp");
 	m_ColorTexture = GAPI.createTex2D(imgLoader.getWidth(),
-									  imgLoader.getHeight(),
-									  0,
-									  DXGI_FORMAT_R8G8B8A8_UNORM,
-									  D3D11_BIND_SHADER_RESOURCE);
+	/********************************/imgLoader.getHeight(),
+	/********************************/0,
+	/********************************/DXGI_FORMAT_R8G8B8A8_UNORM,
+	/********************************/D3D11_BIND_SHADER_RESOURCE);
 									//0xaabbggrr
 	GAPI.updateTexture(m_ColorTexture, 
-					   imgLoader.getImgData(), 
-					   imgLoader.getPitch(), 
-					   imgLoader.getImgSize());
+	/*****************/imgLoader.getImgData(), 
+	/*****************/imgLoader.getPitch(), 
+	/*****************/imgLoader.getImgSize());
 
 
 	//Create Sampler
@@ -171,17 +186,21 @@ void DirectXApp::onCreate() {
 	//Initialize Camera
 	m_MainCamera.init(XM_PIDIV4, (m_Width/m_Height), 0.01f, 100.0f);
 	
-	GAPI.updateSubresource(m_CB_NC, &m_MainCamera.m_NC, sizeof(m_MainCamera.m_NC));
+	CBNeverChanges tmpNC;
+	tmpNC.mView = m_MainCamera.getViewMatrix();
+	GAPI.updateSubresource(m_CB_NC, &tmpNC, sizeof(tmpNC));
 
-	GAPI.updateSubresource(m_CB_COR, &m_MainCamera.m_COR, sizeof(m_MainCamera.m_COR));
+	CBChangeOnResize tmpCOR;
+	tmpCOR.mProjection = m_MainCamera.getProyectionMatrix();
+	GAPI.updateSubresource(m_CB_COR, &tmpCOR, sizeof(tmpCOR));
 
 	//Other Render Target
 	m_MyRenderTarget = GAPI.createTex2D(m_Width,
-					   				    m_Height,
-					   				    1,
-					   				    DXGI_FORMAT_R8G8B8A8_UNORM,
-					   				    D3D11_BIND_RENDER_TARGET | 
-										D3D11_BIND_SHADER_RESOURCE);
+	/**********************************/m_Height,
+	/**********************************/1,
+	/**********************************/DXGI_FORMAT_R8G8B8A8_UNORM,
+	/**********************************/D3D11_BIND_RENDER_TARGET | 
+	/**********************************/D3D11_BIND_SHADER_RESOURCE);
 	
 }
 
@@ -254,16 +273,10 @@ void DirectXApp::onRender() {
 	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
 
 
-	//Set vertex buffer
-	GAPI.setVertexBuffer(m_PlaneVB, stride);
-	
-	//Set IB
-	GAPI.setIndexBuffer(m_PlaneIB, DXGI_FORMAT_R16_UINT);
-
 	m_World = XMMatrixIdentity();
-	m_World *= XMMatrixScaling(2.f, 2.f, 2.f);
+	m_World *= XMMatrixScaling(0.1f, 0.1f, 0.1f);
 	//m_World *= XMMatrixRotationY(45);
-	m_World *= XMMatrixTranslation(0.f, -3.0f, -2.f);
+	//m_World *= XMMatrixTranslation(0.f, -3.0f, -2.f);
 
 	cb.mWorld = XMMatrixTranspose(m_World);
 	cb.vMeshColor = m_MeshColor;
@@ -277,7 +290,8 @@ void DirectXApp::onRender() {
 	///GAPI.psSetShaderResource(0, m_MyRenderTarget);
 	///GAPI.vsSetShader(m_VS_Reflect);
 	///GAPI.psSetShader(m_PS_Reflect);
-	GAPI.draw(6, 0);
+
+	m_Yoshi.drawModel();
 	
 	//Make it show
 	GAPI.show();
@@ -315,7 +329,9 @@ void DirectXApp::onEvent(UINT inMsg, WPARAM inwParam) {
 			m_MainCamera.move(tmpVect);
 		}
 
-		GAPI.updateSubresource(m_CB_NC, &m_MainCamera.m_NC, sizeof(m_MainCamera.m_NC));
+		CBNeverChanges tmpNC;
+		tmpNC.mView = m_MainCamera.getViewMatrix();
+		GAPI.updateSubresource(m_CB_NC, &tmpNC, sizeof(tmpNC));
 	}
 	default:
 		break;
@@ -327,5 +343,3 @@ void DirectXApp::onEvent(UINT inMsg, WPARAM inwParam) {
 CGraphicsAPI& g_GraphicsAPI() {
 	return CGraphicsAPI::getSingleton();
 }
-
-

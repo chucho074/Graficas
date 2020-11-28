@@ -381,6 +381,8 @@
     <ClCompile Include="CGraphicsAPI.cpp" />
     <ClCompile Include="CImageLoader.cpp" />
     <ClCompile Include="CInputLayout.cpp" />
+    <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CObjectLoader.cpp" />
     <ClCompile Include="CPass.cpp" />
     <ClCompile Include="CPixelShader.cpp" />
     <ClCompile Include="CRenderTargetView.cpp" />
@@ -404,6 +406,8 @@
     <ClInclude Include="CGraphicsAPI.h" />
     <ClInclude Include="CImageLoader.h" />
     <ClInclude Include="CInputLayout.h" />
+    <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CObjectLoader.h" />
     <ClInclude Include="CPass.h" />
     <ClInclude Include="CPixelShader.h" />
     <ClInclude Include="CRenderTargetView.h" />

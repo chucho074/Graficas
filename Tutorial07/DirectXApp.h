@@ -14,21 +14,19 @@
 #include "CVertexShader.h"
 #include "CPixelShader.h"
 #include "CImageLoader.h"
+#include "CObjectLoader.h"
 #include "CCamera.h"
+#include "CMesh.h"
 
 
-struct SimpleVertex {
-	XMFLOAT3 Pos;
-	XMFLOAT2 Tex;
+
+struct CBNeverChanges {
+	XMMATRIX mView;
 };
 
-//struct CBNeverChanges {
-//	XMMATRIX mView;
-//};
-//
-//struct CBChangeOnResize {
-//	XMMATRIX mProjection;
-//};
+struct CBChangeOnResize {
+	XMMATRIX mProjection;
+};
 
 struct CBChangesEveryFrame {
 	XMMATRIX mWorld;
@@ -64,9 +62,11 @@ private:
 	XMFLOAT4 m_MeshColor;
 	CTexture2D * m_ColorTexture = nullptr;
 	
+	CMesh m_Yoshi;
 
 	CBuffer* m_PlaneVB = nullptr;
 	CBuffer* m_PlaneIB = nullptr;
+
 	CTexture2D * m_MyRenderTarget = nullptr;
 };
 

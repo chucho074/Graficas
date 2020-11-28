@@ -74,6 +74,8 @@
     <ClCompile Include="CImageLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="CObjectLoader.cpp" />
+    <ClCompile Include="CMesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -141,6 +143,8 @@
     <ClInclude Include="CImageLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CObjectLoader.h" />
+    <ClInclude Include="CMesh.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

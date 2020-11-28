@@ -21,12 +21,10 @@ void CCamera::init(float inAngle, float inAR, float inNear, float inFar) {
 void CCamera::update() {
 	m_VM = XMMatrixLookAtLH(m_Eye, m_At, m_Up);
 	m_VM = XMMatrixTranspose(m_VM);
-	m_NC.mView = m_VM;
 	updateVM();
 
 	m_PM = XMMatrixPerspectiveFovLH(m_Angle, m_AspectRatio, m_Near, m_Far);
 	m_PM = XMMatrixTranspose(m_PM);
-	m_COR.mProjection = m_PM;
 }
 
 void CCamera::updateVM() {
@@ -78,12 +76,11 @@ void CCamera::move(XMVECTOR inVect) {
 	};
 	Pos *= Axis;
 	m_VM = Pos;
-	m_NC.mView = m_VM;
 }
 
 XMMATRIX CCamera::getViewMatrix() {
 	//Process - update
-	return XMMATRIX();
+	return m_VM;
 }
 
 XMMATRIX CCamera::getProyectionMatrix() {

@@ -6,14 +6,6 @@
 #include "resource.h"
 #include "Defines.h"
 
-struct CBNeverChanges {
-	XMMATRIX mView;
-};
-
-struct CBChangeOnResize {
-	XMMATRIX mProjection;
-};
-
 
 class CCamera {
 public:
@@ -27,8 +19,6 @@ public:
 
 	void move(XMVECTOR inVect);
 
-	CBNeverChanges m_NC;
-	CBChangeOnResize m_COR;
 
 	XMMATRIX getViewMatrix();
 	XMMATRIX getProyectionMatrix();
