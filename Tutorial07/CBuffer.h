@@ -30,7 +30,7 @@ public:
 
 
 private:
-	//No deberian existir aqui / 
+	//No deberian existir aqui  
 	unsigned int m_StartSlot = 0;
 	unsigned int m_NumBuffer = 1;
 	unsigned int m_Stride = 0;

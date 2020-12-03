@@ -23,6 +23,10 @@ void CMesh::loadModel(std::string inFileName) {
 	CObjectLoader tmpObjectLoader;
 	tmpObjectLoader.loadObject(inFileName);
 
+	//Texture name
+	m_TextureName = tmpObjectLoader.getTextureName();
+
+
 	std::vector<SimpleVertex> tmpVertList;
 	auto numVertex = tmpObjectLoader.getNumVertex();
 	tmpVertList.reserve(numVertex);

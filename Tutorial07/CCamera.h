@@ -9,18 +9,28 @@
 
 class CCamera {
 public:
+	///Default Constructor
 	CCamera();
+
+	///Destructor
 	~CCamera();
 
+
 	void init(float inAngle, float inAR, float inNear, float inFar);
+
+
 	void update();
 
+
 	void updateVM();
+
 
 	void move(XMVECTOR inVect);
 
 
 	XMMATRIX getViewMatrix();
+
+
 	XMMATRIX getProyectionMatrix();
 private:
 	float m_Angle = 0;

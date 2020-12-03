@@ -24,7 +24,7 @@ public:
 	~CObjectLoader();
 
 	bool loadObject(std::string inFileName);
-	//Mandar referencias del vector
+
 	std::vector<std::vector<float>> & getVertex() { return m_VertexList; }
 	std::vector<std::vector<float>> & getTextureCoords() { return m_TextureCoordsList; }
 	std::vector<std::vector<float>> & getVertexNormal() { return m_VertexNormalList; }
@@ -39,10 +39,12 @@ public:
 
 private:
 	bool readLineObj(std::string inLine);
+	bool readLineMtl(std::string inLine);
 
 	
 
 	std::string m_TextureFile;
+	std::string m_MTLFile = " ";
 
 	std::vector<std::vector<float>> m_VertexList;
 	std::vector<std::vector<float>> m_TextureCoordsList;

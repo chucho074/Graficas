@@ -157,6 +157,7 @@ void DirectXApp::onCreate() {
 	//Load Texture
 	CImageLoader imgLoader;
 	imgLoader.loadBMP("Test.bmp");
+
 	m_ColorTexture = GAPI.createTex2D(imgLoader.getWidth(),
 	/********************************/imgLoader.getHeight(),
 	/********************************/0,

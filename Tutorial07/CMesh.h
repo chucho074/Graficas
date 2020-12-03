@@ -43,7 +43,7 @@ private:
 	CBuffer* m_VertexBuffer;
 
 	//Obtener los nombres de las texturas a cargar por el modelo
-
+	std::string m_TextureName;
 
 };
 

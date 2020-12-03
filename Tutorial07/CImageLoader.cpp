@@ -12,7 +12,10 @@ CImageLoader::~CImageLoader() {
 
 
 void CImageLoader::loadBMP(std::string inFileName) {
-	
+
+	//Clear the variables to use it
+	clearData();
+
 	std::ifstream FS;
 	BITMAPFILEHEADER fileHeader;
 	BITMAPINFOHEADER infoHeader;
@@ -51,4 +54,12 @@ void CImageLoader::loadBMP(std::string inFileName) {
 
 	//Close File
 	FS.close();
+}
+
+
+void CImageLoader::clearData() {
+	m_Width = 0;
+	m_Height = 0;
+	m_BPP = 0;
+	m_Img.clear();
 }

@@ -12,7 +12,6 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
-
 #include <windows.h>
 
 /**
@@ -77,13 +76,18 @@ public:
    **/
     unsigned int getPitch() { return m_Width * m_BPP; }
 
-
    /**
    * @brief    Getter for full image size.
    * @bug      No know Bugs.
    * @return   Returns the full size in bytes.
    **/
     unsigned int getImgSize() { return m_Width * m_Height * m_BPP; }
+
+    /**
+   * @brief    Clears the variables to use it again.
+   * @bug      No know Bugs.
+   **/
+    void clearData();
 private:
 
     

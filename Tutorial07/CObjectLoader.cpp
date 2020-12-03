@@ -36,6 +36,24 @@ bool CObjectLoader::loadObject(std::string inFileName) {
 	}
 
 	FS.close();
+
+	if (" " != m_MTLFile) {
+		FS.open(m_MTLFile, std::ios::in);
+		while (!FS.eof()) {
+			std::getline(FS, tmpLine);
+			tmpLineIter++;
+
+			if (!readLineMtl(tmpLine)) {
+				tmpIsReaded = false;
+				break;
+			}
+
+		}
+
+		FS.close();
+	}
+
+
 	return tmpIsReaded;
 }
 
@@ -54,7 +72,7 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 	//Texture
 	if ("mtllib " == inLine.substr(0, 7)) {
 		std::stringstream tmpBuffer(inLine.substr(7));
-		tmpBuffer >> m_TextureFile;
+		tmpBuffer >> m_MTLFile;
 		return true;
 	}
 
@@ -140,5 +158,31 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 
 
 
+	return false;
+}
+
+bool CObjectLoader::readLineMtl(std::string inLine) {
+	//map_Kd
+	if ("\t" == inLine.substr(0, 1)) {
+		inLine.erase(inLine.begin());
+	}
+
+	if ("Ns " == inLine.substr(0, 3)
+		|| "d " == inLine.substr(0, 2)
+		|| "illum " == inLine.substr(0, 6)
+		|| "newmtl " == inLine.substr(0, 7)
+		|| "Kd " == inLine.substr(0, 3)
+		|| "Ks " == inLine.substr(0, 3)
+		|| "Ka " == inLine.substr(0, 3)
+		|| "#" == inLine.substr(0, 1)
+		|| "" == inLine.substr(0, 1)) {
+
+		return true;
+	}
+	else if ("map_Kd " == inLine.substr(0, 7)) {
+		std::stringstream tmpBuffer(inLine.substr(7));
+		tmpBuffer >> m_TextureFile;
+		return true;
+	}
 	return false;
 }
