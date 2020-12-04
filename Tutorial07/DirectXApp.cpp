@@ -141,8 +141,8 @@ void DirectXApp::onCreate() {
 	//Aqui iria la carga de modelos :D
 	m_Yoshi.loadModel("yoshipirate.obj");
 	//Cargar de esta forma las texturas
-	/*CImageLoader imgLoader;
-	imgLoader.loadBMP("Test.bmp");*/
+	CImageLoader imgLoader;
+	imgLoader.loadBMP(m_Yoshi.getTexture());
 
 	//Set Topology
 	GAPI.setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -155,8 +155,8 @@ void DirectXApp::onCreate() {
 	m_CB_CEF = GAPI.createBuffer(sizeof(CBChangesEveryFrame), 0x4L, 0, nullptr);
 
 	//Load Texture
-	CImageLoader imgLoader;
-	imgLoader.loadBMP("Test.bmp");
+	//CImageLoader imgLoader;
+	//imgLoader.loadBMP("Test.bmp");
 
 	m_ColorTexture = GAPI.createTex2D(imgLoader.getWidth(),
 	/********************************/imgLoader.getHeight(),

@@ -33,6 +33,8 @@ public:
 
 	void drawModel();
 
+	std::string getTexture() { return m_TextureName; }
+
 private:
 	int m_IndexNum;
 	
