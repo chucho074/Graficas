@@ -76,6 +76,8 @@
     </ClCompile>
     <ClCompile Include="CObjectLoader.cpp" />
     <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="CMaterial.cpp" />
+    <ClCompile Include="CModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -145,6 +147,8 @@
     </ClInclude>
     <ClInclude Include="CObjectLoader.h" />
     <ClInclude Include="CMesh.h" />
+    <ClInclude Include="CMaterial.h" />
+    <ClInclude Include="CModel.h" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

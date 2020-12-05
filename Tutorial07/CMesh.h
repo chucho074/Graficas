@@ -13,11 +13,6 @@
 
 class CBuffer;
 
-struct SimpleVertex {
-	XMFLOAT3 Pos;
-	XMFLOAT2 Tex;
-	XMFLOAT3 Nor;
-};
 
 /**
 * @class    CMesh.
@@ -33,7 +28,9 @@ public:
 
 	void drawModel();
 
-	std::string getTexture() { return m_TextureName; }
+	std::vector<std::string> getTextures() { return m_TexturesNames; }
+
+	unsigned int getNumTextures() { return m_TexturesNames.size(); }
 
 private:
 	int m_IndexNum;
@@ -45,7 +42,7 @@ private:
 	CBuffer* m_VertexBuffer;
 
 	//Obtener los nombres de las texturas a cargar por el modelo
-	std::string m_TextureName;
+	std::vector<std::string> m_TexturesNames;
 
 };
 

@@ -24,16 +24,17 @@ void CMesh::loadModel(std::string inFileName) {
 	tmpObjectLoader.loadObject(inFileName);
 
 	//Texture name
-	m_TextureName = tmpObjectLoader.getTextureName();
+	m_TexturesNames = tmpObjectLoader.getTextureName();
 
 
 	std::vector<SimpleVertex> tmpVertList;
 	auto numVertex = tmpObjectLoader.getNumVertex();
 	tmpVertList.reserve(numVertex);
 
-	for (int i = 0; i<numVertex; ++i) {
+	/*for (int i = 0; i < numVertex; ++i) {
 		tmpVertList.emplace_back();
 		SimpleVertex& tmpVertex = tmpVertList.back();
+		auto& objFaces = tmpObjectLoader.getFaces();
 		auto& objVertex = tmpObjectLoader.getVertex()[i];
 		auto& texCoord = tmpObjectLoader.getTextureCoords()[i];
 		auto& normals = tmpObjectLoader.getVertexNormal()[i];
@@ -48,23 +49,26 @@ void CMesh::loadModel(std::string inFileName) {
 		tmpVertex.Nor = XMFLOAT3(normals[0],
 								 normals[1],
 								 normals[2]);
-	}
+	}*/
+	
+	auto& tmpBuffer = tmpObjectLoader.getVertBuffer();
 
-	m_VertexBuffer = GAPI.createBuffer(sizeof(SimpleVertex) * tmpVertList.size(),
+	m_VertexBuffer = GAPI.createBuffer(sizeof(SimpleVertex) * tmpBuffer.size(),
 									   0x1L, 
 									   0,
-									   tmpVertList.data());
+									   tmpBuffer.data());
 
 
 	auto& faces = tmpObjectLoader.getFaces();
 	auto numIndices = faces.size() * 3;
 	std::vector<unsigned short> tmpIndices;
 	tmpIndices.reserve(numIndices);
-
+	int tmpIndexCount = 0;
 	for(auto& face : faces) {
-	  tmpIndices.push_back(face[0]);
-	  tmpIndices.push_back(face[3]);
-	  tmpIndices.push_back(face[6]);
+	  tmpIndices.push_back(tmpIndexCount * 3 + 0);
+	  tmpIndices.push_back(tmpIndexCount * 3 + 1);
+	  tmpIndices.push_back(tmpIndexCount * 3 + 2);
+	  ++tmpIndexCount;
 	}
 
 	m_IndexBuffer = GAPI.createBuffer(sizeof(unsigned short) * tmpIndices.size(),
@@ -77,6 +81,7 @@ void CMesh::loadModel(std::string inFileName) {
 
 
 }
+
 
 void CMesh::drawModel() {
 

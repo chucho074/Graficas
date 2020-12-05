@@ -142,7 +142,9 @@ void DirectXApp::onCreate() {
 	m_Yoshi.loadModel("yoshipirate.obj");
 	//Cargar de esta forma las texturas
 	CImageLoader imgLoader;
-	imgLoader.loadBMP(m_Yoshi.getTexture());
+	for (int i = 0; i < m_Yoshi.getNumTextures(); i++) {
+		imgLoader.loadBMP(m_Yoshi.getTextures()[i]);
+	}
 
 	//Set Topology
 	GAPI.setTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -163,7 +165,8 @@ void DirectXApp::onCreate() {
 	/********************************/0,
 	/********************************/DXGI_FORMAT_R8G8B8A8_UNORM,
 	/********************************/D3D11_BIND_SHADER_RESOURCE);
-									//0xaabbggrr
+										//0xaabbggrr
+
 	GAPI.updateTexture(m_ColorTexture, 
 	/*****************/imgLoader.getImgData(), 
 	/*****************/imgLoader.getPitch(), 
@@ -213,7 +216,7 @@ void DirectXApp::onDestroy() {
 
 void DirectXApp::onUpdate(float inDeltaTime) {
 	//Movimiento de objetos
-	//m_World = XMMatrixRotationY(inDeltaTime);
+	m_World = XMMatrixRotationY(inDeltaTime);
 }
 
 
@@ -238,7 +241,7 @@ void DirectXApp::onRender() {
 
 	// Update variables that change once per frame
 	CBChangesEveryFrame cb;
-	m_World = XMMatrixIdentity();
+	//m_World = XMMatrixIdentity();
 	cb.mWorld = XMMatrixTranspose(m_World);
 	cb.vMeshColor = m_MeshColor;
 	GAPI.updateSubresource(m_CB_CEF, &cb, sizeof(cb));
@@ -265,7 +268,7 @@ void DirectXApp::onRender() {
 					//Render to the other Render Target
 	GAPI.omSetRenderTarget(m_MyRenderTarget);
 
-	m_World = XMMatrixIdentity();
+	//m_World = XMMatrixIdentity();
 	XMVECTOR tmpVect = { 0.f, 1.f, 0.f };
 	m_World *= XMMatrixReflect(tmpVect);
 
@@ -273,8 +276,11 @@ void DirectXApp::onRender() {
 
 	GAPI.omSetRenderTarget(GAPI.getDefaultRenderTarget(), GAPI.getDefaultDephtStencil());
 
+	static float tmpRotation = 3.1415f / 550.0f;
+	tmpRotation += 3.1415f / 550.0f;
 
 	m_World = XMMatrixIdentity();
+	m_World = XMMatrixRotationY(tmpRotation);
 	m_World *= XMMatrixScaling(0.1f, 0.1f, 0.1f);
 	//m_World *= XMMatrixRotationY(45);
 	//m_World *= XMMatrixTranslation(0.f, -3.0f, -2.f);

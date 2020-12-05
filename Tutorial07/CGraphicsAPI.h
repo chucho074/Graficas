@@ -5,9 +5,11 @@
 #include <d3d11.h>
 #include <d3dx11.h>
 #include <d3dcompiler.h>
-#include <xnamath.h>
 #include "resource.h"
 #include <string>
+#include <DirectXMath.h>
+
+using namespace DirectX;
 
 class CTexture2D;
 class CDepthStencilView;

@@ -13,6 +13,18 @@
 #include <iostream>
 #include <stdio.h>
 
+#include <DirectXMath.h>
+
+using namespace DirectX;
+
+struct SimpleVertex {
+	XMFLOAT3 Pos;
+	XMFLOAT2 Tex;
+	XMFLOAT3 Nor;
+};
+
+
+
 /**
 * @class    CObjectLoader.
 * @brief    This class read info from a .obj file.
@@ -35,21 +47,23 @@ public:
 	int getNumNormals() { return m_VertexNormalList.size(); }
 	int getNumFaces() { return m_FacesList.size(); }
 
-	std::string getTextureName() { return m_TextureFile; }
+	std::vector<std::string> & getTextureName() { return m_TextureFiles; }
 
+	std::vector<SimpleVertex> getVertBuffer() { return m_VertexBuffer; }
 private:
 	bool readLineObj(std::string inLine);
 	bool readLineMtl(std::string inLine);
 
 	
 
-	std::string m_TextureFile;
+	std::vector<std::string> m_TextureFiles;
 	std::string m_MTLFile = " ";
 
 	std::vector<std::vector<float>> m_VertexList;
 	std::vector<std::vector<float>> m_TextureCoordsList;
 	std::vector<std::vector<float>> m_VertexNormalList;
 	std::vector<std::vector<unsigned short>> m_FacesList;
+	std::vector<SimpleVertex> m_VertexBuffer;
 
 };
 

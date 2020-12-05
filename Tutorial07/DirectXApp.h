@@ -18,6 +18,10 @@
 #include "CCamera.h"
 #include "CMesh.h"
 
+#include "ImGUI/imgui.h"
+#include "ImGUI/imgui_impl_dx11.h"
+#include "ImGUI/imgui_impl_win32.h"
+
 
 
 struct CBNeverChanges {
@@ -48,7 +52,7 @@ private:
 
 	CCamera m_MainCamera;
 	CInputLayout * m_InputLayout = nullptr;
-	CSampler *m_Sampler = nullptr;
+	CSampler * m_Sampler = nullptr;
 	CBuffer * m_VB = nullptr;
 	CBuffer * m_IB = nullptr;
 	CBuffer * m_CB_NC = nullptr;	
@@ -64,8 +68,8 @@ private:
 	
 	CMesh m_Yoshi;
 
-	CBuffer* m_PlaneVB = nullptr;
-	CBuffer* m_PlaneIB = nullptr;
+	CBuffer * m_PlaneVB = nullptr;
+	CBuffer * m_PlaneIB = nullptr;
 
 	CTexture2D * m_MyRenderTarget = nullptr;
 };

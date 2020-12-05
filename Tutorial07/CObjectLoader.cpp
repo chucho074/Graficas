@@ -17,7 +17,7 @@ CObjectLoader::~CObjectLoader() {
 
 }
 
-bool CObjectLoader::loadObject(std::string inFileName) {
+bool CObjectLoader::loadObject(std::string inFileName)	 {
 	bool tmpIsReaded = true;
 	int tmpLineIter = 0;
 	std::ifstream FS;
@@ -131,6 +131,8 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 	}
 
 	//Faces
+	
+	std::vector<std::vector<float>> tmpTexCordsList = m_TextureCoordsList;
 	if ("f " == inLine.substr(0, 2)) {
 		std::vector<unsigned short> tmpArrayData;
 		int tmpData;
@@ -152,6 +154,20 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 		tmpArrayData.push_back(C1-1);
 		tmpArrayData.push_back(C2-1);
 		m_FacesList.push_back(tmpArrayData);
+
+		SimpleVertex tmpVertex;
+		
+		tmpVertex.Pos = XMFLOAT3(m_VertexList[a-1][0], m_VertexList[a-1][1], m_VertexList[a-1][2]);
+		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[A1-1][0], m_TextureCoordsList[A1-1][1]);
+		m_VertexBuffer.push_back(tmpVertex);
+
+		tmpVertex.Pos = XMFLOAT3(m_VertexList[b-1][0], m_VertexList[b-1][1], m_VertexList[b-1][2]);
+		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[B1-1][0], m_TextureCoordsList[B1-1][1]);
+		m_VertexBuffer.push_back(tmpVertex);
+
+		tmpVertex.Pos = XMFLOAT3(m_VertexList[c-1][0], m_VertexList[c-1][1], m_VertexList[c-1][2]);
+		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[C1-1][0], m_TextureCoordsList[C1-1][1]);
+		m_VertexBuffer.push_back(tmpVertex);
 
 		return true;
 	}
@@ -180,8 +196,10 @@ bool CObjectLoader::readLineMtl(std::string inLine) {
 		return true;
 	}
 	else if ("map_Kd " == inLine.substr(0, 7)) {
+		std::string tmpString;
 		std::stringstream tmpBuffer(inLine.substr(7));
-		tmpBuffer >> m_TextureFile;
+		tmpBuffer >> tmpString;
+		m_TextureFiles.push_back(tmpString);
 		return true;
 	}
 	return false;
