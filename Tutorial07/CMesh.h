@@ -9,10 +9,12 @@
 
 #pragma once
 #include <string>
+#include <map>
 #include "CGraphicsAPI.h"
 
 class CBuffer;
-
+class CObjectLoader;
+struct SimpleVertex;
 
 /**
 * @class    CMesh.
@@ -24,25 +26,26 @@ public:
 	CMesh() = default;
 	~CMesh();
 
-	void loadModel(std::string inFileName);
+	void loadMesh();
 
-	void drawModel();
+	void drawMesh();
 
-	std::vector<std::string> getTextures() { return m_TexturesNames; }
 
-	unsigned int getNumTextures() { return m_TexturesNames.size(); }
+protected:
 
-private:
-	int m_IndexNum;
-	
-	CBuffer* m_IndexBuffer;
-
-	int m_VertexNum;
-	
 	CBuffer* m_VertexBuffer;
 
-	//Obtener los nombres de las texturas a cargar por el modelo
-	std::vector<std::string> m_TexturesNames;
+	std::vector<SimpleVertex> m_VertexVector;
 
+	//std::vector<unsigned int> m_IndexBuffer;
+
+	CBuffer* m_IndexBuffer;
+
+	std::vector<std::vector<unsigned short>> m_FacesList;
+
+	int m_IndexNum = 0;
+
+private:	
+	friend class CObjectLoader;
 };
 

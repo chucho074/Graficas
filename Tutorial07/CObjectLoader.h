@@ -12,7 +12,8 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
-
+#include <map>
+#include "CMesh.h"
 #include <DirectXMath.h>
 
 using namespace DirectX;
@@ -50,11 +51,11 @@ public:
 	std::vector<std::string> & getTextureName() { return m_TextureFiles; }
 
 	std::vector<SimpleVertex> getVertBuffer() { return m_VertexBuffer; }
+
+	std::map<std::string, CMesh*> getMapMesh() { return m_Meshes; }
 private:
 	bool readLineObj(std::string inLine);
 	bool readLineMtl(std::string inLine);
-
-	
 
 	std::vector<std::string> m_TextureFiles;
 	std::string m_MTLFile = " ";
@@ -65,6 +66,10 @@ private:
 	std::vector<std::vector<unsigned short>> m_FacesList;
 	std::vector<SimpleVertex> m_VertexBuffer;
 
+	std::map<std::string, CMesh*> m_Meshes;
+
+	std::string m_ActualName;
+	
 };
 
 

@@ -1,5 +1,8 @@
 #pragma once
 #include "CGraphicsAPI.h"
+#include <iostream>
+#include <io.h>
+#include <fcntl.h>
 
 class BaseApp {
 public:
@@ -50,6 +53,10 @@ private:
 	* @brief	: Method that destroys the systems of the engine.
 	*/
 	void destroySystems();
+	/*
+	* @brief	: Method that actives the console.
+	*/
+	void activateConsole();
 
 
 public:

@@ -1,0 +1,173 @@
+# Blender3D MTL File: Pirate Peach.blend
+# Material Count: 16
+newmtl Material.027
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd 31B210D3_c.bmp
+
+
+newmtl Material.051_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.053
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.759375 0.759375 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.055
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.057
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.396875 0.396875 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.047_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.027_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.048_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.054_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.396875 0.396875 0.396875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.049_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.396875 0.396875 0.396875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.056
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.653125 0.653125 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.050_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.775000 0.775000 0.775000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.045
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.684375 0.684375 0.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+
+newmtl Material.052_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.044_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.528125 0.528125 0.528125
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+
+newmtl Material.046_Pirate_Peach_grp.png
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.796875 0.796875 0.796875
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Pirate Peach_grp.bmp
+
+

@@ -173,6 +173,25 @@ void DirectXApp::onCreate() {
 	/*****************/imgLoader.getImgSize());
 
 
+	imgLoader.clearData();
+	m_Peach.loadModel("Pirate Peach.obj");
+	//Cargar de esta forma las texturas
+	//CImageLoader imgLoader;
+	for (int i = 0; i < m_Peach.getNumTextures(); i++) {
+		imgLoader.loadBMP(m_Peach.getTextures()[i]);
+	}
+	m_PeachTexture = GAPI.createTex2D(imgLoader.getWidth(),
+	/********************************/imgLoader.getHeight(),
+	/********************************/0,
+	/********************************/DXGI_FORMAT_R8G8B8A8_UNORM,
+	/********************************/D3D11_BIND_SHADER_RESOURCE);
+										//0xaabbggrr
+
+	GAPI.updateTexture(m_PeachTexture,
+	/*****************/imgLoader.getImgData(), 
+	/*****************/imgLoader.getPitch(), 
+	/*****************/imgLoader.getImgSize());
+
 	//Create Sampler
 	SamplerDesc sampDesc;
 	sampDesc.filter = 21;
@@ -282,8 +301,7 @@ void DirectXApp::onRender() {
 	m_World = XMMatrixIdentity();
 	m_World = XMMatrixRotationY(tmpRotation);
 	m_World *= XMMatrixScaling(0.1f, 0.1f, 0.1f);
-	//m_World *= XMMatrixRotationY(45);
-	//m_World *= XMMatrixTranslation(0.f, -3.0f, -2.f);
+	m_World *= XMMatrixTranslation(0.f, 0.0f, 20.f);
 
 	cb.mWorld = XMMatrixTranspose(m_World);
 	cb.vMeshColor = m_MeshColor;
@@ -299,6 +317,20 @@ void DirectXApp::onRender() {
 	///GAPI.psSetShader(m_PS_Reflect);
 
 	m_Yoshi.drawModel();
+
+
+	m_World = XMMatrixIdentity();
+	m_World = XMMatrixRotationY(tmpRotation);
+	m_World *= XMMatrixScaling(0.1f, 0.1f, 0.1f);
+	m_World *= XMMatrixTranslation(0.f, 1.5f, 0.f);
+	cb.mWorld = XMMatrixTranspose(m_World);
+	cb.vMeshColor = m_MeshColor;
+	GAPI.updateSubresource(m_CB_CEF, &cb, sizeof(cb));
+	GAPI.vsSetConstantBuffer(2, m_CB_CEF);
+	GAPI.psSetConstantBuffer(2, m_CB_CEF);
+
+	GAPI.psSetShaderResource(0, m_PeachTexture);
+	m_Peach.drawModel();
 	
 	//Make it show
 	GAPI.show();

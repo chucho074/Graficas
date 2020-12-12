@@ -63,16 +63,35 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 	if ("#" == inLine.substr(0, 1)
 		|| "o " == inLine.substr(0, 2)
 		|| "g " == inLine.substr(0, 2)
-		|| "usemtl " == inLine.substr(0, 7)
+		|| "s " == inLine.substr(0, 2)
 		|| "" == inLine.substr(0, 1)) {
 
 		return true;
 	}
 
-	//Texture
+	//Material File
 	if ("mtllib " == inLine.substr(0, 7)) {
 		std::stringstream tmpBuffer(inLine.substr(7));
-		tmpBuffer >> m_MTLFile;
+		m_MTLFile = tmpBuffer.str();
+		return true;
+	}
+	if ("usemtl " == inLine.substr(0, 7)) {
+
+		//Save the actual mesh name
+		m_ActualName = inLine.substr(7);
+
+		//Verify if that mesh exist in map
+		auto comp_func = m_Meshes.key_comp();
+		for (auto iter : m_Meshes) {
+			if (comp_func(m_ActualName, iter.first)
+				&& comp_func(iter.first, m_ActualName)) {
+				
+			}
+		}
+		
+		//Add a new Mesh to the map
+		auto tmpMesh = new CMesh();
+		m_Meshes.insert({ inLine.substr(7), tmpMesh });
 		return true;
 	}
 
@@ -143,32 +162,54 @@ bool CObjectLoader::readLineObj(std::string inLine) {
 		const char* chh = inLine.c_str();
 		sscanf_s(chh, "f %i/%i/%i %i/%i/%i %i/%i/%i", 
 			&a, &A1, &A2, &b, &B1, &B2, &c, &C1, &C2);
+		if (0 > C2) {
+			sscanf_s(chh, "f %i/%i %i/%i %i/%i",
+				&a, &A1, &b, &B1, &c, &C1);
 
-		tmpArrayData.push_back(a-1);
-		tmpArrayData.push_back(A1-1);
-		tmpArrayData.push_back(A2-1);
-		tmpArrayData.push_back(b -1);
-		tmpArrayData.push_back(B1-1);
-		tmpArrayData.push_back(B2-1);
-		tmpArrayData.push_back(c -1);
-		tmpArrayData.push_back(C1-1);
-		tmpArrayData.push_back(C2-1);
+			tmpArrayData.push_back(a - 1);
+			tmpArrayData.push_back(A1 - 1);
+			tmpArrayData.push_back(b - 1);
+			tmpArrayData.push_back(B1 - 1);
+			tmpArrayData.push_back(c - 1);
+			tmpArrayData.push_back(C1 - 1);
+		}
+		else {
+
+			tmpArrayData.push_back(a - 1);
+			tmpArrayData.push_back(A1 - 1);
+			tmpArrayData.push_back(A2 - 1);
+			tmpArrayData.push_back(b - 1);
+			tmpArrayData.push_back(B1 - 1);
+			tmpArrayData.push_back(B2 - 1);
+			tmpArrayData.push_back(c - 1);
+			tmpArrayData.push_back(C1 - 1);
+			tmpArrayData.push_back(C2 - 1);
+		}
 		m_FacesList.push_back(tmpArrayData);
 
 		SimpleVertex tmpVertex;
 		
+		auto tmpActualMesh = (m_Meshes.find(m_ActualName));
+
 		tmpVertex.Pos = XMFLOAT3(m_VertexList[a-1][0], m_VertexList[a-1][1], m_VertexList[a-1][2]);
 		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[A1-1][0], m_TextureCoordsList[A1-1][1]);
-		m_VertexBuffer.push_back(tmpVertex);
+		tmpActualMesh->second->m_VertexVector.push_back(tmpVertex);
+		//m_VertexBuffer.push_back(tmpVertex);
 
 		tmpVertex.Pos = XMFLOAT3(m_VertexList[b-1][0], m_VertexList[b-1][1], m_VertexList[b-1][2]);
 		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[B1-1][0], m_TextureCoordsList[B1-1][1]);
-		m_VertexBuffer.push_back(tmpVertex);
+		tmpActualMesh->second->m_VertexVector.push_back(tmpVertex);
+		//m_VertexBuffer.push_back(tmpVertex);
 
 		tmpVertex.Pos = XMFLOAT3(m_VertexList[c-1][0], m_VertexList[c-1][1], m_VertexList[c-1][2]);
 		tmpVertex.Tex = XMFLOAT2(m_TextureCoordsList[C1-1][0], m_TextureCoordsList[C1-1][1]);
-		m_VertexBuffer.push_back(tmpVertex);
+		tmpActualMesh->second->m_VertexVector.push_back(tmpVertex);
+		//m_VertexBuffer.push_back(tmpVertex);
 
+		//se le daria valor a Actual mesh cuando se encuentre el usemtl
+		//Por cada usemtl mandar buffer al mesh que corresponda con el nombre
+		//Mandar al actualMesh el buffer
+		tmpActualMesh->second->m_FacesList.push_back(tmpArrayData);
 		return true;
 	}
 
@@ -189,6 +230,7 @@ bool CObjectLoader::readLineMtl(std::string inLine) {
 		|| "newmtl " == inLine.substr(0, 7)
 		|| "Kd " == inLine.substr(0, 3)
 		|| "Ks " == inLine.substr(0, 3)
+		|| "Ni " == inLine.substr(0, 3)
 		|| "Ka " == inLine.substr(0, 3)
 		|| "#" == inLine.substr(0, 1)
 		|| "" == inLine.substr(0, 1)) {
@@ -198,8 +240,22 @@ bool CObjectLoader::readLineMtl(std::string inLine) {
 	else if ("map_Kd " == inLine.substr(0, 7)) {
 		std::string tmpString;
 		std::stringstream tmpBuffer(inLine.substr(7));
-		tmpBuffer >> tmpString;
-		m_TextureFiles.push_back(tmpString);
+		tmpString = tmpBuffer.str();
+		//Check if the name exist
+		int tmpSize = m_TextureFiles.size();
+		if (0 != tmpSize) {
+			for (int i = 0; i < tmpSize; i++) {
+				if (tmpString == m_TextureFiles[i]) {
+					return true;
+				}
+				if (i == (tmpSize-1)) {
+					m_TextureFiles.push_back(tmpString);
+				}
+			}
+		}
+		else if (0 == tmpSize) {
+			m_TextureFiles.push_back(tmpString);
+		}
 		return true;
 	}
 	return false;

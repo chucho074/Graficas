@@ -74,10 +74,18 @@
     <ClCompile Include="CImageLoader.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="CObjectLoader.cpp" />
-    <ClCompile Include="CMesh.cpp" />
-    <ClCompile Include="CMaterial.cpp" />
-    <ClCompile Include="CModel.cpp" />
+    <ClCompile Include="CMaterial.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CMesh.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CModel.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="CObjectLoader.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tutorial07.fx">
@@ -145,10 +153,18 @@
     <ClInclude Include="CImageLoader.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="CObjectLoader.h" />
-    <ClInclude Include="CMesh.h" />
-    <ClInclude Include="CMaterial.h" />
-    <ClInclude Include="CModel.h" />
+    <ClInclude Include="CMaterial.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CMesh.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CModel.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CObjectLoader.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>

@@ -17,6 +17,7 @@
 #include "CObjectLoader.h"
 #include "CCamera.h"
 #include "CMesh.h"
+#include "CModel.h"
 
 #include "ImGUI/imgui.h"
 #include "ImGUI/imgui_impl_dx11.h"
@@ -64,9 +65,12 @@ private:
 	CPixelShader * m_PS_Reflect = nullptr;
 	XMMATRIX m_World;
 	XMFLOAT4 m_MeshColor;
-	CTexture2D * m_ColorTexture = nullptr;
 	
-	CMesh m_Yoshi;
+	CModel m_Yoshi;
+	CTexture2D * m_ColorTexture = nullptr;
+
+	CModel m_Peach;
+	CTexture2D * m_PeachTexture = nullptr;
 
 	CBuffer * m_PlaneVB = nullptr;
 	CBuffer * m_PlaneIB = nullptr;
